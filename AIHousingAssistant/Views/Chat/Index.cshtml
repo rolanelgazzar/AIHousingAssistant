@@ -1,0 +1,627 @@
+﻿@{
+    ViewData["Title"] = "Housing Chat Assistant";
+}
+@{
+    Layout = null;
+}
+
+<style type="text/css">
+    :root {
+        --body-bg: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        --msger-bg: #fff;
+        --border: 2px solid #ddd;
+        --left-msg-bg: #ececec;
+        --right-msg-bg: #579ffb;
+    }
+
+    html {
+        box-sizing: border-box;
+    }
+
+    *
+    *:before,
+    *:after {
+        margin: 0;
+        padding: 0;
+        box-sizing: inherit;
+    }
+
+    body {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        background-image: var(--body-bg);
+        font-family: Helvetica, sans-serif;
+    }
+
+    .msger {
+        display: flex;
+        flex-flow: column wrap;
+        justify-content: space-between;
+        width: 100%;
+        max-width: 867px;
+        margin: 25px 50px;
+        height: calc(100% - 50px);
+        border: var(--border);
+        border-radius: 5px;
+        background: var(--msger-bg);
+        box-shadow: 0 15px 15px -5px rgba(0, 0, 0, 0.2);
+    }
+
+    .msger-header {
+        display: flex;
+        justify-content: space-between;
+        padding: 10px;
+        border-bottom: var(--border);
+        background: #eee;
+        color: #666;
+    }
+
+    .msger-chat {
+        flex: 1;
+        overflow-y: auto;
+        padding: 10px;
+    }
+
+        .msger-chat::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .msger-chat::-webkit-scrollbar-track {
+            background: #ddd;
+        }
+
+        .msger-chat::-webkit-scrollbar-thumb {
+            background: #bdbdbd;
+        }
+
+    .msg {
+        display: flex;
+        align-items: flex-end;
+        margin-bottom: 10px;
+    }
+
+        .msg:last-of-type {
+            margin: 0;
+        }
+
+    .msg-img {
+        width: 50px;
+        height: 50px;
+        margin-right: 10px;
+        background: #ddd;
+        background-repeat: no-repeat;
+        background-position: center;
+        background-size: cover;
+        border-radius: 50%;
+    }
+
+    .msg-bubble {
+        max-width: 450px;
+        padding: 15px;
+        border-radius: 15px;
+        background: var(--left-msg-bg);
+    }
+
+    .msg-info {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 10px;
+    }
+
+    .msg-info-name {
+        margin-right: 10px;
+        font-weight: bold;
+    }
+
+    .msg-info-time {
+        font-size: 0.85em;
+    }
+
+    .left-msg .msg-bubble {
+        border-bottom-left-radius: 0;
+    }
+
+    .right-msg {
+        flex-direction: row-reverse;
+    }
+
+        .right-msg .msg-bubble {
+            background: var(--right-msg-bg);
+            color: #fff;
+            border-bottom-right-radius: 0;
+        }
+
+        .right-msg .msg-img {
+            margin: 0 0 0 10px;
+        }
+
+    .msger-inputarea {
+        display: flex;
+        padding: 10px;
+        border-top: var(--border);
+        background: #eee;
+    }
+
+        .msger-inputarea * {
+            padding: 10px;
+            border: none;
+            border-radius: 3px;
+            font-size: 1em;
+        }
+
+    .msger-input {
+        flex: 1;
+        background: #ddd;
+    }
+
+    .msger-send-btn {
+        margin-left: 10px;
+        background: rgb(0, 196, 65);
+        color: #fff;
+        font-weight: bold;
+        cursor: pointer;
+        transition: background 0.23s;
+    }
+
+        .msger-send-btn:hover {
+            background: rgb(0, 180, 50);
+        }
+
+    .msger-chat {
+        background-color: #fcfcfe;
+    }
+
+    .imgLoader {
+        height: 100px;
+        position: relative;
+        left: 55px;
+        top: -40px;
+    }
+
+    .chat-container {
+        display: flex;
+        height: 100vh;
+        width: 100%;
+    }
+
+    .chat-sidebar {
+        width: 250px;
+        background: #f4f4f4;
+        border-right: 1px solid #ddd;
+        display: flex;
+        flex-direction: column;
+        padding: 10px;
+        overflow-y: auto;
+        transition: all 0.3s ease;
+    }
+
+    .sidebar-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 10px;
+    }
+
+    .delete-history-btn {
+        background: red;
+        color: white;
+        border: none;
+        padding: 5px 10px;
+        font-size: 12px;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+
+        .delete-history-btn:hover {
+            background: darkred;
+        }
+
+    .recent-conversations {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .recent-conversation-item {
+        background: white;
+        padding: 10px;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+        font-size: 14px;
+    }
+
+        .recent-conversation-item:hover {
+            background-color: #ddd;
+        }
+
+    .toggle-btn {
+        background: none;
+        border: none;
+        font-size: 24px;
+        cursor: pointer;
+    }
+
+    .initial-questions {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        margin: 15px 0;
+    }
+
+        .initial-questions .question-btn {
+            background-color: white;
+            color: #333;
+            border: 1px solid #ccc;
+            padding: 12px 16px;
+            border-radius: 10px;
+            cursor: pointer;
+            text-align: left;
+            font-size: 15px;
+            transition: background-color 0.3s, box-shadow 0.3s;
+            width: 100%;
+        }
+
+            .initial-questions .question-btn:hover {
+                background-color: #f0f0f0;
+                box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+            }
+
+    .feedback-buttons {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 20px;
+        padding: 10px;
+        border-top: var(--border);
+        background: #eee;
+    }
+
+    .feedback-btn {
+        background: none;
+        border: none;
+        cursor: pointer;
+    }
+
+        .feedback-btn img {
+            width: 40px;
+            height: 40px;
+            object-fit: contain;
+            transition: transform 0.2s;
+        }
+
+        .feedback-btn:hover img {
+            transform: scale(1.1);
+        }
+
+    .chat-container {
+        display: flex;
+        height: 100vh;
+        width: 100%;
+    }
+
+    .chat-sidebar {
+        width: 250px;
+        background: #f4f4f4;
+        border-right: 1px solid #ddd;
+        display: flex;
+        flex-direction: column;
+        padding: 10px;
+        overflow-y: auto;
+    }
+
+        .chat-sidebar h3 {
+            margin-bottom: 10px;
+            font-size: 18px;
+            text-align: center;
+        }
+
+    #chatHistoryList {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .summary-box {
+        margin-top: 20px;
+        padding: 15px;
+        border-radius: 8px;
+        background: #f3f3f3;
+        font-size: 16px;
+        line-height: 1.6;
+    }
+
+    #error {
+        color: red;
+    }
+
+    #loader {
+        font-size: 18px;
+        color: #007bff;
+        font-weight: bold;
+    }
+
+    .attach-btn {
+        background: linear-gradient(135deg, #b192ff, #8f6bff); /* موف جميل */
+        color: #ffffff;
+        margin-left: 10px;
+        padding: 10px 14px;
+        border-radius: 6px;
+        cursor: pointer;
+        font-weight: 600;
+        display: inline-block;
+        transition: 0.25s;
+        text-decoration: none;
+    }
+
+        .attach-btn:hover {
+            background: linear-gradient(135deg, #a17bff, #7d5aff);
+            transform: scale(1.03);
+        }
+
+
+        .attach-btn .icon {
+            color: #fff !important; /* نفس لون النص */
+           
+        }
+
+</style>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
+
+
+<div class="chat-container">
+    <!-- Sidebar (Sessions History) -->
+    <div class="chat-sidebar">
+        <h3>Help Questions</h3>
+        <div class="msger-chat-header"></div>
+
+        <h3>Summarization Chat History</h3>
+ 
+
+        <div id="loader" style="display:none;">Loading...</div>
+
+        <div id="summaryResult" class="initial-questions"></div>
+
+        <input type="button" id="loadSummarizationChatHistoryBtn" value="Load Summarization Chat History" />
+     
+
+    </div>
+
+    <!-- Main Chat Area -->
+    <section class="msger">
+        <header class="msger-header">
+            <div class="msger-header-title">
+                <i class="fas fa-comment-alt"></i> Housing Service Bot - internal
+            </div>
+            <div class="msger-header-options">
+                <span><i class="fas fa-cog"></i></span>
+            </div>
+        </header>
+
+
+        <main class="msger-chat"></main>
+
+        <form class="msger-inputarea">
+            
+            <input id="messageInput" type="text" class="msger-input" placeholder="اكتب رسالتك هنا..." />
+            <button id="sendButton" class="msger-send-btn">Send</button>
+            <button id="sendPlannerButton" class="msger-send-btn">Send by Planner</button>
+            <label for="fileUpload" class="attach-btn">
+                📎 Attach
+
+            </label>
+
+            <input type="file" id="fileUpload" style="display:none;" />
+
+        </form>
+    </section>
+</div>
+
+<script>
+    const imgBOT = "/images/bot.png";
+    const imgPerson = "/images/user.png";
+    const nameBOT = "Housing Service Bot";
+    const namePerson = "";
+
+    // ---------------- Global functions ----------------
+    window.addChatMessage = function(name, img, side, text) {
+        const msgHTML = `
+            <div class="msg ${side}-msg">
+                <div class="msg-img" style="background-image: url(${img})"></div>
+                <div class="msg-bubble">
+                    <div class="msg-info">
+                        <div class="msg-info-name">${name}</div>
+                        <div class="msg-info-time">${formatDate(new Date())}</div>
+                    </div>
+                    <div class="msg-text">${text}</div>
+                </div>
+            </div>
+        `;
+
+        $(".msger-chat").append($(msgHTML));
+
+        if (side == "left") {
+            var loaderHTML = `<div id="dvLoader"><img class="imgLoader" src="/images/loader.gif" /></div>`;
+            $(".msger-chat").append($(loaderHTML));
+        }
+
+        $(".msger-chat").scrollTop($(".msger-chat").scrollTop() + 500);
+        return false;
+    };
+
+    window.formatDate = function(date) {
+        const h = "0" + date.getHours();
+        const m = "0" + date.getMinutes();
+        return `${h.slice(-2)}:${m.slice(-2)}`;
+    };
+
+    window.handleFileUpload = function(event) {
+        let file = event.target.files[0];
+        if (!file) return;
+
+        addChatMessage(namePerson, imgPerson, "left", `📄 File Selected: ${file.name}`);
+
+        let formData = new FormData();
+        formData.append("file", file);
+
+        $.ajax({
+            url: "/UploadDocument",
+            type: "POST",
+            data: formData,
+            contentType: false,
+            processData: false,
+            success: function (response) {
+                addChatMessage(nameBOT, imgBOT, "right",
+                    "تم رفع المستند بنجاح ✔\nسيتم استخدامه في الإجابات عند بناء RAG");
+            },
+            error: function () {
+                addChatMessage(nameBOT, imgBOT, "right", "حدث خطأ أثناء رفع الملف ❌");
+            }
+        });
+    };
+
+    // ---------------- Document ready ----------------
+    $(function () {
+        addChatMessage(nameBOT, imgBOT, "right", "مرحبًا! كيف يمكنني مساعدتك بخصوص السكن؟");
+
+        loadInitialQuestions();
+
+        $('#sendButton').click(function () {
+            var message = $('#messageInput').val().trim();
+            if (message === '') return;
+            askChatGPT(message);
+            $('#messageInput').val('');
+            return false;
+        });
+
+        $('#sendPlannerButton').click(function () {
+            var message = $('#messageInput').val().trim();
+            if (message === '') return;
+            AskChatAI_Planner(message);
+            $('#messageInput').val('');
+            return false;
+        });
+
+        $('#messageInput').keypress(function (e) {
+            if (e.which === 13) {
+                $('#sendButton').click();
+                return false;
+            }
+        });
+
+        $('#loadSummarizationChatHistoryBtn').click(function() {
+            GetSummarizationChatHistory();
+        });
+
+        $("#fileUpload").on("change", handleFileUpload);
+    });
+
+    // ---------------- Other functions ----------------
+    function askChatGPT(message) {
+        addChatMessage(namePerson, imgPerson, "left", message);
+
+        $.ajax({
+            url: '/AskChatAI',
+            type: 'POST',
+            data: JSON.stringify(message),
+            contentType: 'application/json',
+            success: function (response) {
+                addChatMessage(nameBOT, imgBOT, "right", response.data);
+                $('.imgLoader').hide();
+            },
+            error: function (xhr) {
+                var errorMessage = "حدث خطأ أثناء الاتصال بالخادم.";
+                if (xhr.responseJSON && xhr.responseJSON.error) {
+                    errorMessage = xhr.responseJSON.error;
+                } else if (xhr.responseText) {
+                    errorMessage = xhr.responseText;
+                }
+                addChatMessage(nameBOT, imgBOT, "right", errorMessage);
+                $('.imgLoader').hide();
+            }
+        });
+    }
+
+    function AskChatAI_Planner(message) {
+        addChatMessage(namePerson, imgPerson, "left", message);
+
+        $.ajax({
+            url: '/AskChatAI_Planner',
+            type: 'POST',
+            data: JSON.stringify(message),
+            contentType: 'application/json',
+            success: function (response) {
+                addChatMessage(nameBOT, imgBOT, "right", response.data);
+                $('.imgLoader').hide();
+            },
+            error: function (xhr) {
+                var errorMessage = "حدث خطأ أثناء الاتصال بالخادم.";
+                if (xhr.responseJSON && xhr.responseJSON.error) {
+                    errorMessage = xhr.responseJSON.error;
+                } else if (xhr.responseText) {
+                    errorMessage = xhr.responseText;
+                }
+                addChatMessage(nameBOT, imgBOT, "right", errorMessage);
+                $('.imgLoader').hide();
+            }
+        });
+    }
+
+    function loadInitialQuestions() {
+        $.ajax({
+            url: '/GetInitialQuestions',
+            type: 'GET',
+            success: function (response) {
+                if (response.success && response.data.length > 0) {
+                    showInitialQuestions(response.data);
+                }
+            },
+            error: function (xhr) {
+                console.warn("Failed to load initial questions, continue normally.");
+            }
+        });
+    }
+
+    function showInitialQuestions(questions) {
+        const container = $('<div class="initial-questions"></div>');
+        questions.forEach(q => {
+            const btn = $(`<button class="question-btn">${q}</button>`);
+            btn.click(function () {
+                $('#messageInput').val(q);
+                $('#sendButton').click();
+            });
+            container.append(btn);
+        });
+        $(".msger-chat-header").prepend(container);
+    }
+
+    function GetSummarizationChatHistory() {
+        $("#summaryResult").html("");
+        $("#loader").show();
+
+        $.ajax({
+            url: '/SummarizationChatHistory',
+            type: 'GET',
+            success: function (response) {
+                $("#loader").hide();
+                if (response.success) {
+                    showSummary(response.summary);
+                } else {
+                    $("#summaryResult").html("<p class='error'>No summary found.</p>");
+                }
+            },
+            error: function () {
+                $("#loader").hide();
+                $("#summaryResult").html("<p class='error'>Something went wrong.</p>");
+            }
+        });
+    }
+
+    function showSummary(summary) {
+        $("#summaryResult").html(`<div class="summary-text">${summary}</div>`);
+    }
+</script>
