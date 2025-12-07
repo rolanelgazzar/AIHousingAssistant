@@ -221,35 +221,34 @@ namespace AIHousingAssistant.Controllers
         public async Task<IActionResult> UploadDocument(IFormFile file)
         {
             if (file == null || file.Length == 0)
-                return BadRequest("No file uploaded");
+                return BadRequest(new { success = false, error = "No file uploaded" });
 
-            // Save the uploaded file
-            var folder = Path.Combine(Directory.GetCurrentDirectory(), "UploadedDocs");
-            if (!Directory.Exists(folder))
-                Directory.CreateDirectory(folder);
-
-            var filePath = Path.Combine(folder, file.FileName);
-            using (var stream = new FileStream(filePath, FileMode.Create))
-                await file.CopyToAsync(stream);
-
-            // ---------------- Call Service to start RAG processing ----------------
             try
             {
-                // Assume you have a service named IRagService registered in DI
-                await _ragService.ProcessDocumentAsync(filePath);
+                // Call the RAG service to handle saving + processing
+                await _ragService.ProcessDocumentAsync(file);
 
-                // Return success + file path
-                return Ok(new { success = true, path = filePath, message = "File uploaded and RAG processing started." });
+                return Ok(new
+                {
+                    success = true,
+                    fileName = file.FileName,
+                    message = "File uploaded and RAG processing started."
+                });
             }
             catch (Exception ex)
             {
-                // If an error occurs in RAG processing
                 return StatusCode(500, new { success = false, error = ex.Message });
             }
         }
 
 
         #endregion
+        [HttpPost("AskRagAsync")]
+        public async Task<IActionResult> AskRagAsync([FromBody] string query)
+        {
+            var reply = await _ragService.AskRagAsync(query);
+            return Ok(new { data = reply });
+        }
 
     }
 }

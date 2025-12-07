@@ -405,19 +405,27 @@
 
         <main class="msger-chat"></main>
 
-        <form class="msger-inputarea">
-            
-            <input id="messageInput" type="text" class="msger-input" placeholder="اكتب رسالتك هنا..." />
-            <button id="sendButton" class="msger-send-btn">Send</button>
-            <button id="sendPlannerButton" class="msger-send-btn">Send by Planner</button>
-            <label for="fileUpload" class="attach-btn">
-                📎 Attach
+        <form class="msger-inputarea" onsubmit="return false;">
 
-            </label>
+            <div style="display:flex; gap:10px; align-items:center;">
+                <input id="messageInput" type="text" class="msger-input" placeholder="اكتب رسالتك هنا..." />
 
-            <input type="file" id="fileUpload" style="display:none;" />
+                <button id="sendButton" class="msger-send-btn">Send</button>
+                <button id="sendPlannerButton" class="msger-send-btn">Send by Planner</button>
+
+                <label for="fileUpload" class="attach-btn">📎 Attach</label>
+                <input type="file" id="fileUpload" style="display:none;">
+            </div>
+
+            <hr style="margin:15px 0;">
+
+            <!-- زر RAG داخل نفس الفورم ولكن منفصل بصريًا -->
+            <button id="sendRagBtn" class="msger-send-btn" style="margin-top:10px; background:#4c80ff;">
+                🔍 Ask RAG
+            </button>
 
         </form>
+
     </section>
 </div>
 
@@ -450,6 +458,7 @@
         }
 
         $(".msger-chat").scrollTop($(".msger-chat").scrollTop() + 500);
+
         return false;
     };
 
@@ -475,11 +484,13 @@
             contentType: false,
             processData: false,
             success: function (response) {
-                addChatMessage(nameBOT, imgBOT, "right",
-                    "تم رفع المستند بنجاح ✔\nسيتم استخدامه في الإجابات عند بناء RAG");
+               addChatMessage(nameBOT, imgBOT, "right",
+    "File uploaded successfully ✔\nIt will be used for answers when building the RAG");
+      $('.imgLoader').hide();
             },
             error: function () {
-                addChatMessage(nameBOT, imgBOT, "right", "حدث خطأ أثناء رفع الملف ❌");
+    addChatMessage(nameBOT, imgBOT, "right", "An error occurred while uploading the file ❌");
+      $('.imgLoader').hide();
             }
         });
     };
@@ -518,7 +529,19 @@
         });
 
         $("#fileUpload").on("change", handleFileUpload);
+
+        
+         // زر Ask RAG event
+
+        $('#sendRagBtn').click(function () {
+            var message = $('#messageInput').val().trim();
+            if (message === '') return;
+
+            AskRagAsync(message);  //
+            $('#messageInput').val('');
+        });
     });
+  
 
     // ---------------- Other functions ----------------
     function askChatGPT(message) {
@@ -570,7 +593,28 @@
             }
         });
     }
+    //-------------------------
+     // ---------------- Ask RAG Function ----------------
+        function AskRagAsync(message) {
+        addChatMessage(namePerson, imgPerson, "left", message);
 
+        $.ajax({
+            url: '/AskRagAsync',
+            type: 'POST',
+            data: JSON.stringify(message),
+            contentType: 'application/json',
+            success: function (response) {
+                addChatMessage(nameBOT, imgBOT, "right", response.data ?? "No answer found");
+                $('.imgLoader').hide();
+            },
+            error: function () {
+                addChatMessage(nameBOT, imgBOT, "right", "Error occurred ❌");
+                $('.imgLoader').hide();
+            }
+        });
+    }
+
+    //------------------------------
     function loadInitialQuestions() {
         $.ajax({
             url: '/GetInitialQuestions',

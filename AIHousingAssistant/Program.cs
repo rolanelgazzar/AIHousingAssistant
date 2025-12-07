@@ -19,6 +19,8 @@ builder.Services.AddScoped<IHousingService, HousingService>();
 builder.Services.AddScoped<ISummarizerService, SummarizerService>();
 builder.Services.AddSingleton<IChatHistoryService, ChatHistoryService>();
 builder.Services.AddScoped<IRagService, RagService>();
+builder.Services.AddScoped<IVectorStore, InMemoryVectorStore>();
+builder.Services.AddScoped<IChunkService, ChunkService>();
 
 
 builder.Services.AddCors(options =>

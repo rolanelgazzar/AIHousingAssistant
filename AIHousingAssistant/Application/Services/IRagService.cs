@@ -2,7 +2,8 @@
 {
     public interface IRagService
     {
-        Task ProcessDocumentAsync(string filePath);
+        public Task ProcessDocumentAsync(IFormFile file);
+        public Task<string> AskRagAsync(string query);
 
     }
 }

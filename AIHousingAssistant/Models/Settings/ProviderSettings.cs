@@ -6,7 +6,11 @@
         public OpenRouterSettings OpenRouterAI { get; set; } = new();
         public OpenAISettings OpenAI { get; set; } = new();
         public OllamaSettings Ollama { get; set; } = new();
+        public OllamaEmbeddingSettings OllamaEmbedding { get; set; } = new();
 
+        public string  ProcessingFolder { get; set; }
+        public string VectorStoreFilename { get; set; }
+        public string ChunksFileName { get; set; }
     }
 
     public class AzureSettings
@@ -34,4 +38,9 @@
         public string Endpoint { get; set; } 
     public string Model { get; set; } = string.Empty;
         }
+    public class OllamaEmbeddingSettings
+    {
+        public string Endpoint { get; set; }
+        public string Model { get; set; } = string.Empty;
+    }
 }
