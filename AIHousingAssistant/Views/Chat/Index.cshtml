@@ -138,36 +138,94 @@
             margin: 0 0 0 10px;
         }
 
+    /* ====== INPUT AREA (modified) ====== */
     .msger-inputarea {
         display: flex;
-        padding: 10px;
+        flex-direction: column;
+        padding: 12px;
         border-top: var(--border);
-        background: #eee;
+        background: #f5f7fb;
+        gap: 8px;
     }
 
         .msger-inputarea * {
-            padding: 10px;
-            border: none;
-            border-radius: 3px;
             font-size: 1em;
         }
 
-    .msger-input {
-        flex: 1;
-        background: #ddd;
+    /* row for the text box only */
+    .input-row {
+        width: 100%;
     }
 
+    .msger-input {
+        width: 100%;
+        background: #ffffff;
+        border-radius: 6px;
+        padding: 14px 18px;
+        font-size: 15px;
+        border: 1px solid #d0d7e2;
+        outline: none;
+        transition: box-shadow 0.2s ease, border-color 0.2s ease;
+    }
+
+        .msger-input:focus {
+            border-color: #4c80ff;
+            box-shadow: 0 0 0 3px rgba(76, 128, 255, 0.15);
+        }
+
+    /* row for all buttons under the text box */
+    .buttons-row {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+        justify-content: flex-start;
+        flex-wrap: wrap;
+        margin-top: 4px;
+    }
+
+    /* Base button style: square-ish, not rounded pill */
     .msger-send-btn {
-        margin-left: 10px;
-        background: rgb(0, 196, 65);
-        color: #fff;
-        font-weight: bold;
+        padding: 10px 14px;
+        border-radius: 6px;
+        font-size: 14px;
+        font-weight: 600;
         cursor: pointer;
-        transition: background 0.23s;
+        color: #fff;
+        border: none;
+        background: #777; /* default fallback */
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.12);
+        transition: background 0.2s ease, transform 0.1s ease, box-shadow 0.1s ease;
+        white-space: nowrap;
     }
 
         .msger-send-btn:hover {
-            background: rgb(0, 180, 50);
+            transform: translateY(-1px);
+            box-shadow: 0 6px 14px rgba(0, 0, 0, 0.16);
+        }
+
+    /* Different colors for each button – all muted to fit gray theme */
+    #sendButton {
+        background: #4a90e2; /* muted blue */
+    }
+
+        #sendButton:hover {
+            background: #407fcc;
+        }
+
+    #sendPlannerButton {
+        background: #7f8c8d; /* gray-teal */
+    }
+
+        #sendPlannerButton:hover {
+            background: #6f7c7d;
+        }
+
+    #sendRagBtn {
+        background: #8e44ad; /* muted purple */
+    }
+
+        #sendRagBtn:hover {
+            background: #7b3a96;
         }
 
     .msger-chat {
@@ -347,7 +405,7 @@
     .attach-btn {
         background: linear-gradient(135deg, #b192ff, #8f6bff); /* موف جميل */
         color: #ffffff;
-        margin-left: 10px;
+        margin-left: 0;
         padding: 10px 14px;
         border-radius: 6px;
         cursor: pointer;
@@ -355,6 +413,7 @@
         display: inline-block;
         transition: 0.25s;
         text-decoration: none;
+        border: none;
     }
 
         .attach-btn:hover {
@@ -362,10 +421,8 @@
             transform: scale(1.03);
         }
 
-
         .attach-btn .icon {
             color: #fff !important; /* نفس لون النص */
-           
         }
 
 </style>
@@ -380,14 +437,14 @@
         <div class="msger-chat-header"></div>
 
         <h3>Summarization Chat History</h3>
- 
+
 
         <div id="loader" style="display:none;">Loading...</div>
 
         <div id="summaryResult" class="initial-questions"></div>
 
         <input type="button" id="loadSummarizationChatHistoryBtn" value="Load Summarization Chat History" />
-     
+
 
     </div>
 
@@ -407,27 +464,31 @@
 
         <form class="msger-inputarea" onsubmit="return false;">
 
-            <div style="display:flex; gap:10px; align-items:center;">
+            <!-- text box in its own full-width row -->
+            <div class="input-row">
                 <input id="messageInput" type="text" class="msger-input" placeholder="اكتب رسالتك هنا..." />
+            </div>
 
+            <hr style="margin:10px 0;">
+
+            <!-- all buttons below the textbox -->
+            <div class="buttons-row">
                 <button id="sendButton" class="msger-send-btn">Send</button>
                 <button id="sendPlannerButton" class="msger-send-btn">Send by Planner</button>
 
                 <label for="fileUpload" class="attach-btn">📎 Attach</label>
                 <input type="file" id="fileUpload" style="display:none;">
+
+                <button id="sendRagBtn" class="msger-send-btn">
+                    🔍 Ask RAG
+                </button>
             </div>
-
-            <hr style="margin:15px 0;">
-
-            <!-- زر RAG داخل نفس الفورم ولكن منفصل بصريًا -->
-            <button id="sendRagBtn" class="msger-send-btn" style="margin-top:10px; background:#4c80ff;">
-                🔍 Ask RAG
-            </button>
 
         </form>
 
     </section>
 </div>
+
 
 <script>
     const imgBOT = "/images/bot.png";
