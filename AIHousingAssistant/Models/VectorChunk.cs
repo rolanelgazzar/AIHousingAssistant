@@ -1,9 +1,9 @@
 ﻿namespace AIHousingAssistant.Models
 {
-    public class VectorChunk
+    public class VectorChunk:TextChunk
     {
-        public int Index { get; set; }
-        public string Content { get; set; }
+        
+        public float Similarity { get; set; }
         public float[] Embedding { get; set; } // store vector representation
     }
 }

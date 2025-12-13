@@ -1,12 +1,11 @@
 ﻿using AIHousingAssistant.Models;
 
-namespace AIHousingAssistant.Application.Services
+namespace AIHousingAssistant.Application.Services.Interfaces
 {
     public interface IVectorStore
     {
-        Task<float[]> TextToVectorAsync(string text);
         Task StoreTextChunksAsVectorsAsync(List<TextChunk> chunks);
-        public  Task<VectorChunk?> SearchClosest(String queryText);
+        public Task<VectorChunk?> SearchClosest(string queryText);
         public Task<List<VectorChunk>> GetAllAsync();
     }
 }

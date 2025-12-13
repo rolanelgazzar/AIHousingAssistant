@@ -1,4 +1,5 @@
-﻿using AIHousingAssistant.Infrastructure.Data;
+﻿using AIHousingAssistant.Application.Services.Interfaces;
+using AIHousingAssistant.Infrastructure.Data;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.SemanticKernel.ChatCompletion;

@@ -1,4 +1,5 @@
-﻿using AIHousingAssistant.Models.Settings;
+﻿using AIHousingAssistant.Application.Services.Interfaces;
+using AIHousingAssistant.Models.Settings;
 using Microsoft.Extensions.Options;
 using Microsoft.SemanticKernel.ChatCompletion;
 using OllamaSharp;

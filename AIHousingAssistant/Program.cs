@@ -1,8 +1,11 @@
 
 using AIHousingAssistant.Application.Services;
+using AIHousingAssistant.Application.Services.Interfaces;
 using AIHousingAssistant.Infrastructure.Data;
 using AIHousingAssistant.Models.Settings;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.SemanticKernel;
+using Qdrant.Client;
 using System;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -19,8 +22,16 @@ builder.Services.AddScoped<IHousingService, HousingService>();
 builder.Services.AddScoped<ISummarizerService, SummarizerService>();
 builder.Services.AddSingleton<IChatHistoryService, ChatHistoryService>();
 builder.Services.AddScoped<IRagService, RagService>();
-builder.Services.AddScoped<IVectorStore, InMemoryVectorStore>();
 builder.Services.AddScoped<IChunkService, ChunkService>();
+// concrete types
+builder.Services.AddScoped<IInMemoryVectorStore,InMemoryVectorStore>();
+builder.Services.AddScoped<IQDrantVectorStore,QDrantVectorStore>();
+builder.Services.AddScoped<IQDrantVectorStoreEF, QDrantVectorStoreEF>();
+
+
+
+
+//builder.Services.AddQdrantVectorStore("localhost"); // Register Qdrant Vector Store
 
 
 builder.Services.AddCors(options =>

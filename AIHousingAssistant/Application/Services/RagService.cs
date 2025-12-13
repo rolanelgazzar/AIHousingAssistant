@@ -17,18 +17,26 @@ using System.Linq;
 using AIHousingAssistant.Helper;
 using OllamaSharp;
 using System.Text;
+using AIHousingAssistant.Application.Services.Interfaces;
+using AIHousingAssistant.Application.Enum;
 
 namespace AIHousingAssistant.Application.Services
 {
     public class RagService : IRagService
     {
         private readonly string _uploadFolder;
-        private readonly IVectorStore _vectorStore;
+        private readonly IInMemoryVectorStore _memoryVectorStore;
         private readonly ProviderSettings _providerSettings;
         private readonly IChunkService _chunkService;
         private readonly OllamaApiClient _ollamaClient;
+        private readonly IQDrantVectorStore _QDrantVectorStore;
+        private readonly IQDrantVectorStoreEF _QDrantVectorStoreEF;
 
-        public RagService(IOptions<ProviderSettings> providerSettings, IVectorStore vectorStore, IChunkService chunkService)
+        public RagService(IOptions<ProviderSettings> providerSettings,
+            IInMemoryVectorStore memoryStore,
+                 IQDrantVectorStore QDrantVectorStore,
+                 IQDrantVectorStoreEF qDrantVectorStoreEF,
+            IChunkService chunkService)
         {
             if (providerSettings == null)
                 throw new ArgumentNullException(nameof(providerSettings));
@@ -43,7 +51,10 @@ namespace AIHousingAssistant.Application.Services
             //if (!Directory.Exists(_uploadFolder))
             //    Directory.CreateDirectory(_uploadFolder);
 
-            _vectorStore = vectorStore ?? throw new ArgumentNullException(nameof(vectorStore));
+            _memoryVectorStore = memoryStore ?? throw new ArgumentNullException(nameof(memoryStore));
+            _QDrantVectorStore = QDrantVectorStore ?? throw new ArgumentNullException(nameof(QDrantVectorStore));
+            _QDrantVectorStoreEF = qDrantVectorStoreEF ?? throw new ArgumentNullException(nameof(QDrantVectorStoreEF));
+
             _chunkService = chunkService;
 
             // Initialize Ollama client for answer generation (llama3)
@@ -60,6 +71,7 @@ namespace AIHousingAssistant.Application.Services
 
             // 1️⃣ Save uploaded document locally
             var filePath = await FileHelper.SaveFileAsync(file, _providerSettings.ProcessingFolder);
+            var source = FileHelper.GetSafeFileNameFromPath(filePath);
 
             // 2️⃣ Extract text based on file type
             var fileNameLower = file.FileName.ToLowerInvariant();
@@ -82,16 +94,22 @@ namespace AIHousingAssistant.Application.Services
                 throw new InvalidOperationException("No readable text found in the uploaded document.");
 
             // 3️⃣ Split the extracted text into chunks
-            var chunks = await _chunkService.CreateChunksAsync(text);
+            var chunks = await _chunkService.CreateChunksAsync(text, ChunkingMode.LangChainRecursiveTextSplitter, source);
 
             if (chunks == null || chunks.Count == 0)
                 throw new InvalidOperationException("No text chunks were generated from the document.");
 
-            // 4️⃣ Convert all chunks to embeddings and store inside the vector store
-            await _vectorStore.StoreTextChunksAsVectorsAsync(chunks);
+            // 4️⃣ Convert all chunks to embeddings and store inside the Json 
+            await _memoryVectorStore .StoreTextChunksAsVectorsAsync(chunks);
+
+            // 4️⃣ Convert all chunks to embeddings and store inside the QDrantVectorStore
+               await _QDrantVectorStore.StoreTextChunksAsVectorsAsync(chunks);
+
+         //   await _QDrantVectorStoreEF.StoreTextChunksAsVectorsAsync(chunks);
+
         }
 
-        
+
         // -----------------------------------------------------------
         // Extract plain text from a Word document (.docx)
         private string ExtractWordText(string filePath)
@@ -120,13 +138,13 @@ namespace AIHousingAssistant.Application.Services
 
         // -----------------------------------------------------------
         // Perform a RAG query: embed the question, search for the closest chunk, return the text
-        public async Task<string> AskRagAsync(string query)
+        public async Task<string> AskRagJsonAsync(string query)
         {
             if (string.IsNullOrWhiteSpace(query))
                 return "Query is empty.";
 
             // 1️⃣ Get the closest chunk using the vector store
-            var resultChunk = await _vectorStore.SearchClosest(query);
+            var resultChunk = await _memoryVectorStore.SearchClosest(query);
 
             if (resultChunk == null || string.IsNullOrWhiteSpace(resultChunk.Content))
                 return "No related answer found.";
@@ -141,10 +159,49 @@ namespace AIHousingAssistant.Application.Services
 
 
         // -----------------------------------------------------------
+        public async Task<string> AskRagQDrantAsync(string query)
+        {
+            if (string.IsNullOrWhiteSpace(query))
+                return "Query is empty.";
+
+            // 1️⃣ Get the closest chunk using the vector store
+            var resultChunk = await _QDrantVectorStore.SearchClosest(query);
+
+            if (resultChunk == null || string.IsNullOrWhiteSpace(resultChunk.Content))
+                return "No related answer found.";
+
+            // 2️⃣ Extract the most relevant answer snippet from the chunk
+            var answer = await ExtractAnswerFromChunkAsync(query, resultChunk.Content);
+
+            return string.IsNullOrWhiteSpace(answer)
+                ? "No related answer found."
+                : answer;
+        }
         // -----------------------------------------------------------
         // Use llama3 via Ollama to extract ONLY the answer from the chunk (G in RAG)
+
+        public async Task<string> AskRagQDrantEFAsync(string query)
+        {
+            if (string.IsNullOrWhiteSpace(query))
+                return "Query is empty.";
+
+            // 1️⃣ Get the closest chunk using the vector store
+            var resultChunk = await _QDrantVectorStoreEF.SearchClosest(query);
+
+            if (resultChunk == null || string.IsNullOrWhiteSpace(resultChunk.Content))
+                return "No related answer found.";
+
+            // 2️⃣ Extract the most relevant answer snippet from the chunk
+            var answer = await ExtractAnswerFromChunkAsync(query, resultChunk.Content);
+
+            return string.IsNullOrWhiteSpace(answer)
+                ? "No related answer found."
+                : answer;
+        }
+
         private async Task<string> ExtractAnswerFromChunkAsync(string query, string chunkContent)
         {
+            return chunkContent;
             if (string.IsNullOrWhiteSpace(chunkContent))
                 return string.Empty;
 
@@ -192,5 +249,6 @@ ANSWER:
             return answer;
         }
 
+       
     }
 }

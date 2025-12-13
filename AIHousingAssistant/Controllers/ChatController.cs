@@ -1,6 +1,5 @@
 ﻿using AIHousingAssistant.Application.Enum;
 using AIHousingAssistant.Application.semantic;
-using AIHousingAssistant.Application.Services;
 using AIHousingAssistant.semantic.Plugins;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.SemanticKernel.Connectors.OpenAI;
@@ -12,6 +11,7 @@ using Newtonsoft.Json;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 using System.Linq;
 using Microsoft.SemanticKernel.Services;
+using AIHousingAssistant.Application.Services.Interfaces;
 
 namespace AIHousingAssistant.Controllers
 {
@@ -225,7 +225,6 @@ namespace AIHousingAssistant.Controllers
 
             try
             {
-                // Call the RAG service to handle saving + processing
                 await _ragService.ProcessDocumentAsync(file);
 
                 return Ok(new
@@ -241,14 +240,21 @@ namespace AIHousingAssistant.Controllers
             }
         }
 
-
         #endregion
-        [HttpPost("AskRagAsync")]
-        public async Task<IActionResult> AskRagAsync([FromBody] string query)
+        [HttpPost("AskRagJson")]
+        public async Task<IActionResult> AskRagJsonAsync([FromBody] string query)
         {
-            var reply = await _ragService.AskRagAsync(query);
+            var reply = await _ragService.AskRagJsonAsync(query);
             return Ok(new { data = reply });
         }
+
+        [HttpPost("AskRagQDrant")]
+        public async Task<IActionResult> AskRagQDrantAsync([FromBody] string query)
+        {
+            var reply = await _ragService.AskRagQDrantAsync(query);
+            return Ok(new { data = reply });
+        }
+
 
     }
 }

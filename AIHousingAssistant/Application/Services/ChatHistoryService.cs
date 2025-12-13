@@ -1,11 +1,12 @@
 ﻿
+using AIHousingAssistant.Application.Services.Interfaces;
 using Microsoft.SemanticKernel.ChatCompletion;
 using System.Collections.Concurrent;
 
 namespace AIHousingAssistant.Application.Services
 {
-    
-   
+
+
 
     public class ChatHistoryService : IChatHistoryService
     {

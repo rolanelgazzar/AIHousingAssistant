@@ -220,14 +220,18 @@
             background: #6f7c7d;
         }
 
-    #sendRagBtn {
+    #sendRagJsonBtn, #sendRagQDrantBtn {
         background: #8e44ad; /* muted purple */
     }
 
-        #sendRagBtn:hover {
+        #sendRagJsonBtn:hover {
             background: #7b3a96;
         }
 
+        #sendRagQDrantBtn
+        :hover {
+            background: #7b3a96;
+        }
     .msger-chat {
         background-color: #fcfcfe;
     }
@@ -479,8 +483,16 @@
                 <label for="fileUpload" class="attach-btn">📎 Attach</label>
                 <input type="file" id="fileUpload" style="display:none;">
 
-                <button id="sendRagBtn" class="msger-send-btn">
-                    🔍 Ask RAG
+                <button id="sendRagJsonBtn" class="msger-send-btn">
+                    🔍 Ask RAG (JSON)
+                </button>
+
+                <button id="sendRagQDrantBtn" class="msger-send-btn">
+                    🔍 Ask RAG (Qdrant 1)
+                </button>
+
+                <button id="sendRagQDrantBtn" class="msger-send-btn">
+                    🔍 Ask RAG (Qdrant EF)
                 </button>
             </div>
 
@@ -529,32 +541,75 @@
         return `${h.slice(-2)}:${m.slice(-2)}`;
     };
 
-    window.handleFileUpload = function(event) {
-        let file = event.target.files[0];
-        if (!file) return;
+       // Global function to handle file selection and upload
+    window.handleFileUpload = function (event) {
+        // 1) Get the selected file from the input element
+        const file = event.target.files[0];
+        if (!file) {
+            return; // No file selected, nothing to do
+        }
 
-        addChatMessage(namePerson, imgPerson, "left", `📄 File Selected: ${file.name}`);
+        // 2) Show a message in the chat from the user side
+        addChatMessage(
+            namePerson,       // User name
+            imgPerson,        // User avatar
+            "left",           // Message alignment (left = user)
+            `📄 File Selected: ${file.name}`
+        );
 
-        let formData = new FormData();
-        formData.append("file", file);
+        // 3) Prepare FormData to send the file in a POST request
+        const formData = new FormData();
+        formData.append("file", file); // "file" must match the parameter name in your controller
 
+        // 4) Optionally show a loading indicator while uploading/processing
+        $('.imgLoader').show();
+
+        // 5) Send AJAX request to the backend to upload and process the document
         $.ajax({
-            url: "/UploadDocument",
+            url: "/UploadDocument",    // API endpoint in your ASP.NET controller
             type: "POST",
             data: formData,
-            contentType: false,
-            processData: false,
+            contentType: false,        // Required when sending FormData
+            processData: false,        // Prevent jQuery from converting FormData to query string
+
+            // 6) Called when the server returns HTTP 200 OK
             success: function (response) {
-               addChatMessage(nameBOT, imgBOT, "right",
-    "File uploaded successfully ✔\nIt will be used for answers when building the RAG");
-      $('.imgLoader').hide();
+                // You can use response.success / response.message if needed
+                addChatMessage(
+                    nameBOT,           // Bot name
+                    imgBOT,            // Bot avatar
+                    "right",           // Message alignment (right = bot)
+                    "File uploaded successfully ✔\nIt will be used for answers when building the RAG"
+                );
+
+                $('.imgLoader').hide();
             },
-            error: function () {
-    addChatMessage(nameBOT, imgBOT, "right", "An error occurred while uploading the file ❌");
-      $('.imgLoader').hide();
+
+            // 7) Called when the server returns an error (4xx / 5xx)
+            error: function (xhr) {
+                // Default error message
+                let msg = "An error occurred while uploading the file ❌";
+
+                // If the API returned a JSON error (from your C# controller), show it
+                if (xhr.responseJSON && xhr.responseJSON.error) {
+                    msg += "\n" + xhr.responseJSON.error;
+                }
+
+                addChatMessage(
+                    nameBOT,
+                    imgBOT,
+                    "right",
+                    msg
+                );
+
+                $('.imgLoader').hide();
+
+                // Optional: log full error to browser console for debugging
+                console.error("UploadDocument error:", xhr);
             }
         });
     };
+
 
     // ---------------- Document ready ----------------
     $(function () {
@@ -594,13 +649,24 @@
         
          // زر Ask RAG event
 
-        $('#sendRagBtn').click(function () {
+        $('#sendRagJsonBtn').click(function () {
             var message = $('#messageInput').val().trim();
             if (message === '') return;
 
-            AskRagAsync(message);  //
+            AskRagJsonAsync(message);  //
             $('#messageInput').val('');
         });
+
+        //
+        $('#sendRagQDrantBtn').click(function () {
+            var message = $('#messageInput').val().trim();
+            if (message === '') return;
+
+            AskRagQDrantAsync(message);  //
+            $('#messageInput').val('');
+        });
+
+        
     });
   
 
@@ -656,11 +722,31 @@
     }
     //-------------------------
      // ---------------- Ask RAG Function ----------------
-        function AskRagAsync(message) {
+        function AskRagJsonAsync(message) {
         addChatMessage(namePerson, imgPerson, "left", message);
 
         $.ajax({
-            url: '/AskRagAsync',
+            url: '/AskRagJson',
+            type: 'POST',
+            data: JSON.stringify(message),
+            contentType: 'application/json',
+            success: function (response) {
+                addChatMessage(nameBOT, imgBOT, "right", response.data ?? "No answer found");
+                $('.imgLoader').hide();
+            },
+            error: function () {
+                addChatMessage(nameBOT, imgBOT, "right", "Error occurred ❌");
+                $('.imgLoader').hide();
+            }
+        });
+    }
+
+    //////////////////////AskRagQDrantAsync
+    function AskRagQDrantAsync(message) {
+        addChatMessage(namePerson, imgPerson, "left", message);
+
+        $.ajax({
+            url: '/AskRagQDrant',
             type: 'POST',
             data: JSON.stringify(message),
             contentType: 'application/json',

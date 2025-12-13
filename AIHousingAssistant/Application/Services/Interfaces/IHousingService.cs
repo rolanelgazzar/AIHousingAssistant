@@ -1,6 +1,6 @@
 ﻿using Microsoft.SemanticKernel.ChatCompletion;
 
-namespace AIHousingAssistant.Application.Services
+namespace AIHousingAssistant.Application.Services.Interfaces
 {
     public interface IHousingService
     {
@@ -8,7 +8,7 @@ namespace AIHousingAssistant.Application.Services
         Task<bool> IsUnitTypeAvailable(string type);
         Task<Dictionary<string, int>> GetAllAvailableGrouped();
         Task<List<string>> GetInitialQuestionsAsync();
-       
+
 
     }
 }

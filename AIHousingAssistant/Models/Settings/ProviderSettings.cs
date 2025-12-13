@@ -8,6 +8,7 @@
         public OllamaSettings Ollama { get; set; } = new();
         public OllamaEmbeddingSettings OllamaEmbedding { get; set; } = new();
 
+        public QDrantSettings QDrant { get; set; } = new();
         public string  ProcessingFolder { get; set; }
         public string VectorStoreFilename { get; set; }
         public string ChunksFileName { get; set; }
@@ -42,5 +43,11 @@
     {
         public string Endpoint { get; set; }
         public string Model { get; set; } = string.Empty;
+    }
+
+    public class QDrantSettings
+    {
+        public string Endpoint { get; set; }
+
     }
 }

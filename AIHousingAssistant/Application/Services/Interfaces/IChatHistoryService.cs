@@ -1,7 +1,7 @@
 ﻿using AIHousingAssistant.Models;
 using Microsoft.SemanticKernel.ChatCompletion;
 
-namespace AIHousingAssistant.Application.Services
+namespace AIHousingAssistant.Application.Services.Interfaces
 {
     public interface IChatHistoryService
     {

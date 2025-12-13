@@ -8,75 +8,83 @@ using AIHousingAssistant.Models.Settings;
 using Microsoft.Extensions.Options;
 using OllamaSharp;
 using System.Linq;
+using AIHousingAssistant.Application.Services.Interfaces;
+using AIHousingAssistant.Helper;
 
 namespace AIHousingAssistant.Application.Services
 {
-    public class InMemoryVectorStore : IVectorStore
+    public class InMemoryVectorStore : IInMemoryVectorStore
     {
         private readonly List<VectorChunk> _vectorChunks = new();
         private readonly string _uploadFolder;
-        private readonly OllamaApiClient _ollamaEmbeddingClient;
+
+
         private readonly ProviderSettings _providerSettings;
+
+        // NEW: centralized embedding service
+        private readonly IEmbeddingService _embeddingService;
 
         private static readonly JsonSerializerOptions SerializerOptions = new() { WriteIndented = true };
 
-        public InMemoryVectorStore( IOptions<ProviderSettings> providerSettings)
+        public InMemoryVectorStore(IOptions<ProviderSettings> providerSettings, IEmbeddingService embeddingService)
         {
-                _uploadFolder = Path.Combine(Directory.GetCurrentDirectory(), providerSettings.Value.ProcessingFolder);
+            _embeddingService = embeddingService;
+
+            _uploadFolder = Path.Combine(Directory.GetCurrentDirectory(), providerSettings.Value.ProcessingFolder);
 
             if (!Directory.Exists(_uploadFolder))
-            Directory.CreateDirectory(_uploadFolder);
+                Directory.CreateDirectory(_uploadFolder);
 
             _providerSettings = providerSettings.Value;
 
-            _ollamaEmbeddingClient = new OllamaApiClient(_providerSettings.OllamaEmbedding.Endpoint);
-            _ollamaEmbeddingClient.SelectedModel = _providerSettings.OllamaEmbedding.Model;
         }
 
         // -----------------------------------------------------------------
-
-
-
-
-        // -----------------------------------------------------------------
-        public async Task  <VectorChunk?> SearchClosest(String queryText)
+        // Find the closest stored chunk to the given query text (cosine similarity)
+        public async Task<VectorChunk?> SearchClosest(string queryText)
         {
-            float[] queryEmbedding = await TextToVectorAsync(queryText);
+            // Convert query text to embedding
+            float[] queryEmbedding = await _embeddingService.EmbedAsync(queryText);
 
-            // Build the path to the stored JSON file
+            // Build the path to the stored JSON file (kept for reference)
             string filePath = Path.Combine(_uploadFolder, _providerSettings.VectorStoreFilename);
 
-            // Return null if the file doesn't exist
+            // Return null if the file doesn't exist (kept for reference)
             if (!File.Exists(filePath))
                 return null;
 
-            // Read the file and deserialize into a list of VectorChunk
-            var json = File.ReadAllText(filePath);
-            var vectorChunks = JsonSerializer.Deserialize<List<VectorChunk>>(json);
+            // Read the stored JSON file
+            var vectorChunks = await FileHelper.ReadJsonAsync<List<VectorChunk>>(
+                _uploadFolder,
+                _providerSettings.VectorStoreFilename
+            );
 
             // Return null if no chunks are available
             if (vectorChunks == null || vectorChunks.Count == 0)
                 return null;
 
-            VectorChunk? best = null;
+            VectorChunk? bestChunk = null;
             float bestScore = float.NegativeInfinity;
 
             // Iterate through all chunks and calculate cosine similarity
             foreach (var chunk in vectorChunks)
             {
                 var score = CosineSimilarity(chunk.Embedding, queryEmbedding);
+
                 // Update the best match if current score is higher
                 if (score > bestScore)
                 {
                     bestScore = score;
-                    best = chunk;
+                    bestChunk = chunk;
                 }
             }
 
             // Return the closest chunk
-            return best;
+            return bestChunk;
         }
-        // Returns all stored vector chunks from memory
+
+        // -----------------------------------------------------------------
+        // Returns all stored vector chunks from disk (JSON)
         public async Task<List<VectorChunk>> GetAllAsync()
         {
             string filePath = Path.Combine(_uploadFolder, _providerSettings.VectorStoreFilename);
@@ -84,43 +92,39 @@ namespace AIHousingAssistant.Application.Services
             if (!File.Exists(filePath))
                 return new List<VectorChunk>();
 
-            string json = await File.ReadAllTextAsync(filePath);
-            var chunks = JsonSerializer.Deserialize<List<VectorChunk>>(json, SerializerOptions);
+            var chunks = await FileHelper.ReadJsonAsync<List<VectorChunk>>(
+                _uploadFolder,
+                _providerSettings.VectorStoreFilename
+            );
 
             return chunks ?? new List<VectorChunk>();
         }
 
-
+        // -----------------------------------------------------------------
+        // Safe cosine similarity (avoids divide-by-zero & dimension mismatch)
         private float CosineSimilarity(float[] a, float[] b)
         {
+            if (a == null || b == null || a.Length == 0 || b.Length == 0)
+                return 0f;
+
+            if (a.Length != b.Length)
+                return 0f;
+
             float dot = 0, normA = 0, normB = 0;
+
             for (int i = 0; i < a.Length; i++)
             {
                 dot += a[i] * b[i];
                 normA += a[i] * a[i];
                 normB += b[i] * b[i];
             }
+
+            const float eps = 1e-6f;
+            if (normA < eps || normB < eps)
+                return 0f;
+
             return dot / (float)(Math.Sqrt(normA) * Math.Sqrt(normB));
         }
-
-        // -----------------------------------------------------------------
-        // Convert text → embedding using Ollama nomic-embed-text
-        public async Task<float[]> TextToVectorAsync(string text)
-        {
-            if (string.IsNullOrWhiteSpace(text))
-                return Array.Empty<float>();
-
-            text = text.Trim().ToLowerInvariant();
-
-            var response = await _ollamaEmbeddingClient.EmbedAsync(text);
-            if (response.Embeddings != null && response.Embeddings.Count > 0)
-            {
-                var embedding = response.Embeddings[0];
-                return embedding.Length > 0 ? embedding : Array.Empty<float>();
-            }
-            return Array.Empty<float>();
-        }
-
 
 
         // -----------------------------------------------------------------
@@ -131,21 +135,17 @@ namespace AIHousingAssistant.Application.Services
             {
                 Index = chunk.Index,
                 Content = chunk.Content,
-                Embedding = await TextToVectorAsync(chunk.Content)
+
+                // IMPORTANT: keep source traceability (requires VectorChunk.Source property)
+                Source = chunk.Source,
+
+                Embedding = await  _embeddingService.EmbedAsync(chunk.Content)
             });
 
             var results = await Task.WhenAll(tasks);
             _vectorChunks.AddRange(results);
-          await   SaveVectorStoreAsync(_vectorChunks);
-        }
 
-        // -----------------------------------------------------------------
-        // Save vector store → JSON
-        public async Task SaveVectorStoreAsync( List<VectorChunk> vectorChunks)
-        {
-            string filePath = Path.Combine(_uploadFolder, _providerSettings.VectorStoreFilename);
-            string json = JsonSerializer.Serialize(vectorChunks, SerializerOptions);
-            await File.WriteAllTextAsync(filePath, json);
+            await FileHelper.WriteJsonAsync(_uploadFolder, _providerSettings.VectorStoreFilename, _vectorChunks);
         }
     }
 }

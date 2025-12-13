@@ -1,4 +1,4 @@
-﻿using AIHousingAssistant.Application.Services;
+﻿using AIHousingAssistant.Application.Services.Interfaces;
 using Microsoft.SemanticKernel;
 using System.ComponentModel;
 using System.Text;

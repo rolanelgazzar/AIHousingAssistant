@@ -22,6 +22,7 @@
     </PackageReference>
     <PackageReference Include="Microsoft.SemanticKernel" Version="1.67.1" />
     <PackageReference Include="Microsoft.SemanticKernel.Connectors.Ollama" Version="1.67.1-alpha" />
+    <PackageReference Include="Microsoft.SemanticKernel.Connectors.Qdrant" Version="1.68.0-preview" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="8.0.0" />
     <PackageReference Include="UglyToad.PdfPig" Version="1.7.0-custom-5" />
@@ -29,7 +30,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Application\Semantic\Functions\" />
+    <Folder Include="Application\SemanticKernel\Extentions\" />
+    <Folder Include="Application\SemanticKernel\Functions\" />
     <Folder Include="Domain\Interfaces\" />
     <Folder Include="Infrastructure\Repositories\" />
   </ItemGroup>
