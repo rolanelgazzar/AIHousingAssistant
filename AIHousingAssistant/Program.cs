@@ -1,6 +1,10 @@
 
 using AIHousingAssistant.Application.Services;
+using AIHousingAssistant.Application.Services.Chunk;
+using AIHousingAssistant.Application.Services.Embedding;
 using AIHousingAssistant.Application.Services.Interfaces;
+using AIHousingAssistant.Application.Services.VectorDb;
+using AIHousingAssistant.Application.Services.VectorStores;
 using AIHousingAssistant.Infrastructure.Data;
 using AIHousingAssistant.Models.Settings;
 using Microsoft.EntityFrameworkCore;
@@ -22,12 +26,22 @@ builder.Services.AddScoped<IHousingService, HousingService>();
 builder.Services.AddScoped<ISummarizerService, SummarizerService>();
 builder.Services.AddSingleton<IChatHistoryService, ChatHistoryService>();
 builder.Services.AddScoped<IRagService, RagService>();
-builder.Services.AddScoped<IChunkService, ChunkService>();
-// concrete types
-builder.Services.AddScoped<IInMemoryVectorStore,InMemoryVectorStore>();
-builder.Services.AddScoped<IQDrantVectorStore,QDrantVectorStore>();
-builder.Services.AddScoped<IQDrantVectorStoreEF, QDrantVectorStoreEF>();
 
+builder.Services.AddScoped<IChunkService, ChunkService>();
+builder.Services.AddScoped<IEmbeddingService, EmbeddingService>();
+
+
+
+// concrete types
+//builder.Services.AddScoped<IInMemoryVectorStore,InMemoryVectorStore>();
+//builder.Services.AddScoped<IQDrantVectorStore,QDrantVectorStore_Sdk>();
+//builder.Services.AddScoped<IQDrantVectorStoreEF, QDrantVectorStore_SK>();
+
+builder.Services.AddScoped<InMemoryVectorStore>();
+builder.Services.AddScoped<QDrantVectorStore_Sdk>();
+builder.Services.AddScoped<QDrantVectorStore_SK>();
+builder.Services.AddScoped<IVectorStoreResolver, VectorStoreResolver>();
+builder.Services.AddScoped<IVectorDB, QdrantVectorDb_Sdk>();
 
 
 

@@ -19,6 +19,8 @@ using OllamaSharp;
 using System.Text;
 using AIHousingAssistant.Application.Services.Interfaces;
 using AIHousingAssistant.Application.Enum;
+using AIHousingAssistant.Application.Services.VectorStores;
+using AIHousingAssistant.Application.Services.Chunk;
 
 namespace AIHousingAssistant.Application.Services
 {
@@ -53,7 +55,7 @@ namespace AIHousingAssistant.Application.Services
 
             _memoryVectorStore = memoryStore ?? throw new ArgumentNullException(nameof(memoryStore));
             _QDrantVectorStore = QDrantVectorStore ?? throw new ArgumentNullException(nameof(QDrantVectorStore));
-            _QDrantVectorStoreEF = qDrantVectorStoreEF ?? throw new ArgumentNullException(nameof(QDrantVectorStoreEF));
+            _QDrantVectorStoreEF = qDrantVectorStoreEF ?? throw new ArgumentNullException(nameof(QDrantVectorStore_SK));
 
             _chunkService = chunkService;
 

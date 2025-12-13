@@ -1,4 +1,6 @@
-﻿namespace AIHousingAssistant.Application.Services.Interfaces
+﻿using AIHousingAssistant.Application.Services.VectorStores;
+
+namespace AIHousingAssistant.Application.Services.Interfaces
 {
     public interface IQDrantVectorStoreEF: IVectorStore
     {

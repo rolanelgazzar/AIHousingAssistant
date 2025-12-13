@@ -1,4 +1,6 @@
-﻿namespace AIHousingAssistant.Models.Settings
+﻿using AIHousingAssistant.Application.Enum;
+
+namespace AIHousingAssistant.Models.Settings
 {
     public class ProviderSettings
     {
@@ -12,6 +14,8 @@
         public string  ProcessingFolder { get; set; }
         public string VectorStoreFilename { get; set; }
         public string ChunksFileName { get; set; }
+        public VectorStoreProvider VectorStoreProvider { get; set; } = VectorStoreProvider.InMemory;
+
     }
 
     public class AzureSettings
@@ -42,7 +46,13 @@
     public class OllamaEmbeddingSettings
     {
         public string Endpoint { get; set; }
+
         public string Model { get; set; } = string.Empty;
+
+        public string Default { get; set; } = string.Empty;
+
+        public Dictionary<string, string> EmbeddingModelMap { get; set; } = new();
+
     }
 
     public class QDrantSettings
@@ -50,4 +60,5 @@
         public string Endpoint { get; set; }
 
     }
+
 }

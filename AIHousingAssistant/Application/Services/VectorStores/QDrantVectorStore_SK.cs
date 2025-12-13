@@ -10,13 +10,13 @@ using Microsoft.SemanticKernel.Connectors.Qdrant;
 using OllamaSharp;
 using Qdrant.Client;
 
-namespace AIHousingAssistant.Application.Services
+namespace AIHousingAssistant.Application.Services.VectorStores
 {
     /// <summary>
     /// Qdrant-backed vector store using the official Semantic Kernel Qdrant connector.
     /// Embeddings are generated using Ollama and stored/search in Qdrant.
     /// </summary>
-    public class QDrantVectorStoreEF : IQDrantVectorStoreEF
+    public class QDrantVectorStore_SK : IQDrantVectorStoreEF
     {
         private readonly ProviderSettings _providerSettings;
         private readonly OllamaApiClient _ollamaEmbeddingClient;
@@ -25,7 +25,7 @@ namespace AIHousingAssistant.Application.Services
         // Default Qdrant collection name used by this store
         private const string CollectionName = "housing_vectors";
 
-        public QDrantVectorStoreEF(IOptions<ProviderSettings> providerSettings)
+        public QDrantVectorStore_SK(IOptions<ProviderSettings> providerSettings)
         {
             if (providerSettings is null)
                 throw new ArgumentNullException(nameof(providerSettings));

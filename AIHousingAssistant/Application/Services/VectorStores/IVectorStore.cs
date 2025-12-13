@@ -1,6 +1,6 @@
 ﻿using AIHousingAssistant.Models;
 
-namespace AIHousingAssistant.Application.Services.Interfaces
+namespace AIHousingAssistant.Application.Services.VectorStores
 {
     public interface IVectorStore
     {

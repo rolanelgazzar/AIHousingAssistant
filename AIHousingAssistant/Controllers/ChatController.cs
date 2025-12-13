@@ -1,5 +1,4 @@
 ﻿using AIHousingAssistant.Application.Enum;
-using AIHousingAssistant.Application.semantic;
 using AIHousingAssistant.semantic.Plugins;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.SemanticKernel.Connectors.OpenAI;
@@ -12,6 +11,7 @@ using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 using System.Linq;
 using Microsoft.SemanticKernel.Services;
 using AIHousingAssistant.Application.Services.Interfaces;
+using AIHousingAssistant.Application.SemanticKernel;
 
 namespace AIHousingAssistant.Controllers
 {
@@ -52,9 +52,9 @@ namespace AIHousingAssistant.Controllers
                 // ---------------------------
                 // 1. Build the Kernel and add the HousingPlugin
                 // ---------------------------
-                var kernelBuilder = KernelHelper.BuildKernel(AIProvider.OpenRouter, _providerSettings);
-                KernelHelper.AddPlugin(kernelBuilder, new HousingPlugin(_housingService));
-                var kernel = KernelHelper.Build(kernelBuilder);
+                var kernelBuilder = SemanticKernelHelper.BuildKernel(AIProvider.OpenRouter, _providerSettings);
+                SemanticKernelHelper.AddPlugin(kernelBuilder, new HousingPlugin(_housingService));
+                var kernel = SemanticKernelHelper.Build(kernelBuilder);
 
                 // ---------------------------
                 // 2. Get or create semantic session
@@ -105,9 +105,9 @@ namespace AIHousingAssistant.Controllers
             try
             {
                 // 1. Build the Kernel and add the HousingPlugin
-                var kernelBuilder = KernelHelper.BuildKernel(AIProvider.OpenRouter, _providerSettings);
-                KernelHelper.AddPlugin(kernelBuilder, new HousingPlugin(_housingService));
-                var kernel = KernelHelper.Build(kernelBuilder);
+                var kernelBuilder = SemanticKernelHelper.BuildKernel(AIProvider.OpenRouter, _providerSettings);
+                SemanticKernelHelper.AddPlugin(kernelBuilder, new HousingPlugin(_housingService));
+                var kernel = SemanticKernelHelper.Build(kernelBuilder);
 
                 // 2. Get or create semantic session
                 string sessionId = GetOrCreateSessionId();

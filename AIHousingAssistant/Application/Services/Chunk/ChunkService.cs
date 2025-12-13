@@ -9,7 +9,7 @@ using SemanticTextSplitting;
 using System.Text.Json;
 using System.Linq;
 
-namespace AIHousingAssistant.Application.Services
+namespace AIHousingAssistant.Application.Services.Chunk
 {
     public class ChunkService : IChunkService
     {
@@ -67,7 +67,7 @@ namespace AIHousingAssistant.Application.Services
             };
 
             // Save for transparency/debug
-            var fileName= $"chunks-" + (chunkingMode).ToString() + ".json";
+            var fileName = $"chunks-" + chunkingMode.ToString() + ".json";
             await FileHelper.WriteJsonAsync(_uploadFolder, _providerSettings.ChunksFileName, chunks);
 
             return chunks;
@@ -184,7 +184,4 @@ namespace AIHousingAssistant.Application.Services
     }
 }
 
-public interface IChunkService
-{
-    Task<List<TextChunk>> CreateChunksAsync(string text, ChunkingMode chunkingMode, string source);
-}
+

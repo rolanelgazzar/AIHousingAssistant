@@ -10,8 +10,9 @@ using OllamaSharp;
 using System.Linq;
 using AIHousingAssistant.Application.Services.Interfaces;
 using AIHousingAssistant.Helper;
+using AIHousingAssistant.Application.Services.Embedding;
 
-namespace AIHousingAssistant.Application.Services
+namespace AIHousingAssistant.Application.Services.VectorStores
 {
     public class InMemoryVectorStore : IInMemoryVectorStore
     {
@@ -139,7 +140,7 @@ namespace AIHousingAssistant.Application.Services
                 // IMPORTANT: keep source traceability (requires VectorChunk.Source property)
                 Source = chunk.Source,
 
-                Embedding = await  _embeddingService.EmbedAsync(chunk.Content)
+                Embedding = await _embeddingService.EmbedAsync(chunk.Content)
             });
 
             var results = await Task.WhenAll(tasks);

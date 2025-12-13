@@ -1,7 +1,7 @@
 ﻿using AIHousingAssistant.Application.Enum;
 using AIHousingAssistant.Models;
 
-namespace AIHousingAssistant.Application.Services.Interfaces
+namespace AIHousingAssistant.Application.Services.Chunk
 {
     public interface IChunkService
     {

@@ -6,9 +6,9 @@ using Microsoft.SemanticKernel.Connectors.OpenAI;
 using System;
 using System.Net.Http;
 
-namespace AIHousingAssistant.Application.semantic
+namespace AIHousingAssistant.Application.SemanticKernel
 {
-    public static class KernelHelper
+    public static class SemanticKernelHelper
     {
         /// <summary>
         /// Returns an IKernelBuilder preconfigured with the chosen AI provider.
