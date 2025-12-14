@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using AIHousingAssistant.Application.Enum;
 using AIHousingAssistant.Application.Services.Interfaces;
 using AIHousingAssistant.Models;
 using AIHousingAssistant.Models.Settings;
@@ -16,7 +17,7 @@ namespace AIHousingAssistant.Application.Services.VectorStores
     /// Qdrant-backed vector store using the official Semantic Kernel Qdrant connector.
     /// Embeddings are generated using Ollama and stored/search in Qdrant.
     /// </summary>
-    public class QDrantVectorStore_SK : IQDrantVectorStoreEF
+    public class QDrantVectorStore_SK : IVectorStore
     {
         private readonly ProviderSettings _providerSettings;
         private readonly OllamaApiClient _ollamaEmbeddingClient;
@@ -71,8 +72,8 @@ namespace AIHousingAssistant.Application.Services.VectorStores
         /// <summary>
         /// Store all text chunks as vectors in Qdrant using the Semantic Kernel Qdrant connector.
         /// </summary>
-        public async Task StoreTextChunksAsVectorsAsync(List<TextChunk> chunks)
-        {
+        public async Task StoreTextChunksAsVectorsAsync(List<TextChunk> chunks, EmbeddingModel embeddingModel)
+        { 
             // Return early if there are no chunks to store
             if (chunks == null || chunks.Count == 0)
                 return;
@@ -132,7 +133,7 @@ namespace AIHousingAssistant.Application.Services.VectorStores
         /// <summary>
         /// Search Qdrant for the closest chunk to the given query text and map it back to VectorChunk.
         /// </summary>
-        public async Task<VectorChunk?> SearchClosest(string queryText)
+        public async Task<VectorChunk?> VectorSearchAsync(string queryText)
         {
             // Return null if the query text is empty or whitespace
             if (string.IsNullOrWhiteSpace(queryText))
@@ -210,6 +211,20 @@ namespace AIHousingAssistant.Application.Services.VectorStores
             //  - call collection.GetBatchAsync(keys)
             //  - map the results into List<VectorChunk>.
             return Task.FromResult(new List<VectorChunk>());
+        }
+
+ 
+
+    
+
+        public Task<List<VectorChunk>> HybridSearchAsync(string queryText, int top = 5)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<List<VectorChunk>> SemanticSearchAsync(string queryText, int top = 5)
+        {
+            throw new NotImplementedException();
         }
     }
 

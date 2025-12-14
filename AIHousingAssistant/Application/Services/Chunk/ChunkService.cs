@@ -67,7 +67,9 @@ namespace AIHousingAssistant.Application.Services.Chunk
             };
 
             // Save for transparency/debug
-            var fileName = $"chunks-" + chunkingMode.ToString() + ".json";
+            string chunkingName = System.Enum.GetName(typeof(ChunkingMode), chunkingMode);
+            var fileName = $"{_providerSettings.ChunksFileName}-{chunkingName}.json";
+            await FileHelper.WriteJsonAsync(_uploadFolder, fileName, chunks);
             await FileHelper.WriteJsonAsync(_uploadFolder, _providerSettings.ChunksFileName, chunks);
 
             return chunks;

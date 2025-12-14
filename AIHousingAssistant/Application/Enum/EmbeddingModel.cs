@@ -6,9 +6,7 @@ namespace AIHousingAssistant.Application.Enum
     public enum EmbeddingModel
     {
         NomicEmbedText,
-        MxbaiEmbedLarge,
-        BgeSmallEn,
-        BgeLargeEn
+        TextEmbedding3Small
     }
 }
 public static class EmbeddingModelExtensions

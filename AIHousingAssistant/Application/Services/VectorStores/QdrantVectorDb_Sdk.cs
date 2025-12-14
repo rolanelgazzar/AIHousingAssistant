@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using AIHousingAssistant.Application.Services.Interfaces;
 using AIHousingAssistant.Models;
 using AIHousingAssistant.Models.Settings;
+using DocumentFormat.OpenXml.Drawing.Charts;
 using Microsoft.Extensions.Options;
 using Qdrant.Client;
 using Qdrant.Client.Grpc;
@@ -13,20 +14,20 @@ namespace AIHousingAssistant.Application.Services.VectorDb
     public class QdrantVectorDb_Sdk : IVectorDB
     {
         private readonly ProviderSettings _providerSettings;
-        private readonly QdrantClient _client;
+        private readonly QdrantClient _qdrantClient;
 
 
         public QdrantVectorDb_Sdk(IOptions<ProviderSettings> providerSettings)
         {
             _providerSettings = providerSettings.Value;
 
-            _client = new QdrantClient(_providerSettings.QDrant.Endpoint);
+            _qdrantClient = new QdrantClient(_providerSettings.QDrant.Endpoint);
 
         }
 
         public async Task<bool> IsCollectionExistedAsync(string collectionName)
         {
-            var collections = await _client.ListCollectionsAsync();
+            var collections = await _qdrantClient.ListCollectionsAsync();
             return collections != null && collections.Contains(collectionName);
         }
 
@@ -57,11 +58,17 @@ namespace AIHousingAssistant.Application.Services.VectorDb
             if (vectorSize <= 0)
                 throw new ArgumentException("Vector size must be > 0.", nameof(vectorSize));
 
+            // check collection
             var exists = await IsCollectionExistedAsync(collectionName);
-            if (exists)
-                return;
 
-            await _client.CreateCollectionAsync(
+            if (exists)
+            {
+                // if exists, delete
+                await _qdrantClient.DeleteCollectionAsync(collectionName);
+            }
+
+            // create new one
+            await _qdrantClient.CreateCollectionAsync(
                 collectionName: collectionName,
                 vectorsConfig: new VectorParams
                 {
@@ -104,9 +111,9 @@ namespace AIHousingAssistant.Application.Services.VectorDb
             if (!points.Any())
                 return;
 
-            await _client.UpsertAsync(collectionName, points);
+            await _qdrantClient.UpsertAsync(collectionName, points);
         }
-        public async Task<VectorChunk?> SearchClosestAsync(string collectionName, float[] queryVector)
+        public async Task<VectorChunk?> SearchVectorAsync(string collectionName, float[] queryVector)
         {
             if (string.IsNullOrWhiteSpace(collectionName))
                 throw new ArgumentException("Collection name is required.", nameof(collectionName));
@@ -114,7 +121,7 @@ namespace AIHousingAssistant.Application.Services.VectorDb
             if (queryVector == null || queryVector.Length == 0)
                 return null;
 
-            var results = await _client.SearchAsync(
+            var results = await _qdrantClient.SearchAsync(
              collectionName,
              queryVector,
              null,                                   // Filter?
@@ -231,5 +238,98 @@ private static float[] ExtractEmbeddingFromVectorsOutput(object? vectorsOutput)
         {
             throw new NotImplementedException();
         }
+
+        public List<string> ExtractKeywords(string text)
+        {
+            return text
+                .Split(' ', StringSplitOptions.RemoveEmptyEntries)
+                .Where(w => w.Length > 3)
+                .Select(w => w.ToLowerInvariant())
+                .Distinct()
+                .ToList();
+        }
+        public float CosineSimilarity(float[] a, float[] b)
+        {
+            if (a == null || b == null || a.Length == 0 || b.Length == 0)
+                return 0f;
+
+            if (a.Length != b.Length)
+                return 0f;
+
+            float dot = 0, normA = 0, normB = 0;
+
+            for (int i = 0; i < a.Length; i++)
+            {
+                dot += a[i] * b[i];
+                normA += a[i] * a[i];
+                normB += b[i] * b[i];
+            }
+
+            const float eps = 1e-6f;
+            if (normA < eps || normB < eps)
+                return 0f;
+
+            return dot / (float)(Math.Sqrt(normA) * Math.Sqrt(normB));
+        }
+
+        public async Task<List<VectorChunk>> SearchTopAsync(
+            string collectionName,
+            float[] queryVector,
+            int top = 5)
+        {
+            if (string.IsNullOrWhiteSpace(collectionName))
+                throw new ArgumentException("Collection name is required.", nameof(collectionName));
+
+            if (queryVector == null || queryVector.Length == 0)
+                return new List<VectorChunk>();
+
+            var results = await _qdrantClient.SearchAsync(
+                collectionName,
+                queryVector,
+                null,                                   // Filter?
+                null,                                   // SearchParams?
+                (ulong)top,                                    // limit
+                0UL,                                    // offset
+                new WithPayloadSelector { Enable = true },
+                new WithVectorsSelector { Enable = true }
+            );
+
+            if (results == null || !results.Any())
+                return new List<VectorChunk>();
+
+            var list = new List<VectorChunk>();
+
+            foreach (var r in results)
+            {
+                string content = string.Empty;
+                string source = string.Empty;
+                int index = 0;
+
+                if (r.Payload != null)
+                {
+                    if (r.Payload.TryGetValue("content", out var contentVal))
+                        content = contentVal?.StringValue ?? string.Empty;
+
+                    if (r.Payload.TryGetValue("source", out var sourceVal))
+                        source = sourceVal?.StringValue ?? string.Empty;
+
+                    if (r.Payload.TryGetValue("index", out var indexVal))
+                        index = (int)(indexVal?.IntegerValue ?? 0);
+                }
+
+                list.Add(new VectorChunk
+                {
+                    Index = index,
+                    Content = content,
+                    Source = source,
+                    Embedding = ExtractEmbeddingFromVectorsOutput(r.Vectors)
+                });
+            }
+
+            return list;
+        }
+
+
+
     }
 }

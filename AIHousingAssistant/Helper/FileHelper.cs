@@ -1,6 +1,9 @@
 ﻿using AIHousingAssistant.Models.Settings;
+using DocumentFormat.OpenXml.Packaging;
+using System.Text;
 using System.Text.Json;
-
+using UglyToad.PdfPig;
+using UglyToad.PdfPig.Content;
 namespace AIHousingAssistant.Helper
 {
     public static class FileHelper
@@ -35,7 +38,7 @@ namespace AIHousingAssistant.Helper
             var safeFileName = Path.GetFileName(file.FileName);
 
             // NEW: always save with timestamp to avoid overwrite/locking issues
-            var timestampedFileName = AddTimestampToFileName(safeFileName);
+            var timestampedFileName = safeFileName;// AddTimestampToFileName(safeFileName);
 
             var filePath = Path.Combine(rootPath, timestampedFileName);
 
@@ -53,7 +56,7 @@ namespace AIHousingAssistant.Helper
             // NEW: always write JSON with timestamp to avoid overwrite/locking issues
             // example: chunks.json -> chunks_2025-12-13_14-07-55.json
             var safeName = Path.GetFileName(fileName);
-            var timestampedFileName = AddTimestampToFileName(safeName);
+            var timestampedFileName = safeName;// AddTimestampToFileName(safeName);
 
             var path = Path.Combine(folderPath, timestampedFileName);
 
@@ -78,5 +81,40 @@ namespace AIHousingAssistant.Helper
 
         public static string GetFileNameWithoutExtension(string filePathOrName)
             => Path.GetFileNameWithoutExtension(filePathOrName);
+
+
+        public static string ExtractWordText(string filePath)
+        {
+            using var doc = WordprocessingDocument.Open(filePath, false);
+            var body = doc.MainDocumentPart?.Document?.Body;
+            return body?.InnerText ?? string.Empty;
+        }
+
+        public static string ExtractPdfText(string filePath)
+        {
+            var sb = new StringBuilder();
+
+            using var pdf = PdfDocument.Open(filePath);
+            foreach (Page page in pdf.GetPages())
+            {
+                if (!string.IsNullOrWhiteSpace(page.Text))
+                    sb.AppendLine(page.Text);
+            }
+
+            return sb.ToString();
+        }
+
+        public static async Task<string> ExtractDocumentAsync(string filePath, string fileName)
+        {
+            // 2) Extract
+            var fileNameLower = fileName.ToLowerInvariant();
+            if (fileNameLower.EndsWith(".docx") || fileNameLower.EndsWith(".doc"))
+                return ExtractWordText(filePath);
+            else if (fileNameLower.EndsWith(".pdf"))
+                return ExtractPdfText(filePath);
+            else
+                throw new Exception("Unsupported file type");
+
+        }
     }
 }

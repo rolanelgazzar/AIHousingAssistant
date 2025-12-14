@@ -1,4 +1,5 @@
 ﻿using AIHousingAssistant.Application.Enum;
+using AIHousingAssistant.Helper;
 using AIHousingAssistant.Models.Settings;
 using Microsoft.Extensions.Options;
 using OllamaSharp;
@@ -12,10 +13,10 @@ namespace AIHousingAssistant.Application.Services.Embedding
 
         public EmbeddingService(IOptions<ProviderSettings> providerSettings)
         {
-            var settings = providerSettings.Value;
+             _providerSettings = providerSettings.Value;
 
-            _client = new OllamaApiClient(settings.OllamaEmbedding.Endpoint);
-            _client.SelectedModel = settings.OllamaEmbedding.Model;
+            _client = new OllamaApiClient(_providerSettings.OllamaEmbedding.Endpoint);
+            _client.SelectedModel = _providerSettings.OllamaEmbedding.Model;
         }
 
         public async Task<float[]> EmbedAsync(string text, EmbeddingModel embeddingModel = EmbeddingModel.NomicEmbedText)
@@ -35,7 +36,7 @@ namespace AIHousingAssistant.Application.Services.Embedding
                 var embedding = response.Embeddings[0];
                 return embedding.Length > 0 ? embedding : Array.Empty<float>();
             }
-
+           
             return Array.Empty<float>();
         }
     }

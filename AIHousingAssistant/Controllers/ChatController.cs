@@ -12,6 +12,7 @@ using System.Linq;
 using Microsoft.SemanticKernel.Services;
 using AIHousingAssistant.Application.Services.Interfaces;
 using AIHousingAssistant.Application.SemanticKernel;
+using AIHousingAssistant.Models;
 
 namespace AIHousingAssistant.Controllers
 {
@@ -218,14 +219,16 @@ namespace AIHousingAssistant.Controllers
         #endregion
         #region upload
         [HttpPost("UploadDocument")]
-        public async Task<IActionResult> UploadDocument(IFormFile file)
+        public async Task<IActionResult> UploadDocument(IFormFile file, [FromForm] string config)
         {
             if (file == null || file.Length == 0)
                 return BadRequest(new { success = false, error = "No file uploaded" });
 
             try
             {
-                await _ragService.ProcessDocumentAsync(file);
+                RagUiRequest request = JsonConvert.DeserializeObject<RagUiRequest>(config);
+
+                await _ragService.ProcessDocumentAsync(file, request);
 
                 return Ok(new
                 {
@@ -240,20 +243,16 @@ namespace AIHousingAssistant.Controllers
             }
         }
 
+
         #endregion
-        [HttpPost("AskRagJson")]
-        public async Task<IActionResult> AskRagJsonAsync([FromBody] string query)
+        [HttpPost("AskRag")]
+        public async Task<IActionResult> AskRagAsync([FromBody] RagUiRequest ragRequest)
         {
-            var reply = await _ragService.AskRagJsonAsync(query);
+            var reply = await _ragService.AskRagAsync(ragRequest);
             return Ok(new { data = reply });
         }
 
-        [HttpPost("AskRagQDrant")]
-        public async Task<IActionResult> AskRagQDrantAsync([FromBody] string query)
-        {
-            var reply = await _ragService.AskRagQDrantAsync(query);
-            return Ok(new { data = reply });
-        }
+       
 
 
     }

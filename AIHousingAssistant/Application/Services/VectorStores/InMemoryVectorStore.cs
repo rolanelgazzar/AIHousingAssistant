@@ -11,15 +11,17 @@ using System.Linq;
 using AIHousingAssistant.Application.Services.Interfaces;
 using AIHousingAssistant.Helper;
 using AIHousingAssistant.Application.Services.Embedding;
+using AIHousingAssistant.Application.Enum;
+using AIHousingAssistant.Application.Services.VectorDb;
 
 namespace AIHousingAssistant.Application.Services.VectorStores
 {
-    public class InMemoryVectorStore : IInMemoryVectorStore
+    public class InMemoryVectorStore : IVectorStore
     {
         private readonly List<VectorChunk> _vectorChunks = new();
         private readonly string _uploadFolder;
 
-
+        private readonly IVectorDB _vectorDB;
         private readonly ProviderSettings _providerSettings;
 
         // NEW: centralized embedding service
@@ -27,7 +29,10 @@ namespace AIHousingAssistant.Application.Services.VectorStores
 
         private static readonly JsonSerializerOptions SerializerOptions = new() { WriteIndented = true };
 
-        public InMemoryVectorStore(IOptions<ProviderSettings> providerSettings, IEmbeddingService embeddingService)
+        public InMemoryVectorStore(IOptions<ProviderSettings> providerSettings,
+            IEmbeddingService embeddingService,
+            IVectorDB vectorDB
+            )
         {
             _embeddingService = embeddingService;
 
@@ -38,11 +43,13 @@ namespace AIHousingAssistant.Application.Services.VectorStores
 
             _providerSettings = providerSettings.Value;
 
+            _vectorDB = vectorDB;
+
         }
 
         // -----------------------------------------------------------------
         // Find the closest stored chunk to the given query text (cosine similarity)
-        public async Task<VectorChunk?> SearchClosest(string queryText)
+        public async Task<VectorChunk?> VectorSearchAsync(string queryText)
         {
             // Convert query text to embedding
             float[] queryEmbedding = await _embeddingService.EmbedAsync(queryText);
@@ -70,7 +77,7 @@ namespace AIHousingAssistant.Application.Services.VectorStores
             // Iterate through all chunks and calculate cosine similarity
             foreach (var chunk in vectorChunks)
             {
-                var score = CosineSimilarity(chunk.Embedding, queryEmbedding);
+                var score = _vectorDB.CosineSimilarity(chunk.Embedding, queryEmbedding);
 
                 // Update the best match if current score is higher
                 if (score > bestScore)
@@ -103,34 +110,11 @@ namespace AIHousingAssistant.Application.Services.VectorStores
 
         // -----------------------------------------------------------------
         // Safe cosine similarity (avoids divide-by-zero & dimension mismatch)
-        private float CosineSimilarity(float[] a, float[] b)
-        {
-            if (a == null || b == null || a.Length == 0 || b.Length == 0)
-                return 0f;
-
-            if (a.Length != b.Length)
-                return 0f;
-
-            float dot = 0, normA = 0, normB = 0;
-
-            for (int i = 0; i < a.Length; i++)
-            {
-                dot += a[i] * b[i];
-                normA += a[i] * a[i];
-                normB += b[i] * b[i];
-            }
-
-            const float eps = 1e-6f;
-            if (normA < eps || normB < eps)
-                return 0f;
-
-            return dot / (float)(Math.Sqrt(normA) * Math.Sqrt(normB));
-        }
-
+        
 
         // -----------------------------------------------------------------
         // Convert chunks → vectors + store in memory (parallel for performance)
-        public async Task StoreTextChunksAsVectorsAsync(List<TextChunk> chunks)
+        public async Task StoreTextChunksAsVectorsAsync(List<TextChunk> chunks, EmbeddingModel embeddingModel)
         {
             var tasks = chunks.Select(async (chunk, i) => new VectorChunk
             {
@@ -146,7 +130,108 @@ namespace AIHousingAssistant.Application.Services.VectorStores
             var results = await Task.WhenAll(tasks);
             _vectorChunks.AddRange(results);
 
+
+            string embeddingModelName = System.Enum.GetName(typeof(EmbeddingModel), embeddingModel);
+            var fileName = $"{_providerSettings.VectorStoreFilename}-{embeddingModelName}.json";
+
+            await FileHelper.WriteJsonAsync(_uploadFolder, fileName, _vectorChunks); 
             await FileHelper.WriteJsonAsync(_uploadFolder, _providerSettings.VectorStoreFilename, _vectorChunks);
         }
+
+
+
+
+    public     async Task<List<VectorChunk>> HybridSearchAsync(
+        string queryText,
+        int top)
+        {
+            if (string.IsNullOrWhiteSpace(queryText))
+                return new List<VectorChunk>();
+
+            var queryEmbedding = await _embeddingService.EmbedAsync(queryText);
+            if (queryEmbedding == null || queryEmbedding.Length == 0)
+                return new List<VectorChunk>();
+
+            var queryKeywords = _vectorDB.ExtractKeywords(queryText);
+
+            string filePath = Path.Combine(_uploadFolder, _providerSettings.VectorStoreFilename);
+            if (!File.Exists(filePath))
+                return new List<VectorChunk>();
+
+            var chunks = await FileHelper.ReadJsonAsync<List<VectorChunk>>(
+                _uploadFolder,
+                _providerSettings.VectorStoreFilename
+            );
+
+            if (chunks == null || chunks.Count == 0)
+                return new List<VectorChunk>();
+
+            return chunks
+                .Select(chunk =>
+                {
+                    var semanticScore = _vectorDB.CosineSimilarity(chunk.Embedding, queryEmbedding);
+
+                    var keywordScore = 0f;
+                    if (!string.IsNullOrWhiteSpace(chunk.Content))
+                    {
+                        var contentKeywords = _vectorDB.ExtractKeywords(chunk.Content);
+                        keywordScore = contentKeywords
+                            .Intersect(queryKeywords)
+                            .Count();
+                    }
+
+                    // simple hybrid fusion
+                    var finalScore = semanticScore + (0.1f * keywordScore);
+
+                    return new
+                    {
+                        Chunk = chunk,
+                        Score = finalScore
+                    };
+                })
+                .OrderByDescending(x => x.Score)
+                .Take(top)
+                .Select(x => x.Chunk)
+                .ToList();
+        }
+
+      public  async Task<List<VectorChunk>> SemanticSearchAsync(
+     string queryText,
+     int top)
+        {
+            if (string.IsNullOrWhiteSpace(queryText))
+                return new List<VectorChunk>();
+
+            var queryEmbedding = await _embeddingService.EmbedAsync(queryText);
+            if (queryEmbedding == null || queryEmbedding.Length == 0)
+                return new List<VectorChunk>();
+
+            string filePath = Path.Combine(_uploadFolder, _providerSettings.VectorStoreFilename);
+            if (!File.Exists(filePath))
+                return new List<VectorChunk>();
+
+            var chunks = await FileHelper.ReadJsonAsync<List<VectorChunk>>(
+                _uploadFolder,
+                _providerSettings.VectorStoreFilename
+            );
+
+            if (chunks == null || chunks.Count == 0)
+                return new List<VectorChunk>();
+
+            return chunks
+                .Select(c => new
+                {
+                    Chunk = c,
+                    Score = _vectorDB.CosineSimilarity(c.Embedding, queryEmbedding)
+                })
+                .OrderByDescending(x => x.Score)
+                .Take(top)
+                .Select(x => x.Chunk)
+                .ToList();
+        }
+
+ 
+
+   
     }
 }
