@@ -1,49 +1,31 @@
 [
   {
     "Index": 0,
-    "Content": "Advanced RAG Chunking \u0026 Search Evaluation DocumentPurpose:This document is intentionally LONG and REPEATED to test:1.",
+    "Content": "Advanced RAG Chunking \u0026 Search Evaluation DocumentPurpose:This document is intentionally LONG and REPEATED to test:1. Chunking behavior (multiple chunks generation)2. Semantic understanding across distant sections3. Retrieval accuracy using:   - Vector Search   - Semantic Search   - Hybrid SearchKey idea:The SAME topics (e.g., LOGIN, PAYMENTS) appear at the BEGINNING and the ENDto clearly show the difference between pure vector similarity and semantic understanding.SECTION 1: AUTHENTICATION \u0026 LOGIN (INTRO)Login is the primary entry point to the system.Users must provide a valid email and password to access their account.If the credentials are incorrect, the system responds with HTTP 401 Unauthorized.After five consecutive failed login attempts, the account is temporarily locked.Security is a core requirement in the login process.Password hashing, rate limiting, and audit logging are enforced.SECTION 2: USER SESSION MANAGEMENTOnce logged in, a user session is created.Sessions expire",
     "Source": "Advanced_RAG_Chunking_Semantic_Test.docx",
     "Page": null
   },
   {
     "Index": 1,
-    "Content": "Chunking behavior (multiple chunks generation)2.",
+    "Content": "enforced.SECTION 2: USER SESSION MANAGEMENTOnce logged in, a user session is created.Sessions expire after 30 minutes of inactivity.Refreshing activity will extend the session duration.Session tokens are stored securely and rotated periodically.Unauthorized session reuse is blocked automatically.SECTION 3: PAYMENTS \u0026 BILLINGThe system supports multiple payment methods including Visa, MasterCard, and Cash.Each invoice is generated automatically once a payment request is created.Late payments will result in additional service fees.All payment transactions are logged for auditing purposes.Payment reconciliation is handled daily by the finance module.SECTION 4: REFUNDS \u0026 FINANCIAL ADJUSTMENTSRefund requests are allowed within 14 days from the purchase date.Products must remain unused and in original condition.Refund processing may take up to 7 business days.Approved refunds are returned to the original payment method.SECTION 5: WARRANTY POLICYAll hardware devices are covered by a 12-month",
     "Source": "Advanced_RAG_Chunking_Semantic_Test.docx",
     "Page": null
   },
   {
     "Index": 2,
-    "Content": "Semantic understanding across distant sections3.",
+    "Content": "the original payment method.SECTION 5: WARRANTY POLICYAll hardware devices are covered by a 12-month warranty period.The warranty covers manufacturing defects only.Physical damage, misuse, or unauthorized repairs are not covered.Customers must present proof of purchase to claim warranty service.SECTION 6: TECHNICAL SUPPORTTechnical support is available 24/7 through email and ticketing systems.Critical incidents receive the highest priority.The standard response time is within 4 hours.Resolution time depends on issue severity and complexity.SECTION 7: LOGIN \u0026 SECURITY (DEEP DIVE)Login security is continuously monitored.Suspicious login behavior triggers alerts and secondary verification.Multi-factor authentication can be enabled to strengthen login security.Repeated failed login attempts may require captcha verification.Login logs are retained for compliance and security analysis.SECTION 8: SYSTEM AUDIT \u0026 COMPLIANCEAll user activities including login, payments, and refunds are",
     "Source": "Advanced_RAG_Chunking_Semantic_Test.docx",
     "Page": null
   },
   {
     "Index": 3,
-    "Content": "Retrieval accuracy using:   - Vector Search   - Semantic Search   - Hybrid SearchKey idea:The SAME topics (e.g., LOGIN, PAYMENTS) appear at the BEGINNING and the ENDto clearly show the difference between pure vector similarity and semantic understanding.SECTION 1: AUTHENTICATION \u0026 LOGIN (INTRO)Login is the primary entry point to the system.Users must provide a valid email and password to access their account.If the credentials are incorrect, the system responds with HTTP 401 Unauthorized.After five consecutive failed login attempts, the account is temporarily locked.Security is a core requirement in the login process.Password hashing, rate limiting, and audit logging are enforced.SECTION 2: USER SESSION MANAGEMENTOnce logged in,",
+    "Content": "8: SYSTEM AUDIT \u0026 COMPLIANCEAll user activities including login, payments, and refunds are audited.Audit logs are immutable and retained for regulatory compliance.Access to audit data is restricted to authorized administrators only.SECTION 9: LOGIN SUMMARY (END OF DOCUMENT)To summarize, login is the gateway to all system functionality.A secure and reliable login process ensures system integrity.Login failures, retries, session handling, and monitoringare critical components of overall platform security.Suggested Search Queries for Evaluation- How does login work?- What happens after multiple failed login attempts?- What payment methods are supported?- Does warranty cover physical damage?- How long does a refund take?- How is login security monitored?Expected Evaluation Notes- Recursive splitters will generate MANY chunks due to document length.- Vector search may retrieve login chunks from only ONE area.- Semantic search should retrieve login chunks from BOTH beginning and end.-",
     "Source": "Advanced_RAG_Chunking_Semantic_Test.docx",
     "Page": null
   },
   {
     "Index": 4,
-    "Content": "rate limiting, and audit logging are enforced.SECTION 2: USER SESSION MANAGEMENTOnce logged in, a user session is created.Sessions expire after 30 minutes of inactivity.Refreshing activity will extend the session duration.Session tokens are stored securely and rotated periodically.Unauthorized session reuse is blocked automatically.SECTION 3: PAYMENTS \u0026 BILLINGThe system supports multiple payment methods including Visa, MasterCard,",
-    "Source": "Advanced_RAG_Chunking_Semantic_Test.docx",
-    "Page": null
-  },
-  {
-    "Index": 5,
-    "Content": "3: PAYMENTS \u0026 BILLINGThe system supports multiple payment methods including Visa, MasterCard, and Cash.Each invoice is generated automatically once a payment request is created.Late payments will result in additional service fees.All payment transactions are logged for auditing purposes.Payment reconciliation is handled daily by the finance module.SECTION 4: REFUNDS \u0026 FINANCIAL ADJUSTMENTSRefund requests are allowed within 14 days from the purchase date.Products must remain unused and in original condition.Refund processing may take up to 7 business days.Approved refunds are returned to the original payment method.SECTION 5: WARRANTY POLICYAll hardware devices are covered by a 12-month warranty period.The warranty covers manufacturing defects only.Physical damage, misuse,",
-    "Source": "Advanced_RAG_Chunking_Semantic_Test.docx",
-    "Page": null
-  },
-  {
-    "Index": 6,
-    "Content": "a 12-month warranty period.The warranty covers manufacturing defects only.Physical damage, misuse, or unauthorized repairs are not covered.Customers must present proof of purchase to claim warranty service.SECTION 6: TECHNICAL SUPPORTTechnical support is available 24/7 through email and ticketing systems.Critical incidents receive the highest priority.The standard response time is within 4 hours.Resolution time depends on issue severity and complexity.SECTION 7: LOGIN \u0026 SECURITY (DEEP DIVE)Login security is continuously monitored.Suspicious login behavior triggers alerts and secondary verification.Multi-factor authentication can be enabled to strengthen login security.Repeated failed login attempts may require captcha verification.Login logs are retained for compliance and security analysis.SECTION 8: SYSTEM AUDIT \u0026 COMPLIANCEAll user activities including login, payments, and refunds are audited.Audit logs are immutable and retained for regulatory compliance.Access to audit data is restricted to authorized administrators only.SECTION 9: LOGIN SUMMARY (END OF DOCUMENT)To summarize,",
-    "Source": "Advanced_RAG_Chunking_Semantic_Test.docx",
-    "Page": null
-  },
-  {
-    "Index": 7,
-    "Content": "to authorized administrators only.SECTION 9: LOGIN SUMMARY (END OF DOCUMENT)To summarize, login is the gateway to all system functionality.A secure and reliable login process ensures system integrity.Login failures, retries, session handling, and monitoringare critical components of overall platform security.Suggested Search Queries for Evaluation- How does login work?- What happens after multiple failed login attempts?- What payment methods are supported?- Does warranty cover physical damage?- How long does a refund take?- How is login security monitored?Expected Evaluation Notes- Recursive splitters will generate MANY chunks due to document length.- Vector search may retrieve login chunks from only ONE area.- Semantic search should retrieve login chunks from BOTH beginning and end.- Hybrid search should rank the most relevant login chunks higher.",
+    "Content": "from only ONE area.- Semantic search should retrieve login chunks from BOTH beginning and end.- Hybrid search should rank the most relevant login chunks higher.",
     "Source": "Advanced_RAG_Chunking_Semantic_Test.docx",
     "Page": null
   }
