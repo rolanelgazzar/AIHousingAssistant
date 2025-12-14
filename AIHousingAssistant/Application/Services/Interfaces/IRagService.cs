@@ -11,6 +11,6 @@ namespace AIHousingAssistant.Application.Services.Interfaces
                RagUiRequest ragUiRequest
                );
 
-        public Task<string> AskRagAsync(RagUiRequest ragRequest);
+        public Task<RagAnswerResponse> AskRagAsync(RagUiRequest ragRequest);
     }
 }

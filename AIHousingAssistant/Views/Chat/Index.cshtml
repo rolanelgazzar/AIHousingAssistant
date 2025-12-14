@@ -688,46 +688,81 @@
                     });
                 }
 
-                function askRag(message) {
-                    const config = {
-                        query: message,
-                        vectorStoreProvider: parseInt($('#vectorStoreProvider').val()),
-                        chunkingMode: parseInt($('#chunkingMode').val()),
-                        embeddingModel: parseInt($('#embeddingModel').val())
-                        searchMode: parseInt($('#searchMode').val())
+               function escapeHtml(str) {
+          if (str === null || str === undefined) return '';
+          return String(str)
+            .replaceAll('&', '&amp;')
+            .replaceAll('<', '&lt;')
+            .replaceAll('>', '&gt;')
+            .replaceAll('"', '&quot;')
+            .replaceAll("'", '&#039;');
+        }
 
-                    };
+        function askRag(message) {
+          const config = {
+            query: message,
+            vectorStoreProvider: parseInt($('#vectorStoreProvider').val(), 10),
+            chunkingMode: parseInt($('#chunkingMode').val(), 10),
+            embeddingModel: parseInt($('#embeddingModel').val(), 10),
+            searchMode: parseInt($('#searchMode').val(), 10),
+            topK: parseInt($('#topK').val() || "5", 10)
+          };
 
-                    addMessage(message, 'user');
-                    showLoader();
+          addMessage(escapeHtml(message), 'user');
+          showLoader();
 
-                    $.ajax({
-                        url: '/AskRag',
-                        type: 'POST',
-                        data: JSON.stringify(config),
-                        contentType: 'application/json',
-                        success: function(response) {
-                            hideLoader();
-                            const answer = response.data || "لم يتم العثور على إجابة";
-                            const configInfo = `
+          $.ajax({
+            url: '/AskRag',
+            type: 'POST',
+            data: JSON.stringify(config),
+            contentType: 'application/json',
+            success: function (response) {
+              hideLoader();
+
+              const data = response && response.data ? response.data : null;
+
+              const answerText =
+                (typeof data === 'string')
+                  ? data
+                  : (data && data.answer ? data.answer : "لم يتم العثور على إجابة");
+
+              const chunkIndexes =
+                (data && typeof data === 'object' && Array.isArray(data.chunkIndexes))
+                  ? data.chunkIndexes
+                  : [];
+
+              const chunksHtml = chunkIndexes.length
+                ? `<br><strong>📌 Chunk Indexes:</strong> <span style="direction:ltr;display:inline-block">${escapeHtml(chunkIndexes.join(', '))}</span>`
+                : `<br><strong>📌 Chunk Indexes:</strong> <em>Not returned</em>`;
+
+              const configInfo = `
         🔍 <strong>RAG Results</strong><br>
         📊 الإعدادات المستخدمة:<br>
-        • Vector Store: ${getVectorStoreName(config.vectorStoreProvider)}<br>
-        • Chunking: ${getChunkingName(config.chunkingMode)}<br>
-        • Embedding: ${getEmbeddingName(config.embeddingModel)}<br><br>
-        • Search: ${getSearchName(config.searchMode)}<br><br>
+        • Vector Store: ${escapeHtml(getVectorStoreName(config.vectorStoreProvider))}<br>
+        • Chunking: ${escapeHtml(getChunkingName(config.chunkingMode))}<br>
+        • Embedding: ${escapeHtml(getEmbeddingName(config.embeddingModel))}<br>
+        • Search Mode: ${escapeHtml(getSearchModeName(config.searchMode))}<br>
+        • TopK: ${escapeHtml(config.topK)}<br>
+        ${chunksHtml}
+        <br><br>
+        <strong>الإجابة:</strong><br>${escapeHtml(answerText).replaceAll('\n', '<br>')}
+              `;
 
-        <strong>الإجابة:</strong><br>${answer}
-                            `;
-                            addMessage(configInfo, 'bot');
-                        },
-                        error: function(xhr) {
-                            hideLoader();
-                            const error = (xhr.responseJSON && xhr.responseJSON.error) || xhr.responseText || "حدث خطأ في RAG";
-                            addMessage("❌ " + error, 'bot');
-                        }
-                    });
-                }
+              addMessage(configInfo, 'bot');
+            },
+            error: function (xhr) {
+              hideLoader();
+              const error =
+                (xhr.responseJSON && (xhr.responseJSON.error || xhr.responseJSON.message))
+                || xhr.responseText
+                || "حدث خطأ في RAG";
+
+              addMessage("❌ " + escapeHtml(error), 'bot');
+            }
+          });
+        }
+
+
 
                 // ========== FILE UPLOAD ==========
                 function handleFileUpload(event) {
@@ -741,7 +776,7 @@
             
                         vectorStoreProvider: parseInt($('#vectorStoreProvider').val()),
                         chunkingMode: parseInt($('#chunkingMode').val()),
-                        embeddingModel: parseInt($('#embeddingModel').val())
+                        embeddingModel: parseInt($('#embeddingModel').val()),
                         searchMode: parseInt($('#searchMode').val())
 
                     };
@@ -799,7 +834,8 @@
 
                 // ========== LOAD SUMMARY ==========
                 function loadSummary() {
-                    $('#summaryResult').html('<div class="loader" style="border-top-color: #667eea;"></div>');
+        $('#summaryResult').html('<img src="/images/loader.gif" style="width:50px;height:50px;" />');
+
 
                     $.ajax({
                         url: '/SummarizationChatHistory',
@@ -840,7 +876,7 @@
                 }
 
                 function showLoader() {
-                    addMessage('<div class="loader" style="border-top-color: white;"></div>', 'bot');
+                    addMessage('<img src="/images/loader.gif" class="loader" />', 'bot');
                 }
 
                 function hideLoader() {
@@ -871,7 +907,7 @@
                      return names[value] || 'Unknown';
                     
                 }
-                function getSearchName(value) {
+                function getSearchModeName(value) {
                     const names=[
                     
                     'Vector',

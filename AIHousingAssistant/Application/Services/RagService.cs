@@ -77,25 +77,46 @@ namespace AIHousingAssistant.Application.Services
 
         // --------------------------------------------
         // New unified method
-        public async Task<string> AskRagAsync(RagUiRequest ragRequest)
+        public async Task<RagAnswerResponse> AskRagAsync(RagUiRequest ragRequest)
         {
             if (string.IsNullOrWhiteSpace(ragRequest.Query))
-                return "Query is empty.";
+                return new RagAnswerResponse { Answer = "Query is empty." };
 
             var store = _vectorStoreResolver.Resolve(ragRequest.VectorStoreProvider);
 
-            VectorChunk? resultChunk = ragRequest.SearchMode switch
+            List<VectorChunk> chunks = ragRequest.SearchMode switch
             {
-                SearchMode.Hybrid => (await store.HybridSearchAsync(ragRequest.Query)).FirstOrDefault(),
-                SearchMode.Semantic => (await store.SemanticSearchAsync(ragRequest.Query)).FirstOrDefault(),
-                _ => await store.VectorSearchAsync(ragRequest.Query),
+                SearchMode.Hybrid => await store.HybridSearchAsync(ragRequest.Query, top: 5),
+                SearchMode.Semantic => await store.SemanticSearchAsync(ragRequest.Query, top: 5),
+                _ => (await store.VectorSearchAsync(ragRequest.Query)) is { } c
+                        ? new List<VectorChunk> { c }
+                        : new List<VectorChunk>()
             };
 
-            if (resultChunk == null || string.IsNullOrWhiteSpace(resultChunk.Content))
-                return "No related answer found.";
+            if (chunks == null || chunks.Count == 0)
+                return new RagAnswerResponse { Answer = "No related answer found." };
 
-            var answer = await ExtractAnswerFromChunkAsync(ragRequest.Query, resultChunk.Content);
-            return string.IsNullOrWhiteSpace(answer) ? "No related answer found." : answer;
+            var usedChunks = chunks
+                .Where(c => !string.IsNullOrWhiteSpace(c.Content))
+                .ToList();
+
+            if (usedChunks.Count == 0)
+                return new RagAnswerResponse { Answer = "No related answer found." };
+
+            var context = string.Join("\n\n---\n\n", usedChunks.Select(c => c.Content));
+
+            var answer = await ExtractAnswerFromChunkAsync(ragRequest.Query, context);
+
+            if (string.IsNullOrWhiteSpace(answer))
+                answer = "No related answer found.";
+
+            return new RagAnswerResponse
+            {
+                Answer = answer,
+                ChunkIndexes = usedChunks.Select(c => c.Index).Distinct().ToList(),
+                Sources = usedChunks.Select(c => c.Source).Distinct().ToList() ,
+                Similarity = usedChunks.Select(c => c.Similarity).Distinct().ToList()
+            };
         }
 
 
@@ -106,6 +127,8 @@ namespace AIHousingAssistant.Application.Services
         // --------------------------------------------
         private async Task<string> ExtractAnswerFromChunkAsync(string query, string chunkContent)
         {
+
+            //return chunkContent;
             if (string.IsNullOrWhiteSpace(chunkContent))
                 return string.Empty;
 

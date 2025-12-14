@@ -248,11 +248,17 @@ namespace AIHousingAssistant.Controllers
         [HttpPost("AskRag")]
         public async Task<IActionResult> AskRagAsync([FromBody] RagUiRequest ragRequest)
         {
+            if (ragRequest == null)
+                return BadRequest(new { error = "Request body is empty." });
+
             var reply = await _ragService.AskRagAsync(ragRequest);
+
+            // reply هنا DTO (Answer + ChunkIndexes + Sources)
             return Ok(new { data = reply });
         }
 
-       
+
+
 
 
     }
