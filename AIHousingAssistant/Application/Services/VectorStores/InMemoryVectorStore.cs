@@ -124,7 +124,7 @@ namespace AIHousingAssistant.Application.Services.VectorStores
                 // IMPORTANT: keep source traceability (requires VectorChunk.Source property)
                 Source = chunk.Source,
 
-                Embedding = await _embeddingService.EmbedAsync(chunk.Content)
+                Embedding = await _embeddingService.EmbedAsync(chunk.Content  , embeddingModel)
             });
 
             var results = await Task.WhenAll(tasks);

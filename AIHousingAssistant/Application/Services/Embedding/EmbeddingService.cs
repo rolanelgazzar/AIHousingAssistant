@@ -10,10 +10,12 @@ namespace AIHousingAssistant.Application.Services.Embedding
     {
         private readonly OllamaApiClient _client;
         private readonly ProviderSettings _providerSettings;
+     
 
         public EmbeddingService(IOptions<ProviderSettings> providerSettings)
         {
              _providerSettings = providerSettings.Value;
+     
 
             _client = new OllamaApiClient(_providerSettings.OllamaEmbedding.Endpoint);
             _client.SelectedModel = _providerSettings.OllamaEmbedding.Model;

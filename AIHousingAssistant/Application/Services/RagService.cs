@@ -127,6 +127,7 @@ namespace AIHousingAssistant.Application.Services
         // --------------------------------------------
         private async Task<string> ExtractAnswerFromChunkAsync(string query, string chunkContent)
         {
+            return chunkContent;
 
             //return chunkContent;
             if (string.IsNullOrWhiteSpace(chunkContent))

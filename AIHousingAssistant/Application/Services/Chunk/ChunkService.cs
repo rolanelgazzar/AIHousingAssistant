@@ -8,6 +8,8 @@ using Microsoft.Extensions.Options;
 using SemanticTextSplitting;
 using System.Text.Json;
 using System.Linq;
+using Microsoft.Extensions.AI;
+using AIHousingAssistant.Application.Services.Embedding;
 
 namespace AIHousingAssistant.Application.Services.Chunk
 {
@@ -15,10 +17,11 @@ namespace AIHousingAssistant.Application.Services.Chunk
     {
         private readonly ProviderSettings _providerSettings;
         private readonly string _uploadFolder;
+        private readonly IEmbeddingService _embeddingService;
 
         private static readonly JsonSerializerOptions SerializerOptions = new() { WriteIndented = true };
 
-        public ChunkService(IOptions<ProviderSettings> providerSettings)
+        public ChunkService(IOptions<ProviderSettings> providerSettings, IEmbeddingService embeddingService)
         {
             if (providerSettings == null)
                 throw new ArgumentNullException(nameof(providerSettings));
@@ -32,6 +35,9 @@ namespace AIHousingAssistant.Application.Services.Chunk
 
             if (!Directory.Exists(_uploadFolder))
                 Directory.CreateDirectory(_uploadFolder);
+
+            _embeddingService = embeddingService;
+
         }
 
         // -----------------------------------------------------------
@@ -147,23 +153,32 @@ namespace AIHousingAssistant.Application.Services.Chunk
         // 3) SemanticTextBlocksGrouper (simple “semantic-ish” mode for testing)
         // NOTE: the full power of this class is with embeddings + similarity grouping.
         // Here we start simple: paragraphs/sentences -> TextChunk.
-        private Task<List<TextChunk>> SemanticBlocksGrouperChunks(string text, string source)
+        private async Task<List<TextChunk>> SemanticBlocksGrouperChunks(string text, string source)
         {
-            // Start with paragraphs. You can switch to sentences if you want.
-            var blocks = SemanticTextBlocksGrouper.SplitTextIntoParagraphs(text);
+            var blocks = SemanticTextBlocksGrouper.SplitTextIntoSentences(text);
 
-            var chunks = blocks
-                .Select((b, i) => new TextChunk
-                {
-                    Index = i,
-                    Content = (b ?? string.Empty).Trim(),
-                    Source = source
-                })
-                .Where(tc => !string.IsNullOrWhiteSpace(tc.Content))
+            if (blocks.Count <= 1)
+                return blocks.Select((b, i) => new TextChunk { Index = i, Content = b.Trim(), Source = source }).ToList();
+
+            // Generate embeddings using your EmbeddingService
+            var embeddings = new Dictionary<string, float[]>();
+            foreach (var b in blocks.Distinct())
+                embeddings[b] = await _embeddingService.EmbedAsync(b);
+
+            float threshold = 0.70f;
+            var grouped = SemanticTextBlocksGrouper.GroupTextBlocksBySimilarity(embeddings, threshold);
+            var aggregated = SemanticTextBlocksGrouper.AggregateGroupedTextBlocks(grouped);
+
+            var finalBlocks = new List<string>();
+            foreach (var g in aggregated)
+                finalBlocks.AddRange(g.RecursiveSplit(1000, 100));
+
+            return finalBlocks
+                .Select((c, i) => new TextChunk { Index = i, Content = (c ?? "").Trim(), Source = source })
+                .Where(x => !string.IsNullOrWhiteSpace(x.Content))
                 .ToList();
-
-            return Task.FromResult(chunks);
         }
+
 
         private Task<List<TextChunk>> RecursiveTextSplitterChunks(string text, string source)
         {

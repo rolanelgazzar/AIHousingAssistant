@@ -16,6 +16,11 @@ namespace AIHousingAssistant.Application.Services.VectorDb
         List<string> ExtractKeywords(string text);
         public float CosineSimilarity(float[] a, float[] b);
         Task<List<VectorChunk>>  SearchTopAsync(string collectionName, float[] queryVector,int top=5);
-
+        public  Task<List<VectorChunk>> SearchTopFilteredAsync(
+            string collectionName,
+            float[] queryVector,
+            int topK,
+            string payloadTextField,
+            List<string> keywords);
     }
 }

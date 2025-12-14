@@ -578,8 +578,10 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
     <script>
-                const imgBOT = "https://api.dicebear.com/7.x/bottts-neutral/svg?seed=bot&backgroundColor=b6e3f4";
-                const imgPerson = "https://api.dicebear.com/7.x/avataaars-neutral/svg?seed=user&backgroundColor=c0aede";
+     
+                          const imgBOT =  "/images/bot.png";
+
+                const imgPerson =  "/images/user.png";
                 const nameBOT = "المساعد الذكي";
                 const namePerson = "أنت";
 
@@ -834,7 +836,7 @@
 
                 // ========== LOAD SUMMARY ==========
                 function loadSummary() {
-        $('#summaryResult').html('<img src="/images/loader.gif" style="width:50px;height:50px;" />');
+        $('#summaryResult').html('<img src="/images/loader.gif" class="loader" />');
 
 
                     $.ajax({
@@ -876,7 +878,7 @@
                 }
 
                 function showLoader() {
-                    addMessage('<img src="/images/loader.gif" class="loader" />', 'bot');
+                    addMessage('<img src="/images/loader.gif" class="loader"/>', 'bot');
                 }
 
                 function hideLoader() {
