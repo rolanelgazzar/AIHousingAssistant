@@ -5,6 +5,10 @@ namespace AIHousingAssistant.Application.Services.Chunk
 {
     public interface IChunkService
     {
-        Task<List<TextChunk>> CreateChunksAsync(string text, ChunkingMode chunkingMode, string source);
+        public Task<List<TextChunk>> CreateChunksAsync(
+                 string text,
+                 RagUiRequest ragUiRequest,
+                 string source);
+
     }
 }

@@ -56,15 +56,43 @@ namespace AIHousingAssistant.Application.Services.VectorStores
         /// <summary>
         /// Stores text chunks as vectors in the Vector DB after generating embeddings in parallel.
         /// </summary>
-
         public async Task StoreTextChunksAsVectorsAsync(List<TextChunk> chunks, RagUiRequest ragUiRequest)
         {
             if (chunks == null || chunks.Count == 0)
                 return;
-            // This function handles the parallelism/batching internally in the embedding service.
-            var vectorChunks = await _embeddingService.GenerateEmbeddingsAsync(chunks, ragUiRequest.EmbeddingModel);
 
-            // Validation
+            var vectorChunks = new List<VectorChunk>();
+
+            // 1. Conditionally generate/use existing embeddings to create VectorChunks
+            foreach (var chunk in chunks)
+            {
+                float[]? embedding = chunk.Vector;
+
+                // Check 1: If the vector is null (meaning it came from a traditional splitter like Recursive/LangChain)
+                if (embedding == null)
+                {
+                    // Generate the embedding now. This is the only generation point for these chunks.
+                    embedding = await _embeddingService.EmbedAsync(chunk.Content, ragUiRequest.EmbeddingModel);
+                }
+                // else: The vector is already present (from Semantic chunking) and is used directly.
+
+                // Check 2: Map the result to VectorChunk model for Upserting
+                if (embedding != null && embedding.Length > 0)
+                {
+                    vectorChunks.Add(new VectorChunk
+                    {
+                        Index = chunk.Index,
+                        Content = chunk.Content,
+                        Source = chunk.Source,
+                        // Use the existing or newly generated embedding
+                        Embedding = embedding,
+                        // Similarity is only relevant during retrieval, so set to 0.0 for storage
+                        Similarity = 0.0f
+                    });
+                }
+            }
+
+            // 2. Validation
             var validChunks = vectorChunks
                 .Where(vc => vc.Embedding != null && vc.Embedding.Length > 0)
                 .ToList();
@@ -72,16 +100,19 @@ namespace AIHousingAssistant.Application.Services.VectorStores
             if (validChunks.Count == 0)
                 return;
 
-            // 2. Ensure collection and Upsert using IVectorDB
+            // 3. Ensure collection and Upsert using IVectorDB
             int vectorSize = validChunks[0].Embedding!.Length;
 
+            // Resolve the specific Vector Database implementation (e.g., Qdrant, Chroma, etc.)
             var vectorDbInstance = GetVectorDb(ragUiRequest);
+            var collectionName = GetCollectionName(ragUiRequest);
 
-            await vectorDbInstance.EnsureCollectionAsync(GetCollectionName(ragUiRequest), vectorSize);
+            // Ensure the collection exists with the correct vector dimension
+            await vectorDbInstance.EnsureCollectionAsync(collectionName, vectorSize);
 
-            await vectorDbInstance.UpsertAsync(GetCollectionName(ragUiRequest), validChunks);
-        }
-        // ------------------------- Query Path -------------------------
+            // Upsert the validated chunks into the database
+            await vectorDbInstance.UpsertAsync(collectionName, validChunks);
+        }        // ------------------------- Query Path -------------------------
 
         /// <summary>
         /// Pure Vector Search: returns the single closest vector chunk (top=1).
@@ -117,7 +148,7 @@ namespace AIHousingAssistant.Application.Services.VectorStores
             catch (Exception ex)
             {
                 // Catch any exception related to the Vector DB search itself (e.g., Qdrant connection failure)
-                throw new ApplicationException($"Failed to perform Vector DB search on collection {_collectionName}.", ex);
+                throw new ApplicationException($"Failed to perform Vector DB search on collection {GetCollectionName (ragUiRequest)}.", ex);
             }
         }
 

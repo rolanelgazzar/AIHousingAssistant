@@ -62,8 +62,8 @@ namespace AIHousingAssistant.Application.Services
            
 
             // 3) Chunk
-            var chunks = await _chunkService.CreateChunksAsync(textExtracted, ragUiRequest.ChunkingMode, source);
-
+            var chunks = await _chunkService.CreateChunksAsync(textExtracted, ragUiRequest, source);
+            
             if (chunks == null || chunks.Count == 0)
                 throw new InvalidOperationException("No text chunks were generated from the document.");
 
@@ -77,22 +77,41 @@ namespace AIHousingAssistant.Application.Services
         // New unified method
         public async Task<RagAnswerResponse> AskRagAsync(RagUiRequest ragRequest)
         {
+            // Validate the incoming query
             if (string.IsNullOrWhiteSpace(ragRequest.Query))
                 return new RagAnswerResponse { Answer = "Query is empty." };
 
 
-            List<VectorChunk> chunks = ragRequest.SearchMode switch
+            // 1. Retrieval (Vector Retrieval)
+            // Use a switch expression to dynamically select the search strategy (Hybrid, Semantic, or Pure Vector)
+            // The full ragRequest object is passed to IVectorStore to enable dynamic provider selection 
+            // and retrieval limit (TopSimilarity).
+           // ragRequest.TopSimilarity = 3;
+            List<VectorChunk>? chunks = ragRequest.SearchMode switch
             {
-                SearchMode.Hybrid => await _vectorStore.HybridSearchAsync(ragRequest.Query, top: 5),
-                SearchMode.Semantic => await _vectorStore.SemanticSearchAsync(ragRequest.Query, top: 5),
-                _ => (await _vectorStore.VectorSearchAsync(ragRequest.Query)) is { } c
-                        ? new List<VectorChunk> { c }
-                        : new List<VectorChunk>()
+                // Hybrid Search: Combines semantic search with keyword filtering.
+                SearchMode.Hybrid => await _vectorStore.HybridSearchAsync(ragRequest.Query, ragRequest),
+
+                // Semantic Search: Finds closest matches based on embedding similarity.
+                SearchMode.Semantic => await _vectorStore.SemanticSearchAsync(ragRequest.Query, ragRequest),
+
+                // Pure Vector Search (Default for basic requests): Finds the single closest match.
+                // The single VectorChunk? result is wrapped in a List<VectorChunk>.
+                SearchMode.Vector => (await _vectorStore.VectorSearchAsync(ragRequest.Query, ragRequest)) is { } singleChunk
+                                     ? new List<VectorChunk> { singleChunk }
+                                     : new List<VectorChunk>(),
+
+                // Default Case: Fallback to the basic Vector Search if the mode is unspecified or unknown.
+                _ => (await _vectorStore.VectorSearchAsync(ragRequest.Query, ragRequest)) is { } defaultChunk
+                     ? new List<VectorChunk> { defaultChunk }
+                     : new List<VectorChunk>()
             };
 
+            // Check if the retrieval step returned any results
             if (chunks == null || chunks.Count == 0)
                 return new RagAnswerResponse { Answer = "No related answer found." };
 
+            // Filter out chunks that might have null or empty content (cleanup)
             var usedChunks = chunks
                 .Where(c => !string.IsNullOrWhiteSpace(c.Content))
                 .ToList();
@@ -100,22 +119,23 @@ namespace AIHousingAssistant.Application.Services
             if (usedChunks.Count == 0)
                 return new RagAnswerResponse { Answer = "No related answer found." };
 
+            // 2. Generation (Answer Synthesis)
+            // Combine the content of all retrieved chunks into a single context string for the LLM.
             var context = string.Join("\n\n---\n\n", usedChunks.Select(c => c.Content));
-
             var answer = await ExtractAnswerFromChunkAsync(ragRequest.Query, context);
 
             if (string.IsNullOrWhiteSpace(answer))
                 answer = "No related answer found.";
 
+            // 3. Return Response (Packaging Results)
             return new RagAnswerResponse
             {
                 Answer = answer,
                 ChunkIndexes = usedChunks.Select(c => c.Index).Distinct().ToList(),
-                Sources = usedChunks.Select(c => c.Source).Distinct().ToList() ,
-                Similarity = usedChunks.Select(c => c.Similarity).Distinct().ToList()
+                Sources = usedChunks.Select(c => c.Source).Distinct().ToList(),
+                Similarity = usedChunks.Select(c => c.Similarity).ToList()
             };
         }
-
 
 
         // --------------------------------------------

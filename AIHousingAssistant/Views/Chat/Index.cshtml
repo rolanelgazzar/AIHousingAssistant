@@ -160,6 +160,18 @@
                     box-shadow: 0 0 0 3px rgba(65, 105, 225, 0.4);
                 }
 
+        .config-section input {
+                width: 100%;
+                padding: 10px;
+                border: 1px solid #cccccc;
+                border-radius: 8px;
+                font-size: 13px;
+                margin-bottom: 10px;
+                background: #ffffff;
+                color: var(--sidebar-text-color);
+                transition: all 0.3s;
+            }
+
         .badge {
             display: inline-block;
             padding: 4px 10px;
@@ -623,7 +635,7 @@
 
         <!-- SIDEBAR (LEFT) -->
         <div class="chat-sidebar">
-            <div class="sidebar-title">⚙️ إعدادات RAG</div>
+            <div class="sidebar-title">⚙️ Settings RAG</div>
 
             <!-- Embedding Model -->
             <div class="config-section">
@@ -639,10 +651,9 @@
             <div class="config-section">
                 <h4>✂️ Chunking Strategy</h4>
                 <select id="chunkingMode">
-                    <option value="0">Semantic Text Splitter</option>
-                    <option value="1">Semantic Text Blocks Grouper</option>
+                    <option value="1">LangChain Recursive Text Splitter</option>
                     <option value="2">Recursive Text Splitter</option>
-                    <option value="3">LangChain Recursive Text Splitter</option>
+                    <option value="3">Semantic Text Blocks Grouper</option>
                 </select>
 
             </div>
@@ -651,9 +662,10 @@
             <div class="config-section">
                 <h4>🗄️ Vector Store Provider</h4>
                 <select id="vectorStoreProvider">
-                    <option value="0">In-Memory</option>
-                    <option value="1">Qdrant SDK</option>
-                    <option value="2">Qdrant Semantic Kernel</option>
+                    <option value="0">Qdrant SDK</option>
+                    <option value="1">Qdrant Http</option>
+                    <option value="2">In-Memory</option>
+
                 </select>
 
             </div>
@@ -668,20 +680,29 @@
                 </select>
 
             </div>
+
+            <!-- TopSimilarity -->
+            <div class="config-section">
+                <h4>🤝 Top Similarity</h4>
+                <input type="text" id="topSimilarity" value="3" />
+
+            </div>
+
+
             <div class="info-box">
-                💡 <strong>ملحوظة:</strong> تغيير الإعدادات يؤثر على الاستعلامات الجديدة فقط
+                💡 <strong>Note:</strong> Changing the settings affects new queries only.
             </div>
 
             <!-- Help Questions Section -->
             <div class="config-section" style="margin-top: 20px;">
-                <h4>❓ أسئلة مساعدة</h4>
+                <h4>❓ Help Questions</h4>
                 <div id="initialQuestions"></div>
             </div>
 
             <!-- Summary Section -->
             <div class="summary-section">
-                <h4>📋 ملخص المحادثة</h4>
-                <button class="load-summary-btn" id="loadSummaryBtn">تحميل الملخص</button>
+                <h4>📋 Conversation Summary</h4>
+                <button class="load-summary-btn" id="loadSummaryBtn">View Summary</button>
                 <div id="summaryResult"></div>
             </div>
         </div>
@@ -693,14 +714,14 @@
                           const imgBOT =  "/images/bot.png";
 
                 const imgPerson =  "/images/user.png";
-                const nameBOT = "المساعد الذكي";
-                const namePerson = "أنت";
+                const nameBOT = "Smart Assistant";
+                const namePerson = "you";
 
                 let currentMode = 'normal';
 
                 // ========== INITIALIZATION ==========
                 $(document).ready(function() {
-                    addMessage("مرحباً! أنا مساعدك الذكي المحسّن بتقنية RAG. اختر الإعدادات واسألني أي سؤال! ", 'bot');
+                    addMessage("Hello! I am your smart assistant enhanced with RAG technology. Choose the settings and ask me any question! ", 'bot');
                     loadInitialQuestions();
 
                     // Send Button (Main)
@@ -818,8 +839,8 @@
             chunkingMode: parseInt($('#chunkingMode').val(), 10),
             embeddingModel: parseInt($('#embeddingModel').val(), 10),
             searchMode: parseInt($('#searchMode').val(), 10),
-            topK: parseInt($('#topK').val() || "5", 10)
-          };
+        topSimilarity: parseInt($('#topSimilarity').val(), 10)
+                                  };
 
           addMessage(escapeHtml(message), 'user');
           showLoader();
@@ -850,15 +871,15 @@
 
               const configInfo = `
         🔍 <strong>RAG Results</strong><br>
-        📊 الإعدادات المستخدمة:<br>
+        📊 Used Settings:<br>
         • Vector Store: ${escapeHtml(getVectorStoreName(config.vectorStoreProvider))}<br>
         • Chunking: ${escapeHtml(getChunkingName(config.chunkingMode))}<br>
         • Embedding: ${escapeHtml(getEmbeddingName(config.embeddingModel))}<br>
         • Search Mode: ${escapeHtml(getSearchModeName(config.searchMode))}<br>
-        • TopK: ${escapeHtml(config.topK)}<br>
+        • topSimilarity: ${escapeHtml(config.topSimilarity)}<br>
         ${chunksHtml}
         <br><br>
-        <strong>الإجابة:</strong><br>${escapeHtml(answerText).replaceAll('\n', '<br>')}
+        <strong>Answer:</strong><br>${escapeHtml(answerText).replaceAll('\n', '<br>')}
               `;
 
               addMessage(configInfo, 'bot');
@@ -882,7 +903,7 @@
                     const file = event.target.files[0];
                     if (!file) return;
 
-                    addMessage(`📄 جاري رفع الملف: ${file.name}`, 'user');
+                    addMessage(`📄 Uploading file…: ${file.name}`, 'user');
 
                     const formData = new FormData();
                     const config = {
@@ -890,9 +911,9 @@
                         vectorStoreProvider: parseInt($('#vectorStoreProvider').val()),
                         chunkingMode: parseInt($('#chunkingMode').val()),
                         embeddingModel: parseInt($('#embeddingModel').val()),
-                        searchMode: parseInt($('#searchMode').val())
-
-                    };
+                        searchMode: parseInt($('#searchMode').val()),
+        topSimilarity: parseInt($('#topSimilarity').val(), 10)
+                            };
 
                     formData.append("file", file);
                     formData.append("config", JSON.stringify(config));
@@ -906,12 +927,12 @@
                         processData: false,
                         success: function(response) {
                             hideLoader();
-                            addMessage(`✅ تم رفع "${file.name}" بنجاح!<br><br>🔄 جاري المعالجة والفهرسة...`, 'bot');
-                        },
+        addMessage(`✅ "${file.name}" uploaded successfully!<br><br>✅ Processing and indexing completed successfully.`, 'bot');
+                             },
                         error: function(xhr) {
                             hideLoader();
-                            const error = (xhr.responseJSON && xhr.responseJSON.error) || "فشل رفع الملف";
-                            addMessage("❌ " + error, 'bot');
+        const error = (xhr.responseJSON && xhr.responseJSON.error) || "File upload failed";
+                                    addMessage("❌ " + error, 'bot');
                         }
                     });
                 }
@@ -998,16 +1019,16 @@
 
                 // ========== HELPER FUNCTIONS ==========
                 function getVectorStoreName(value) {
-                    const names = ['In-Memory', 'Qdrant SDK', 'Qdrant Semantic Kernel'];
+                    const names = ['In-Memory', 'Qdrant SDK', 'Qdrant Http'];
                     return names[value] || 'Unknown';
                 }
 
                 function getChunkingName(value) {
                     const names = [
-                        'Semantic Text Splitter',
-                        'Semantic Text Blocks Grouper',
-                        'Recursive Text Splitter',
-                        'LangChain Recursive'
+                        'LangChain Recursive',
+                         'Recursive Text Splitter',
+                         'Semantic Text Blocks Grouper'
+                     
                     ];
                     return names[value] || 'Unknown';
                 }

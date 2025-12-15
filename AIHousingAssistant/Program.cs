@@ -38,11 +38,10 @@ builder.Services.AddHttpClient<HttpClientHelper>();
 //builder.Services.AddScoped<IQDrantVectorStore,QDrantVectorStore_Sdk>();
 //builder.Services.AddScoped<IQDrantVectorStoreEF, QDrantVectorStore_SK>();
 
-
+builder.Services.AddScoped<QdrantVectorDb_Http>();
+builder.Services.AddScoped<QdrantVectorDb_Sdk>();
 builder.Services.AddScoped<IVectorDB_Resolver, VectorDB_Resolver>();
-builder.Services.AddScoped<IVectorDB, QdrantVectorDb_Http>();
 //builder.Services.AddScoped<IVectorDB, QdrantVectorDb_InMemory>();
-builder.Services.AddScoped<IVectorDB, QdrantVectorDb_Sdk>();
 builder.Services.AddScoped<IVectorStore, VectorStore>();
 
 

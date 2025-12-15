@@ -14,7 +14,6 @@ namespace AIHousingAssistant.Models.Settings
         public string  ProcessingFolder { get; set; }
         public string VectorStoreFilename { get; set; }
         public string ChunksFileName { get; set; }
-        public VectorStoreProvider VectorStoreProvider { get; set; } = VectorStoreProvider.InMemory;
         public string CollectionNameBase { get; set; }
     }
 

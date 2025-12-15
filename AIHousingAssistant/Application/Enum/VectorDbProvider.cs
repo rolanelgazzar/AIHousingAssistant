@@ -2,10 +2,11 @@
 {
     public enum VectorDbProvider
     {
-        InMemory = 0,
-        QdrantSdk = 1,
-        QdrantSemanticKernel = 2,
-        QdrantHttp = 3
+        QdrantSdk = 0,
+        QdrantHttp = 1,
+        InMemory =2,
+
+        // QdrantSemanticKernel = 2,
 
     }
 

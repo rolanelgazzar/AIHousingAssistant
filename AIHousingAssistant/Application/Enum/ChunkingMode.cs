@@ -2,9 +2,10 @@
 {
     public enum ChunkingMode
     {
-        SemanticTextSplitter,
-        SemanticTextBlocksGrouper,
+        LangChainRecursiveTextSplitter,
         RecursiveTextSplitter,
-        LangChainRecursiveTextSplitter
+     //   SemanticTextSplitter,
+        SemanticTextBlocksGrouper
+        
     }
 }

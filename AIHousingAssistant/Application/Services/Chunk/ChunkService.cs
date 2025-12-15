@@ -8,7 +8,6 @@ using Microsoft.Extensions.Options;
 using SemanticTextSplitting;
 using System.Text.Json;
 using System.Linq;
-using Microsoft.Extensions.AI;
 using AIHousingAssistant.Application.Services.Embedding;
 
 namespace AIHousingAssistant.Application.Services.Chunk
@@ -17,7 +16,7 @@ namespace AIHousingAssistant.Application.Services.Chunk
     {
         private readonly ProviderSettings _providerSettings;
         private readonly string _uploadFolder;
-        private readonly IEmbeddingService _embeddingService;
+        private readonly IEmbeddingService _embeddingService; // Used for SemanticBlocksGrouper
 
         private static readonly JsonSerializerOptions SerializerOptions = new() { WriteIndented = true };
 
@@ -37,14 +36,13 @@ namespace AIHousingAssistant.Application.Services.Chunk
                 Directory.CreateDirectory(_uploadFolder);
 
             _embeddingService = embeddingService;
-
         }
 
         // -----------------------------------------------------------
         // Main entry: choose chunking mode
         public async Task<List<TextChunk>> CreateChunksAsync(
             string text,
-            ChunkingMode chunkingMode,
+            RagUiRequest ragUiRequest,
             string source)
         {
             if (string.IsNullOrWhiteSpace(text))
@@ -53,27 +51,26 @@ namespace AIHousingAssistant.Application.Services.Chunk
             // Safe source
             source ??= string.Empty;
 
-            List<TextChunk> chunks = chunkingMode switch
+            // Use switch expression to select the appropriate chunking strategy
+            List<TextChunk> chunks = ragUiRequest.ChunkingMode switch
             {
                 ChunkingMode.LangChainRecursiveTextSplitter =>
                     await LangChainRecursiveTextSplitter(text, source),
 
-                ChunkingMode.SemanticTextSplitter =>
-                    await SemanticTextSplitterChunks(text, source),
-
+                // Semantic Splitter (using local DI for EmbeddingService)
                 ChunkingMode.SemanticTextBlocksGrouper =>
-                    await SemanticBlocksGrouperChunks(text, source),
+                    await SemanticBlocksGrouperChunks(text, source, ragUiRequest.EmbeddingModel), 
 
                 ChunkingMode.RecursiveTextSplitter =>
-                     await RecursiveTextSplitterChunks(text, source),
+                    await RecursiveTextSplitterChunks(text, source),
 
-                // fallback
+                // fallback to the widely used LangChain Recursive Splitter
                 _ =>
                     await LangChainRecursiveTextSplitter(text, source)
             };
 
             // Save for transparency/debug
-            string chunkingName = System.Enum.GetName(typeof(ChunkingMode), chunkingMode);
+            string chunkingName = System.Enum.GetName(typeof(ChunkingMode), ragUiRequest.ChunkingMode);
             var fileName = $"{_providerSettings.ChunksFileName}-{chunkingName}.json";
             await FileHelper.WriteJsonAsync(_uploadFolder, fileName, chunks);
             await FileHelper.WriteJsonAsync(_uploadFolder, _providerSettings.ChunksFileName, chunks);
@@ -82,8 +79,8 @@ namespace AIHousingAssistant.Application.Services.Chunk
         }
 
         // -----------------------------------------------------------
-        // 1) LangChain.NET RecursiveCharacterTextSplitter
-        public Task<List<TextChunk>> LangChainRecursiveTextSplitter(string text, string source)
+        // 1) LangChain.NET RecursiveCharacterTextSplitter (Traditional, fast)
+        private Task<List<TextChunk>> LangChainRecursiveTextSplitter(string text, string source)
         {
             if (string.IsNullOrWhiteSpace(text))
                 return Task.FromResult(new List<TextChunk>());
@@ -109,81 +106,67 @@ namespace AIHousingAssistant.Application.Services.Chunk
         }
 
         // -----------------------------------------------------------
-        // 2) SemanticTextSplitter (Semantic Kernel + Ollama embeddings)
-        // Uses your uploaded: SemanticTextSplitting/SemanticTextSplitter.cs
-#pragma warning disable SKEXP0070
-
-        private async Task<List<TextChunk>> SemanticTextSplitterChunks(string text, string source)
+        // 2) SemanticTextBlocksGrouper (Semantic Grouping using local IEmbeddingService)
+        // This is the optimized function that adds the Vector to the TextChunk.
+        private async Task<List<TextChunk>> SemanticBlocksGrouperChunks(string text, string source,EmbeddingModel embeddingModel)
         {
-            // You can tune these
-            int chunkSize = 1000;
-            int chunkOverlap = 100;
-            float threshold = 0.75f;
-
-            // Paragraph is usually better for documents, Sentence for short/structured text
-            var groupingStrategy = GroupingStrategy.Paragraph;
-
-            // Required settings
-            var modelId = _providerSettings.Ollama.Model;
-            var endpoint = new Uri(_providerSettings.Ollama.Endpoint);
-
-            var rawChunks = await text.SemanticSplitAsync(
-                chunkSize: chunkSize,
-                chunkOverlap: chunkOverlap,
-                modelId: modelId,
-                endpoint: endpoint,
-                threshold: threshold,
-                groupingStrategy: groupingStrategy
-            );
-
-            return rawChunks
-                .Select((c, i) => new TextChunk
-                {
-                    Index = i,
-                    Content = (c ?? string.Empty).Trim(),
-                    Source = source
-                })
-                .Where(tc => !string.IsNullOrWhiteSpace(tc.Content))
-                .ToList();
-        }
-
-#pragma warning restore SKEXP0070
-
-        // -----------------------------------------------------------
-        // 3) SemanticTextBlocksGrouper (simple “semantic-ish” mode for testing)
-        // NOTE: the full power of this class is with embeddings + similarity grouping.
-        // Here we start simple: paragraphs/sentences -> TextChunk.
-        private async Task<List<TextChunk>> SemanticBlocksGrouperChunks(string text, string source)
-        {
+            // 1. Initial Split: Split text into elementary blocks (sentences in this case)
             var blocks = SemanticTextBlocksGrouper.SplitTextIntoSentences(text);
 
             if (blocks.Count <= 1)
-                return blocks.Select((b, i) => new TextChunk { Index = i, Content = b.Trim(), Source = source }).ToList();
+                return blocks.Select((b, i) => new TextChunk { Index = i, Content = b.Trim(), Source = source, Vector = null }).ToList();
 
-            // Generate embeddings using your EmbeddingService
+            // 2. Embedding Generation: Generate embeddings for similarity grouping
             var embeddings = new Dictionary<string, float[]>();
-            foreach (var b in blocks.Distinct())
-                embeddings[b] = await _embeddingService.EmbedAsync(b);
+            var blockList = blocks.Distinct().ToList();
+
+            foreach (var b in blockList)
+                embeddings[b] = await _embeddingService.EmbedAsync(b, embeddingModel); // <--- Embedding generated here
 
             float threshold = 0.70f;
+
+            // 3. Semantic Grouping: Group blocks that are semantically similar
+            // grouped is List<List<string>>
             var grouped = SemanticTextBlocksGrouper.GroupTextBlocksBySimilarity(embeddings, threshold);
-            var aggregated = SemanticTextBlocksGrouper.AggregateGroupedTextBlocks(grouped);
 
-            var finalBlocks = new List<string>();
-            foreach (var g in aggregated)
-                finalBlocks.AddRange(g.RecursiveSplit(1000, 100));
+            var finalChunksWithVectors = new List<TextChunk>();
+            int chunkIndex = 0;
 
-            return finalBlocks
-                .Select((c, i) => new TextChunk { Index = i, Content = (c ?? "").Trim(), Source = source })
+            // 4. Final Split and Packaging: Loop through groups, split them, and assign the vector
+            foreach (var group in grouped)
+            {
+                // The representative vector is the embedding of the first block in the group (semantic cohesion)
+                var representativeVector = embeddings[group.First()];
+
+                // Aggregate the group blocks into one large string
+                var aggregatedText = group.Aggregate((a, b) => a + " " + b);
+
+                // Recursively split the aggregated text to fit max chunk size (1000)
+                var splitBlocks = aggregatedText.RecursiveSplit(1000, 100);
+
+                foreach (var chunkContent in splitBlocks)
+                {
+                    if (string.IsNullOrWhiteSpace(chunkContent)) continue;
+
+                    finalChunksWithVectors.Add(new TextChunk
+                    {
+                        Index = chunkIndex++,
+                        Content = chunkContent.Trim(),
+                        Source = source,
+                        Vector = representativeVector
+                    });
+                }
+            }
+
+            return finalChunksWithVectors
                 .Where(x => !string.IsNullOrWhiteSpace(x.Content))
                 .ToList();
         }
-
-
+        // -----------------------------------------------------------
+        // 3) RecursiveTextSplitterChunks (Custom Recursive, based on paragraphs/separators)
         private Task<List<TextChunk>> RecursiveTextSplitterChunks(string text, string source)
         {
-            // Start with paragraphs. You can switch to sentences if you want.
-            // RecursiveSplit is an extension method on string in your SemanticTextSplitting project :contentReference[oaicite:1]{index=1}
+            // RecursiveSplit is an extension method available via 'SemanticTextSplitting'
             var blocks = text.RecursiveSplit(1000, 100);
 
             var chunks = blocks
@@ -200,5 +183,3 @@ namespace AIHousingAssistant.Application.Services.Chunk
         }
     }
 }
-
-
