@@ -1,26 +1,30 @@
-﻿using AIHousingAssistant.Models;
-using DocumentFormat.OpenXml.Drawing.Charts;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
+using AIHousingAssistant.Models;
+using AIHousingAssistant.Application.Enum;
 
-namespace AIHousingAssistant.Application.Services.VectorDb
+namespace AIHousingAssistant.Application.Services.Interfaces
 {
     public interface IVectorDB
     {
+        // ------------------------- COLLECTION MANAGEMENT -------------------------
         Task<bool> IsCollectionExistedAsync(string collectionName);
         Task<List<string>> ListAllCollectionsAsync();
-        Task<Dictionary<string, object>> GetCollectionInfoAsync(string collectionName);
         Task<bool> DeleteCollectionAsync(string collectionName);
-        Task EnsureCollectionAsync(string collectionName, int vectorSize);
+        Task<bool> CreateCollectionAsync(string collectionName, int vectorSize, QdrantDistance distance = QdrantDistance.Cosine);
+        Task EnsureCollectionAsync(string collectionName, int vectorSize, QdrantDistance distance = QdrantDistance.Cosine);
+
+        // ------------------------- DATA & VECTOR OPERATIONS -------------------------
         Task UpsertAsync(string collectionName, List<VectorChunk> vectors);
-        Task<VectorChunk?> SearchVectorAsync(string collectionName, float[] queryVector);
-        Task<List<VectorChunk>> GetAllAsync(string collectionName);
-        List<string> ExtractKeywords(string text);
-        public float CosineSimilarity(float[] a, float[] b);
-        Task<List<VectorChunk>>  SearchTopAsync(string collectionName, float[] queryVector,int top=5);
-        public  Task<List<VectorChunk>> SearchTopFilteredAsync(
+
+        /// <summary>
+        /// Core Search Function: Handles all types of search (Vector/Semantic/Hybrid)
+        /// </summary>
+        Task<List<VectorChunk>> SearchAsync(
             string collectionName,
             float[] queryVector,
-            int topK,
-            string payloadTextField,
-            List<string> keywords);
+            int top = 3,
+            object? filter = null,
+            bool withPayload = true);
     }
 }

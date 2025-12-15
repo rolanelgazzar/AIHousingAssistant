@@ -21,23 +21,21 @@ namespace AIHousingAssistant.Application.Services
         private readonly ProviderSettings _providerSettings;
         private readonly IChunkService _chunkService;
         private readonly OllamaApiClient _ollamaClient;
+        private readonly IVectorStore _vectorStore;
 
         // NEW: Use resolver instead of injecting 3 stores
-        private readonly IVectorStoreResolver _vectorStoreResolver;
 
         public RagService(
             IOptions<ProviderSettings> providerSettings,
             IChunkService chunkService,
-            IVectorStoreResolver vectorStoreResolver)
+            IVectorStore vectorStore)
         {
             if (providerSettings == null)
                 throw new ArgumentNullException(nameof(providerSettings));
 
             _providerSettings = providerSettings.Value;
-
             _chunkService = chunkService ?? throw new ArgumentNullException(nameof(chunkService));
-            _vectorStoreResolver = vectorStoreResolver ?? throw new ArgumentNullException(nameof(vectorStoreResolver));
-
+            _vectorStore = vectorStore ?? throw new ArgumentNullException(nameof(vectorStore));
             // Initialize Ollama client for answer generation (llama3)
             _ollamaClient = new OllamaApiClient(new Uri(_providerSettings.Ollama.Endpoint));
             _ollamaClient.SelectedModel = _providerSettings.Ollama.Model;
@@ -70,8 +68,8 @@ namespace AIHousingAssistant.Application.Services
                 throw new InvalidOperationException("No text chunks were generated from the document.");
 
             // 4) Store vectors in the selected vector store
-            var store = _vectorStoreResolver.Resolve(ragUiRequest.VectorStoreProvider);
-            await store.StoreTextChunksAsVectorsAsync(chunks, ragUiRequest.EmbeddingModel );
+            //var store = _vectorStoreResolver.Resolve(ragUiRequest.VectorStoreProvider);
+            await _vectorStore.StoreTextChunksAsVectorsAsync(chunks, ragUiRequest);
         }
 
 
@@ -82,13 +80,12 @@ namespace AIHousingAssistant.Application.Services
             if (string.IsNullOrWhiteSpace(ragRequest.Query))
                 return new RagAnswerResponse { Answer = "Query is empty." };
 
-            var store = _vectorStoreResolver.Resolve(ragRequest.VectorStoreProvider);
 
             List<VectorChunk> chunks = ragRequest.SearchMode switch
             {
-                SearchMode.Hybrid => await store.HybridSearchAsync(ragRequest.Query, top: 5),
-                SearchMode.Semantic => await store.SemanticSearchAsync(ragRequest.Query, top: 5),
-                _ => (await store.VectorSearchAsync(ragRequest.Query)) is { } c
+                SearchMode.Hybrid => await _vectorStore.HybridSearchAsync(ragRequest.Query, top: 5),
+                SearchMode.Semantic => await _vectorStore.SemanticSearchAsync(ragRequest.Query, top: 5),
+                _ => (await _vectorStore.VectorSearchAsync(ragRequest.Query)) is { } c
                         ? new List<VectorChunk> { c }
                         : new List<VectorChunk>()
             };

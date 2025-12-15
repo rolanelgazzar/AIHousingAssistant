@@ -15,7 +15,7 @@ namespace AIHousingAssistant.Models.Settings
         public string VectorStoreFilename { get; set; }
         public string ChunksFileName { get; set; }
         public VectorStoreProvider VectorStoreProvider { get; set; } = VectorStoreProvider.InMemory;
-        public string CollectionName { get; set; }
+        public string CollectionNameBase { get; set; }
     }
 
     public class AzureSettings

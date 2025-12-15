@@ -8,430 +8,193 @@ using AIHousingAssistant.Models.Settings;
 using Microsoft.Extensions.Options;
 using Qdrant.Client;
 using Qdrant.Client.Grpc;
+using AIHousingAssistant.Application.Enum;
+using AIHousingAssistant.Helper;
 
 namespace AIHousingAssistant.Application.Services.VectorDb
 {
+    /// <summary>
+    /// QdrantVectorDb_Sdk implementation using NuGet SDK.
+    /// Implements IVectorDB interface only.
+    /// </summary>
     public class QdrantVectorDb_Sdk : IVectorDB
     {
         private readonly ProviderSettings _providerSettings;
         private readonly QdrantClient _qdrantClient;
 
+        /// <summary>
+        /// Constructor: initializes Qdrant client with endpoint from settings.
+        /// </summary>
         public QdrantVectorDb_Sdk(IOptions<ProviderSettings> providerSettings)
         {
             _providerSettings = providerSettings.Value;
             _qdrantClient = new QdrantClient(_providerSettings.QDrant.Endpoint);
         }
 
+        // ------------------------- COMMON VALIDATION -------------------------
+        private void ValidateCollectionName(string name)
+        {
+            if (string.IsNullOrWhiteSpace(name))
+                throw new ArgumentException("Collection name is required.", nameof(name));
+        }
+
+        private void ValidateQueryVector(float[] vector)
+        {
+            if (vector == null || vector.Length == 0)
+                throw new ArgumentException("Query vector cannot be null or empty.");
+        }
+
+        // ------------------------- COLLECTION MANAGEMENT -------------------------
+
+        /// <summary>
+        /// Check if collection exists in Qdrant.
+        /// </summary>
         public async Task<bool> IsCollectionExistedAsync(string collectionName)
         {
+            ValidateCollectionName(collectionName);
+
             var collections = await _qdrantClient.ListCollectionsAsync();
+            if (collections == null) return false;
 
-            if (collections == null)
-                return false;
-
-            // SDK returns collection names as strings in your version
-            return collections.Any(c =>
-                string.Equals(c, collectionName, StringComparison.OrdinalIgnoreCase));
+            return collections.Any(c => string.Equals(c, collectionName, StringComparison.OrdinalIgnoreCase));
         }
 
-
+        /// <summary>
+        /// List all collection names from Qdrant.
+        /// </summary>
         public async Task<List<string>> ListAllCollectionsAsync()
         {
-            // TODO: return list of collection names from Qdrant
-            // Example:
-            // var collections = await _qdrantClient.ListCollectionsAsync();
-            // return collections?.Select(c => c.Name).ToList() ?? new List<string>();
-            return new List<string>();
+            var collections = await _qdrantClient.ListCollectionsAsync();
+            return collections?.ToList() ?? new List<string>();
         }
 
-        public async Task<Dictionary<string, object>> GetCollectionInfoAsync(string collectionName)
-        {
-            // TODO: return collection metadata (vectors size, distance, points count, etc.)
-            return new Dictionary<string, object>();
-        }
-
+        /// <summary>
+        /// Delete a collection in Qdrant.
+        /// </summary>
         public async Task<bool> DeleteCollectionAsync(string collectionName)
         {
-            await _qdrantClient.DeleteCollectionAsync(collectionName);
-            return false;
+            ValidateCollectionName(collectionName);
+
+            try
+            {
+                await _qdrantClient.DeleteCollectionAsync(collectionName);
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
         }
 
-        public async Task EnsureCollectionAsync(string collectionName, int vectorSize)
+        /// <summary>
+        /// Create a new collection with specified vector size and distance metric.
+        /// </summary>
+        public async Task<bool> CreateCollectionAsync(string collectionName, int vectorSize, QdrantDistance distance = QdrantDistance.Cosine)
         {
-            if (string.IsNullOrWhiteSpace(collectionName))
-                throw new ArgumentException("Collection name is required.", nameof(collectionName));
-
+            ValidateCollectionName(collectionName);
             if (vectorSize <= 0)
-                throw new ArgumentException("Vector size must be > 0.", nameof(vectorSize));
-
-            // IMPORTANT:
-            // Deleting an existing collection on every ingestion is dangerous in production.
-            // It wipes all stored vectors. Consider "create if not exists" or "recreate by choice".
-            var exists = await IsCollectionExistedAsync(collectionName);
-
-            if (exists)
-            {
-                // Current behavior: delete & recreate (kept as-is).
-                // Consider a setting flag e.g. providerSettings.RecreateCollectionOnIngest
-                await _qdrantClient.DeleteCollectionAsync(collectionName);
-            }
+                throw new ArgumentException("Vector size must be greater than zero.", nameof(vectorSize));
 
             await _qdrantClient.CreateCollectionAsync(
-                collectionName: collectionName,
-                vectorsConfig: new VectorParams
+                collectionName,
+                new VectorParams
                 {
                     Size = (uint)vectorSize,
-                    Distance = Distance.Cosine
-                }
-            );
+                    Distance = distance == QdrantDistance.Cosine ? Distance.Cosine : Distance.Euclid
+                });
+
+            return true;
         }
 
+        /// <summary>
+        /// Ensure collection exists: delete and recreate if exists.
+        /// </summary>
+        public async Task EnsureCollectionAsync(string collectionName, int vectorSize, QdrantDistance distance = QdrantDistance.Cosine)
+        {
+            var exists = await IsCollectionExistedAsync(collectionName);
+            if (exists)
+            {
+                await DeleteCollectionAsync(collectionName);
+            }
+
+            await CreateCollectionAsync(collectionName, vectorSize, distance);
+        }
+
+        // ------------------------- DATA & VECTOR OPERATIONS -------------------------
+
+        /// <summary>
+        /// Upsert vector chunks into Qdrant collection.
+        /// </summary>
         public async Task UpsertAsync(string collectionName, List<VectorChunk> vectors)
         {
-            if (string.IsNullOrWhiteSpace(collectionName))
-                throw new ArgumentException("Collection name is required.", nameof(collectionName));
-
-            if (vectors == null || vectors.Count == 0)
-                return;
+            ValidateCollectionName(collectionName);
+            if (vectors == null || vectors.Count == 0) return;
 
             var points = vectors
                 .Where(v => v.Embedding != null && v.Embedding.Length > 0)
                 .Select(v =>
                 {
-                    var id = (ulong)v.Index;
-
                     var point = new PointStruct
                     {
-                        Id = new PointId { Num = id },
+                        Id = new PointId { Num = (ulong)v.Index },
                         Vectors = v.Embedding
                     };
 
-                    // Payload is read-only in your SDK version → add values instead of assigning.
                     point.Payload.Add("content", new Value { StringValue = v.Content ?? string.Empty });
                     point.Payload.Add("source", new Value { StringValue = v.Source ?? string.Empty });
                     point.Payload.Add("index", new Value { IntegerValue = v.Index });
 
                     return point;
-                })
-                .ToList();
+                }).ToList();
 
-            if (!points.Any())
-                return;
+            if (!points.Any()) return;
 
             await _qdrantClient.UpsertAsync(collectionName, points);
         }
 
-        public async Task<VectorChunk?> SearchVectorAsync(string collectionName, float[] queryVector)
-        {
-            if (string.IsNullOrWhiteSpace(collectionName))
-                throw new ArgumentException("Collection name is required.", nameof(collectionName));
-
-            if (queryVector == null || queryVector.Length == 0)
-                return null;
-
-            var results = await _qdrantClient.SearchAsync(
-                collectionName,
-                queryVector,
-                null,                                   // Filter
-                null,                                   // SearchParams
-                1,                                      // limit
-                0UL,                                    // offset
-                new WithPayloadSelector { Enable = true },
-                new WithVectorsSelector { Enable = true }
-            );
-
-            var best = results?.FirstOrDefault();
-            if (best == null)
-                return null;
-
-            string content = string.Empty;
-            string source = string.Empty;
-            int index = 0;
-
-            if (best.Payload != null)
-            {
-                if (best.Payload.TryGetValue("content", out var contentVal))
-                    content = contentVal?.StringValue ?? string.Empty;
-
-                if (best.Payload.TryGetValue("source", out var sourceVal))
-                    source = sourceVal?.StringValue ?? string.Empty;
-
-                if (best.Payload.TryGetValue("index", out var indexVal))
-                    index = (int)(indexVal?.IntegerValue ?? 0);
-            }
-
-            return new VectorChunk
-            {
-                Index = index,
-                Content = content,
-                Source = source,
-                Embedding = ExtractEmbeddingFromVectorsOutput(best.Vectors)
-            };
-        }
-
-        // ------------------------------------------------------------
-        // NEW: Filtered Top-K vector search (Hybrid: vector search + keyword filter)
-        // This avoids calling GetAllAsync() and scales much better.
-        public async Task<List<VectorChunk>> SearchTopFilteredAsync(
+        /// <summary>
+        /// Search vectors in collection with optional top-k limit and filter.
+        /// </summary>
+        /// <summary>
+        /// Search vectors in collection with optional top-k limit and filter.
+        /// Filter must be of type Qdrant.Client.Grpc.Filter?; pass null if no filter.
+        /// </summary>
+        public async Task<List<VectorChunk>> SearchAsync(
             string collectionName,
             float[] queryVector,
-            int topK,
-            string payloadTextField,
-            List<string> keywords)
+            int top = 3,
+            object? filter = null,  // Interface defines object?, SDK needs Filter?
+            bool withPayload = true)
         {
-            if (string.IsNullOrWhiteSpace(collectionName))
-                throw new ArgumentException("Collection name is required.", nameof(collectionName));
+            ValidateCollectionName(collectionName);
+            ValidateQueryVector(queryVector);
 
-            if (queryVector == null || queryVector.Length == 0)
-                return new List<VectorChunk>();
-
-            if (topK <= 0)
-                topK = 5;
-
-            if (string.IsNullOrWhiteSpace(payloadTextField))
-                payloadTextField = "content";
-
-            // If no keywords, fallback to pure semantic search.
-            if (keywords == null || keywords.Count == 0)
-                return await SearchTopAsync(collectionName, queryVector, topK);
-
-            // Build OR conditions: payloadTextField matches any keyword
-            // NOTE: Match.Text requires Qdrant text match support on that payload field.
-            // If your Qdrant version/config does not support it, consider storing tokens/keywords as array payload
-            // and use MatchAny instead.
-            var filter = new Filter();
-
-            foreach (var k in keywords.Distinct())
-            {
-                if (string.IsNullOrWhiteSpace(k)) continue;
-
-                filter.Should.Add(new Condition
-                {
-                    Field = new FieldCondition
-                    {
-                        Key = payloadTextField,
-                        Match = new Match
-                        {
-                            Text = k
-                        }
-                    }
-                });
-            }
-
-            // If filter ended up empty, fallback.
-            if (filter.Should == null || filter.Should.Count == 0)
-                return await SearchTopAsync(collectionName, queryVector, topK);
+            // Convert object? to Filter? (if null, pass null)
+            Filter? sdkFilter = filter as Filter;
 
             var results = await _qdrantClient.SearchAsync(
                 collectionName,
                 queryVector,
-                filter,                                 // ✅ Filter applied here
+                sdkFilter,                              // ✅ must be Filter? type
                 null,                                   // SearchParams
-                (ulong)topK,                             // limit
-                0UL,                                    // offset
-                new WithPayloadSelector { Enable = true },
+                (ulong)top,
+                0UL,
+                new WithPayloadSelector { Enable = withPayload },
                 new WithVectorsSelector { Enable = true }
             );
 
             if (results == null || !results.Any())
                 return new List<VectorChunk>();
 
-            var list = new List<VectorChunk>();
-
-            foreach (var r in results)
+            return results.Select(r => new VectorChunk
             {
-                string content = string.Empty;
-                string source = string.Empty;
-                int index = 0;
+                Index = (int)(r.Payload?["index"]?.IntegerValue ?? 0),
+                Content = r.Payload?["content"]?.StringValue ?? string.Empty,
+                Source = r.Payload?["source"]?.StringValue ?? string.Empty,
+                Embedding = SearchHelper.ExtractEmbeddingFromVectorsOutput(r.Vectors)
 
-                if (r.Payload != null)
-                {
-                    if (r.Payload.TryGetValue("content", out var contentVal))
-                        content = contentVal?.StringValue ?? string.Empty;
-
-                    if (r.Payload.TryGetValue("source", out var sourceVal))
-                        source = sourceVal?.StringValue ?? string.Empty;
-
-                    if (r.Payload.TryGetValue("index", out var indexVal))
-                        index = (int)(indexVal?.IntegerValue ?? 0);
-                }
-
-                list.Add(new VectorChunk
-                {
-                    Index = index,
-                    Content = content,
-                    Source = source,
-                    Embedding = ExtractEmbeddingFromVectorsOutput(r.Vectors)
-                });
-            }
-
-            return list;
+            }).ToList();
         }
 
-        private static float[] ExtractEmbeddingFromVectorsOutput(object? vectorsOutput)
-        {
-            if (vectorsOutput == null)
-                return Array.Empty<float>();
-
-            // 1) Try: vectorsOutput.Vector.Data (single vector)
-            var vectorProp = vectorsOutput.GetType().GetProperty("Vector");
-            var vectorObj = vectorProp?.GetValue(vectorsOutput);
-            var data = ExtractFloatData(vectorObj);
-            if (data.Length > 0)
-                return data;
-
-            // 2) Try: vectorsOutput.Vectors (named vectors container)
-            var vectorsProp = vectorsOutput.GetType().GetProperty("Vectors")
-                           ?? vectorsOutput.GetType().GetProperty("Vectors_");
-
-            var vectorsObj = vectorsProp?.GetValue(vectorsOutput);
-            if (vectorsObj == null)
-                return Array.Empty<float>();
-
-            // a) IEnumerable<KeyValuePair<,>>
-            if (vectorsObj is System.Collections.IEnumerable enumerable)
-            {
-                foreach (var item in enumerable)
-                {
-                    var valueProp = item?.GetType().GetProperty("Value");
-                    var valueObj = valueProp?.GetValue(item);
-                    var data2 = ExtractFloatData(valueObj);
-                    if (data2.Length > 0)
-                        return data2;
-                }
-            }
-
-            // b) inner Vectors property
-            var innerVectorsProp = vectorsObj.GetType().GetProperty("Vectors")
-                                ?? vectorsObj.GetType().GetProperty("Vectors_");
-
-            var innerVectorsObj = innerVectorsProp?.GetValue(vectorsObj);
-            if (innerVectorsObj is System.Collections.IEnumerable enumerable2)
-            {
-                foreach (var item in enumerable2)
-                {
-                    var valueProp = item?.GetType().GetProperty("Value");
-                    var valueObj = valueProp?.GetValue(item);
-                    var data2 = ExtractFloatData(valueObj);
-                    if (data2.Length > 0)
-                        return data2;
-                }
-            }
-
-            return Array.Empty<float>();
-        }
-
-        private static float[] ExtractFloatData(object? vectorObj)
-        {
-            if (vectorObj == null)
-                return Array.Empty<float>();
-
-            var dataProp = vectorObj.GetType().GetProperty("Data");
-            var dataObj = dataProp?.GetValue(vectorObj);
-
-            if (dataObj is IEnumerable<float> floats)
-                return floats.ToArray();
-
-            return Array.Empty<float>();
-        }
-
-        public Task<List<VectorChunk>> GetAllAsync(string collectionName)
-        {
-            // IMPORTANT:
-            // Keep this method for Debug/UI tools only.
-            // Hybrid search should NOT depend on fetching all points.
-            throw new NotImplementedException();
-        }
-
-        public List<string> ExtractKeywords(string text)
-        {
-            return text
-                .Split(' ', StringSplitOptions.RemoveEmptyEntries)
-                .Where(w => w.Length > 3)
-                .Select(w => w.ToLowerInvariant())
-                .Distinct()
-                .ToList();
-        }
-
-        public float CosineSimilarity(float[] a, float[] b)
-        {
-            if (a == null || b == null || a.Length == 0 || b.Length == 0)
-                return 0f;
-
-            if (a.Length != b.Length)
-                return 0f;
-
-            float dot = 0, normA = 0, normB = 0;
-
-            for (int i = 0; i < a.Length; i++)
-            {
-                dot += a[i] * b[i];
-                normA += a[i] * a[i];
-                normB += b[i] * b[i];
-            }
-
-            const float eps = 1e-6f;
-            if (normA < eps || normB < eps)
-                return 0f;
-
-            return dot / (float)(Math.Sqrt(normA) * Math.Sqrt(normB));
-        }
-
-        public async Task<List<VectorChunk>> SearchTopAsync(
-            string collectionName,
-            float[] queryVector,
-            int top = 5)
-        {
-            if (string.IsNullOrWhiteSpace(collectionName))
-                throw new ArgumentException("Collection name is required.", nameof(collectionName));
-
-            if (queryVector == null || queryVector.Length == 0)
-                return new List<VectorChunk>();
-
-            var results = await _qdrantClient.SearchAsync(
-                collectionName,
-                queryVector,
-                null,                                   // Filter
-                null,                                   // SearchParams
-                (ulong)top,                              // limit
-                0UL,                                    // offset
-                new WithPayloadSelector { Enable = true },
-                new WithVectorsSelector { Enable = true }
-            );
-
-            if (results == null || !results.Any())
-                return new List<VectorChunk>();
-
-            var list = new List<VectorChunk>();
-
-            foreach (var r in results)
-            {
-                string content = string.Empty;
-                string source = string.Empty;
-                int index = 0;
-
-                if (r.Payload != null)
-                {
-                    if (r.Payload.TryGetValue("content", out var contentVal))
-                        content = contentVal?.StringValue ?? string.Empty;
-
-                    if (r.Payload.TryGetValue("source", out var sourceVal))
-                        source = sourceVal?.StringValue ?? string.Empty;
-
-                    if (r.Payload.TryGetValue("index", out var indexVal))
-                        index = (int)(indexVal?.IntegerValue ?? 0);
-                }
-
-                list.Add(new VectorChunk
-                {
-                    Index = index,
-                    Content = content,
-                    Source = source,
-                    Embedding = ExtractEmbeddingFromVectorsOutput(r.Vectors)
-                });
-            }
-
-            return list;
-        }
     }
 }

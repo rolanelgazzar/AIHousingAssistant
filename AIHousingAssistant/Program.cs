@@ -5,6 +5,7 @@ using AIHousingAssistant.Application.Services.Embedding;
 using AIHousingAssistant.Application.Services.Interfaces;
 using AIHousingAssistant.Application.Services.VectorDb;
 using AIHousingAssistant.Application.Services.VectorStores;
+using AIHousingAssistant.Helper;
 using AIHousingAssistant.Infrastructure.Data;
 using AIHousingAssistant.Models.Settings;
 using Microsoft.EntityFrameworkCore;
@@ -30,19 +31,19 @@ builder.Services.AddScoped<IRagService, RagService>();
 builder.Services.AddScoped<IChunkService, ChunkService>();
 builder.Services.AddScoped<IEmbeddingService, EmbeddingService>();
 
-
+builder.Services.AddHttpClient<HttpClientHelper>();
 
 // concrete types
 //builder.Services.AddScoped<IInMemoryVectorStore,InMemoryVectorStore>();
 //builder.Services.AddScoped<IQDrantVectorStore,QDrantVectorStore_Sdk>();
 //builder.Services.AddScoped<IQDrantVectorStoreEF, QDrantVectorStore_SK>();
 
-builder.Services.AddScoped<InMemoryVectorStore>();
-builder.Services.AddScoped<QDrantVectorStore_Sdk>();
-builder.Services.AddScoped<QDrantVectorStore_SK>();
-builder.Services.AddScoped<IVectorStoreResolver, VectorStoreResolver>();
-builder.Services.AddScoped<IVectorDB, QdrantVectorDb_Sdk>();
 
+builder.Services.AddScoped<IVectorDB_Resolver, VectorDB_Resolver>();
+builder.Services.AddScoped<IVectorDB, QdrantVectorDb_Http>();
+//builder.Services.AddScoped<IVectorDB, QdrantVectorDb_InMemory>();
+builder.Services.AddScoped<IVectorDB, QdrantVectorDb_Sdk>();
+builder.Services.AddScoped<IVectorStore, VectorStore>();
 
 
 //builder.Services.AddQdrantVectorStore("localhost"); // Register Qdrant Vector Store

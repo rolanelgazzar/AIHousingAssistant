@@ -9,7 +9,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@ViewData["Title"]</title>
+
     <style type="text/css">
+
+        /* Animations */
         @@keyframes pulse {
             0%, 100% {
                 opacity: 1;
@@ -38,13 +41,34 @@
             }
         }
 
+        /* Variables (Colors) */
         :root {
-            --body-bg: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            --primary-color: #667eea;
-            --success-color: #48bb78;
-            --danger-color: #f56565;
+            /* الألوان الأساسية: الأزرق الملكي والهادئ */
+            --primary-color-dark: #00008B;
+            --primary-color: #4169e1;
+            --secondary-color: #191970;
+            --header-bg: #4169e1; /* شريط العنوان */
+
+            --body-bg: linear-gradient(135deg, #f5f5dc 0%, #fff8e1 100%);
+            /* ألوان القائمة الجانبية */
+            --sidebar-bg-new: #ffffff;
+            --sidebar-text-color: #212529;
+            --sidebar-element-bg: #f8f8e8;
+            --sidebar-element-hover: #ecece1;
+            --success-color: #28a745;
+            --danger-color: #dc3545;
+            --info-color: #17a2b8;
+            /* ألوان الأزرار الإضافية */
+            --button-text-dark: #333333;
+            --button-bg-light: #ffffff;
+            --button-border-color: rgba(65, 105, 225, 0.6);
+            --msger-chat-bg: #fffbf0;
+            /* === ألوان الفقاعات (المستخدم: أبيض، البوت: أبيض كحلي) === */
+            --user-msg-bg: #FFFFFF;
+            --bot-msg-bg: #F0F8FF;
         }
 
+        /* Base Setup */
         * {
             margin: 0;
             padding: 0;
@@ -56,75 +80,84 @@
             background: var(--body-bg);
             height: 100vh;
             overflow: hidden;
+            /* التغيير الرئيسي لاتجاه الشاشة */
+            direction: ltr;
         }
 
         .chat-container {
             display: flex;
             height: 100vh;
             width: 100%;
+            /* التغيير الرئيسي لاتجاه حاوية الشات */
+            direction: ltr;
         }
 
-        /* ========== SIDEBAR (LEFT) ========== */
+
+        /* ========== SIDEBAR (LEFT) - ORDER 1 in LTR ========== */
         .chat-sidebar {
             width: 320px;
-            background: linear-gradient(180deg, #2d3748 0%, #1a202c 100%);
+            background: var(--sidebar-bg-new);
             display: flex;
             flex-direction: column;
             padding: 20px;
             overflow-y: auto;
-            box-shadow: 2px 0 15px rgba(0,0,0,0.3);
-            order: 2;
+            /* ظل على اليمين */
+            box-shadow: 2px 0 15px rgba(0,0,0,0.1);
+            /* وضعه على اليسار في نظام LTR */
+            order: 1;
+            /* تعديل الحدود */
+            border-left: none;
+            border-right: 1px solid #e0e0e0;
+            direction: ltr; /* اتجاه المحتوى */
         }
 
         .sidebar-title {
             font-size: 18px;
             font-weight: 700;
-            color: #fff;
+            color: var(--primary-color-dark);
             margin-bottom: 20px;
             padding-bottom: 12px;
             border-bottom: 3px solid var(--primary-color);
-            text-align: center;
+            /* محاذاة النص لليسار */
+            text-align: left;
         }
 
         .config-section {
-            background: rgba(255,255,255,0.1);
+            background: var(--sidebar-element-bg);
             border-radius: 12px;
             padding: 15px;
             margin-bottom: 15px;
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255,255,255,0.1);
+            border: 1px solid #e0e0e0;
+            direction: ltr;
         }
 
             .config-section h4 {
                 font-size: 14px;
-                color: #fff;
+                color: var(--sidebar-text-color);
                 margin-bottom: 10px;
                 display: flex;
                 align-items: center;
                 gap: 8px;
+                /* محاذاة النص لليسار */
+                text-align: left;
             }
 
             .config-section select {
                 width: 100%;
                 padding: 10px;
-                border: 1px solid rgba(255,255,255,0.2);
+                border: 1px solid #cccccc;
                 border-radius: 8px;
                 font-size: 13px;
                 margin-bottom: 10px;
-                background: rgba(255,255,255,0.05);
-                color: #fff;
+                background: #ffffff;
+                color: var(--sidebar-text-color);
                 transition: all 0.3s;
             }
 
                 .config-section select:focus {
                     outline: none;
                     border-color: var(--primary-color);
-                    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
-                }
-
-                .config-section select option {
-                    background: #2d3748;
-                    color: #fff;
+                    box-shadow: 0 0 0 3px rgba(65, 105, 225, 0.4);
                 }
 
         .badge {
@@ -137,44 +170,52 @@
         }
 
         .badge-info {
-            background: #4299e1;
+            background: var(--info-color);
             color: #fff;
         }
 
         .badge-success {
-            background: #48bb78;
+            background: var(--success-color);
             color: #fff;
         }
 
         .info-box {
-            background: rgba(66, 153, 225, 0.2);
-            border-left: 4px solid #4299e1;
+            background: rgba(65, 105, 225, 0.05);
+            /* تم إزالة border-left وإضافة border-right */
+            border-left: none;
+            border-right: 4px solid var(--primary-color);
             padding: 12px;
             border-radius: 6px;
             font-size: 12px;
-            color: #fff;
+            color: var(--sidebar-text-color);
             margin-top: 10px;
+            /* محاذاة النص لليسار */
+            text-align: left;
         }
 
         .summary-section {
-            background: rgba(255,255,255,0.1);
+            background: var(--sidebar-element-bg);
             border-radius: 12px;
             padding: 15px;
             margin-top: 15px;
+            border: 1px solid #e0e0e0;
+            direction: ltr;
         }
 
             .summary-section h4 {
-                color: #fff;
+                color: var(--sidebar-text-color);
                 margin-bottom: 10px;
                 font-size: 14px;
+                /* محاذاة النص لليسار */
+                text-align: left;
             }
 
         .load-summary-btn {
             width: 100%;
-            padding: 10px;
-            background: var(--body-bg);
+            background: var(--primary-color-dark);
             color: white;
             border: none;
+            padding: 12px;
             border-radius: 8px;
             font-weight: 600;
             cursor: pointer;
@@ -183,88 +224,54 @@
 
             .load-summary-btn:hover {
                 transform: translateY(-2px);
-                box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+                box-shadow: 0 4px 12px rgba(0, 0, 128, 0.4);
+                background: var(--primary-color);
             }
 
         #summaryResult {
             margin-top: 10px;
             padding: 10px;
-            background: rgba(255,255,255,0.05);
+            background: #fff8e1;
             border-radius: 6px;
             font-size: 12px;
             max-height: 200px;
             overflow-y: auto;
-            color: #e2e8f0;
+            color: var(--sidebar-text-color);
+            /* محاذاة النص لليسار */
+            text-align: left;
         }
 
-        .chat-sidebar::-webkit-scrollbar {
-            width: 6px;
-        }
 
-        .chat-sidebar::-webkit-scrollbar-track {
-            background: rgba(255,255,255,0.05);
-        }
-
-        .chat-sidebar::-webkit-scrollbar-thumb {
-            background: rgba(255,255,255,0.2);
-            border-radius: 3px;
-        }
-
-        /* ========== MAIN CHAT (RIGHT) ========== */
+        /* ========== MAIN CHAT (RIGHT) - ORDER 2 in LTR ========== */
         .msger {
             display: flex;
             flex-direction: column;
             flex: 1;
             background: white;
-            order: 1;
+            /* وضعه على اليمين في نظام LTR */
+            order: 2;
         }
 
         .msger-header {
-            background: var(--body-bg);
+            background: var(--header-bg);
             color: white;
             padding: 20px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        }
-
-        .msger-header-title {
-            font-size: 20px;
-            font-weight: 700;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .status-indicator {
-            width: 10px;
-            height: 10px;
-            background: #48bb78;
-            border-radius: 50%;
-            animation: pulse 2s infinite;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            direction: ltr;
         }
 
         .msger-chat {
             flex: 1;
             overflow-y: auto;
             padding: 20px;
-            background: #f7fafc;
+            background: var(--msger-chat-bg);
+            direction: ltr;
         }
 
-            .msger-chat::-webkit-scrollbar {
-                width: 8px;
-            }
-
-            .msger-chat::-webkit-scrollbar-track {
-                background: #f1f1f1;
-            }
-
-            .msger-chat::-webkit-scrollbar-thumb {
-                background: #cbd5e0;
-                border-radius: 4px;
-            }
-
+        /* Chat Messages Styling */
         .msg {
             display: flex;
             align-items: flex-end;
@@ -280,7 +287,7 @@
             background-position: center;
             margin: 0 10px;
             box-shadow: 0 2px 8px rgba(0,0,0,0.15);
-            border: 3px solid #fff;
+            border: 3px solid var(--primary-color-dark);
         }
 
         .msg-bubble {
@@ -290,21 +297,61 @@
             box-shadow: 0 2px 10px rgba(0,0,0,0.08);
         }
 
-        .left-msg .msg-bubble {
-            background: white;
-            border-bottom-left-radius: 4px;
-            border: 1px solid #e2e8f0;
+        /* === رسالة البوت (يجب أن تظهر على اليسار) === */
+        .left-msg {
+            justify-content: flex-start; /* يدفع الرسالة لليسار */
+            direction: ltr;
         }
 
+            .left-msg .msg-bubble {
+                background: var(--bot-msg-bg);
+                color: var(--secondary-color);
+                /* قلب نصف القطر للذيل ليصبح على اليسار */
+                border-bottom-left-radius: 4px;
+                border-bottom-right-radius: 18px;
+                border: 1px solid #e2e8f0;
+            }
+
+            /* الصورة على يسار الفقاعة */
+            .left-msg .msg-img {
+                order: 0;
+                margin-right: 10px;
+                margin-left: 0;
+            }
+            /* تعديل نصف قطر الفقاعة للذيل ليصبح على اليسار */
+            .left-msg .msg-bubble {
+                border-bottom-left-radius: 4px;
+                border-bottom-right-radius: 18px;
+            }
+
+
+        /* === رسالة المستخدم (يجب أن تظهر على اليمين) === */
         .right-msg {
-            flex-direction: row-reverse;
+            justify-content: flex-end; /* يدفع الرسالة لليمين */
+            direction: ltr;
         }
 
             .right-msg .msg-bubble {
-                background: var(--body-bg);
-                color: white;
+                background: var(--user-msg-bg);
+                color: var(--sidebar-text-color);
+                /* قلب نصف القطر للذيل ليصبح على اليمين */
                 border-bottom-right-radius: 4px;
+                border-bottom-left-radius: 18px;
+                border: 1px solid #e0e0e0;
             }
+
+            /* الصورة على يمين الفقاعة */
+            .right-msg .msg-img {
+                order: 1;
+                margin-left: 10px;
+                margin-right: 0;
+            }
+            /* تعديل نصف قطر الفقاعة للذيل ليصبح على اليمين */
+            .right-msg .msg-bubble {
+                border-bottom-right-radius: 4px;
+                border-bottom-left-radius: 18px;
+            }
+
 
         .msg-info {
             display: flex;
@@ -312,28 +359,30 @@
             margin-bottom: 8px;
             font-size: 12px;
             opacity: 0.85;
-        }
-
-        .msg-info-name {
-            font-weight: 600;
+            direction: ltr;
         }
 
         .msg-text {
             line-height: 1.6;
             word-wrap: break-word;
+            direction: ltr;
+            text-align: left;
         }
 
-        /* ========== INPUT AREA ========== */
+
+        /* ========== INPUT AREA (الفوتر) ========== */
         .msger-inputarea {
             padding: 20px;
-            background: white;
+            background: #ffffff;
             border-top: 1px solid #e2e8f0;
+            direction: ltr;
         }
 
         .input-row {
             display: flex;
             gap: 10px;
             margin-bottom: 15px;
+            align-items: center;
         }
 
         .msger-input {
@@ -343,31 +392,55 @@
             border-radius: 25px;
             font-size: 15px;
             transition: all 0.3s;
+            /* محاذاة النص لليسار */
+            text-align: left;
+            direction: ltr;
+            min-height: 50px;
         }
 
             .msger-input:focus {
                 outline: none;
                 border-color: var(--primary-color);
-                box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+                box-shadow: 0 0 0 3px rgba(65, 105, 225, 0.15);
             }
 
-        .send-btn {
-            padding: 14px 35px;
-            background: var(--body-bg);
-            color: white;
-            border: none;
-            border-radius: 25px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s;
-            font-size: 15px;
+        /* تنسيق الأيقونات داخل الأزرار */
+        .square-btn i {
+            font-size: 20px;
+            color: inherit;
         }
 
-            .send-btn:hover {
+        /* زر الإرسال الرئيسي */
+        #sendButton {
+            width: auto;
+            height: auto;
+            padding: 10px 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 8px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            font-size: 15px;
+            background: var(--primary-color);
+            color: white;
+            border: none;
+        }
+
+            #sendButton:hover {
                 transform: translateY(-2px);
-                box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+                box-shadow: 0 8px 18px rgba(0, 0, 128, 0.3);
+                background: var(--primary-color-dark);
             }
 
+            /* تم إزالة أيقونة :after للسماح بظهور النص */
+            #sendButton:after {
+                content: none;
+            }
+
+        /* الصف الذي يحتوي على الأزرار الإضافية */
         .buttons-row {
             display: flex;
             gap: 10px;
@@ -375,69 +448,90 @@
             align-items: center;
         }
 
+
+        /* أزرار الإجراءات الإضافية */
         .msger-send-btn {
-            padding: 10px 18px;
-            border: none;
-            background: #667eea;
-            color: white;
-            border-radius: 20px;
-            cursor: pointer;
-            font-size: 14px;
-            font-weight: 600;
-            transition: all 0.3s;
+            width: auto;
+            height: auto;
+            padding: 10px 15px;
             display: flex;
+            justify-content: center;
             align-items: center;
-            gap: 6px;
-            white-space: nowrap;
+            border-radius: 8px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            font-size: 13px;
+            background: var(--button-bg-light);
+            color: var(--button-text-dark);
+            border: 2px solid var(--button-border-color);
         }
 
             .msger-send-btn:hover {
                 transform: translateY(-2px);
-                box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+                box-shadow: 0 8px 18px rgba(0, 0, 128, 0.3);
+                border-color: var(--primary-color);
             }
 
-        #sendButton {
-            background: #4a90e2;
-        }
-
-            #sendButton:hover {
-                background: #357abd;
+            .msger-send-btn i {
+                font-size: 20px;
+                color: var(--button-text-dark);
+                /* Added margin for separation if text is present */
+                margin-right: 8px;
+                margin-left: 0;
             }
 
+
+        /* تحديث ألوان الأزرار الإضافية */
         #sendPlannerButton {
-            background: #7f8c8d;
+            background: #ced4da;
+            color: var(--button-text-dark);
+            border: 2px solid #adb5bd;
         }
 
             #sendPlannerButton:hover {
-                background: #6c7a7b;
+                background: #adb5bd;
             }
 
         #sendRagBtn {
-            background: #8e44ad;
+            background: #ffc107;
+            color: var(--button-text-dark);
+            border: 2px solid #e0a800;
         }
 
             #sendRagBtn:hover {
-                background: #7d3c98;
+                background: #e0a800;
             }
 
+        /* زر الإرفاق */
         .attach-btn {
-            padding: 10px 18px;
-            background: linear-gradient(135deg, #48bb78, #38a169);
-            color: white;
-            border-radius: 20px;
-            cursor: pointer;
-            font-size: 14px;
-            font-weight: 600;
-            transition: all 0.3s;
-            display: inline-flex;
+            width: auto;
+            height: auto;
+            padding: 10px 15px;
+            display: flex;
+            justify-content: center;
             align-items: center;
-            gap: 6px;
-            border: none;
+            border-radius: 8px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            font-size: 13px;
+            background: var(--button-bg-light);
+            color: var(--button-text-dark);
+            border: 2px solid var(--button-border-color);
         }
 
             .attach-btn:hover {
                 transform: translateY(-2px);
-                box-shadow: 0 4px 15px rgba(72, 187, 120, 0.4);
+                box-shadow: 0 8px 18px rgba(0, 0, 128, 0.3);
+                border-color: var(--primary-color);
+            }
+
+            /* تم إزالة أيقونة :after للسماح بظهور النص */
+            .attach-btn:after {
+                content: none;
             }
 
         .loader {
@@ -454,26 +548,45 @@
             display: flex;
             flex-direction: column;
             gap: 8px;
+            direction: ltr;
         }
 
         .question-btn {
-            background: rgba(255,255,255,0.05);
-            color: #fff;
-            border: 1px solid rgba(255,255,255,0.2);
+            background: #ffffff;
+            color: var(--sidebar-text-color);
+            border: 1px solid #cccccc;
             padding: 12px 16px;
             border-radius: 10px;
             cursor: pointer;
-            text-align: right;
+            text-align: left;
             font-size: 13px;
             transition: all 0.3s;
         }
 
             .question-btn:hover {
-                background: rgba(255,255,255,0.15);
-                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-                transform: translateX(-2px);
+                background: #f0f0f0;
+                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+                transform: translateX(2px); /* تم عكس اتجاه التحرك */
             }
+
     </style>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 </head>
 <body>
     <div class="chat-container">
@@ -482,11 +595,9 @@
             <header class="msger-header">
                 <div class="msger-header-title">
                     <span class="status-indicator"></span>
-                    Housing Service Bot - RAG Enhanced
+                    Service Bot - RAG Enhanced
                 </div>
-                <div style="font-size: 12px; opacity: 0.9;">
-                    🚀 Multi-Strategy System
-                </div>
+
             </header>
 
             <main class="msger-chat" id="chatBox"></main>
@@ -494,13 +605,13 @@
             <div class="msger-inputarea">
                 <div class="input-row">
                     <input type="text" id="messageInput" class="msger-input" placeholder="اكتب سؤالك هنا..." />
-                    <button class="send-btn" id="sendBtn">إرسال ✈️</button>
+
                 </div>
 
                 <div class="buttons-row">
+                    <button class="msger-send-btn" id="sendRagBtn">🔍 Ask RAG</button>
                     <button class="msger-send-btn" id="sendButton">💬 Normal Chat</button>
                     <button class="msger-send-btn" id="sendPlannerButton">🎯 Send by Planner</button>
-                    <button class="msger-send-btn" id="sendRagBtn">🔍 Ask RAG</button>
 
                     <label for="fileUpload" class="attach-btn">
                         📎 Attach File
@@ -533,7 +644,7 @@
                     <option value="2">Recursive Text Splitter</option>
                     <option value="3">LangChain Recursive Text Splitter</option>
                 </select>
-                <span class="badge badge-success">Optimized</span>
+
             </div>
 
             <!-- Vector Database -->
@@ -544,7 +655,7 @@
                     <option value="1">Qdrant SDK</option>
                     <option value="2">Qdrant Semantic Kernel</option>
                 </select>
-                <span class="badge badge-info">Active</span>
+
             </div>
 
             <!-- Vector Database -->
@@ -555,7 +666,7 @@
                     <option value="1">Semantic</option>
                     <option value="2">Hybrid</option>
                 </select>
-                <span class="badge badge-info">Active</span>
+
             </div>
             <div class="info-box">
                 💡 <strong>ملحوظة:</strong> تغيير الإعدادات يؤثر على الاستعلامات الجديدة فقط
@@ -578,7 +689,7 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
     <script>
-     
+
                           const imgBOT =  "/images/bot.png";
 
                 const imgPerson =  "/images/user.png";
@@ -589,7 +700,7 @@
 
                 // ========== INITIALIZATION ==========
                 $(document).ready(function() {
-                    addMessage("مرحباً! أنا مساعدك الذكي المحسّن بتقنية RAG. اختر الإعدادات واسألني أي سؤال! 🚀", 'bot');
+                    addMessage("مرحباً! أنا مساعدك الذكي المحسّن بتقنية RAG. اختر الإعدادات واسألني أي سؤال! ", 'bot');
                     loadInitialQuestions();
 
                     // Send Button (Main)
@@ -775,7 +886,7 @@
 
                     const formData = new FormData();
                     const config = {
-            
+
                         vectorStoreProvider: parseInt($('#vectorStoreProvider').val()),
                         chunkingMode: parseInt($('#chunkingMode').val()),
                         embeddingModel: parseInt($('#embeddingModel').val()),
@@ -861,7 +972,7 @@
                     const isUser = sender === 'user';
 
                     const msgDiv = `
-                        <div class="msg ${isUser ? 'left' : 'right'}-msg">
+                        <div class="msg ${isUser ? 'right' : 'left'}-msg">
                             <div class="msg-img" style="background-image: url('${isUser ? imgPerson : imgBOT}')"></div>
                             <div class="msg-bubble">
                                 <div class="msg-info">
@@ -902,16 +1013,16 @@
                 }
 
                 function getEmbeddingName(value) {
-                    const names=[ 
+                    const names=[
                     'Nomic Embed Text',
                     'Text Embedding 3 small'
                     ];
                      return names[value] || 'Unknown';
-                    
+
                 }
                 function getSearchModeName(value) {
                     const names=[
-                    
+
                     'Vector',
                     'Semantic',
                      'Hybrid'
