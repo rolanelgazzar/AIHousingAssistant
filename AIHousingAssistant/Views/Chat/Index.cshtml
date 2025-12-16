@@ -651,9 +651,9 @@
             <div class="config-section">
                 <h4>✂️ Chunking Strategy</h4>
                 <select id="chunkingMode">
-                    <option value="1">LangChain Recursive Text Splitter</option>
-                    <option value="2">Recursive Text Splitter</option>
-                    <option value="3">Semantic Text Blocks Grouper</option>
+                    <option value="0">LangChain Recursive Text Splitter</option>
+                    <option value="1">Recursive Text Splitter</option>
+                    <option value="2">Semantic Text Blocks Grouper</option>
                 </select>
 
             </div>
@@ -912,9 +912,9 @@
                         chunkingMode: parseInt($('#chunkingMode').val()),
                         embeddingModel: parseInt($('#embeddingModel').val()),
                         searchMode: parseInt($('#searchMode').val()),
-        topSimilarity: parseInt($('#topSimilarity').val(), 10)
+                        topSimilarity: parseInt($('#topSimilarity').val(), 10)
                             };
-
+      
                     formData.append("file", file);
                     formData.append("config", JSON.stringify(config));
 
@@ -1042,6 +1042,7 @@
 
                 }
                 function getSearchModeName(value) {
+                  
                     const names=[
 
                     'Vector',
