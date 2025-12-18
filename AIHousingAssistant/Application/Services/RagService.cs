@@ -13,6 +13,7 @@ using AIHousingAssistant.Application.Enum;
 using AIHousingAssistant.Application.Services.VectorStores;
 using AIHousingAssistant.Models;
 using AIHousingAssistant.Application.Services.Chunk;
+using Microsoft.SemanticKernel;
 
 namespace AIHousingAssistant.Application.Services
 {
@@ -22,13 +23,17 @@ namespace AIHousingAssistant.Application.Services
         private readonly IChunkService _chunkService;
         private readonly OllamaApiClient _ollamaClient;
         private readonly IVectorStore _vectorStore;
-
+        private readonly Kernel _kernel;
+        private readonly IChatHistoryService _historyService;
         // NEW: Use resolver instead of injecting 3 stores
 
         public RagService(
             IOptions<ProviderSettings> providerSettings,
             IChunkService chunkService,
-            IVectorStore vectorStore)
+            IVectorStore vectorStore,
+            IChatHistoryService historyService,
+            Kernel kernel
+            )
         {
             if (providerSettings == null)
                 throw new ArgumentNullException(nameof(providerSettings));
@@ -39,6 +44,9 @@ namespace AIHousingAssistant.Application.Services
             // Initialize Ollama client for answer generation (llama3)
             _ollamaClient = new OllamaApiClient(new Uri(_providerSettings.Ollama.Endpoint));
             _ollamaClient.SelectedModel = _providerSettings.Ollama.Model;
+            _historyService = historyService ?? throw new ArgumentNullException(nameof(historyService));
+            _kernel = kernel ?? throw new ArgumentNullException(nameof(kernel));
+
         }
 
         // --------------------------------------------

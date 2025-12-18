@@ -248,13 +248,25 @@ namespace AIHousingAssistant.Controllers
         [HttpPost("AskRag")]
         public async Task<IActionResult> AskRagAsync([FromBody] RagUiRequest ragRequest)
         {
+            // Check if the request body is null
             if (ragRequest == null)
+            {
                 return BadRequest(new { error = "Request body is empty." });
+            }
 
-            var reply = await _ragService.AskRagAsync(ragRequest);
+            try
+            {
+                ragRequest.SessionId=GetOrCreateSessionId();
+                var reply = await _ragService.AskRagAsync(ragRequest);
 
-            // reply هنا DTO (Answer + ChunkIndexes + Sources)
-            return Ok(new { data = reply });
+                // Return the DTO (contains Answer, ChunkIndexes, and Sources)
+                return Ok(new { data = reply });
+            }
+            catch (Exception ex)
+            {
+                // Log the error and return a 500 status code
+                return StatusCode(500, new { error = "An error occurred while processing your request.", details = ex.Message });
+            }
         }
 
 

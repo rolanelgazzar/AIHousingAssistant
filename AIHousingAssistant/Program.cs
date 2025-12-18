@@ -44,7 +44,8 @@ builder.Services.AddScoped<IVectorDB_Resolver, VectorDB_Resolver>();
 //builder.Services.AddScoped<IVectorDB, QdrantVectorDb_InMemory>();
 builder.Services.AddScoped<IVectorStore, VectorStore>();
 
-
+builder.Services.AddKernel()
+       .AddOllamaChatCompletion("llama3", new Uri("http://localhost:11434"));
 //builder.Services.AddQdrantVectorStore("localhost"); // Register Qdrant Vector Store
 
 

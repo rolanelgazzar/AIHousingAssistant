@@ -10,6 +10,7 @@ namespace AIHousingAssistant.Models
         public EmbeddingModel EmbeddingModel { get; set; }
         public  SearchMode SearchMode { get; set; }
         public int TopSimilarity { get; set; }
+        public string SessionId { get; set; }
     }
 
 }
