@@ -43,7 +43,7 @@ namespace AIHousingAssistant.Application.Services
             var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "Data", "HousingInitialQuestions.json");
 
             if (!File.Exists(filePath))
-                return new List<string>(); // أو ترمي استثناء حسب رغبتك
+                return new List<string>(); 
 
             var jsonContent = await File.ReadAllTextAsync(filePath);
 

@@ -14,6 +14,9 @@ using AIHousingAssistant.Application.Services.VectorStores;
 using AIHousingAssistant.Models;
 using AIHousingAssistant.Application.Services.Chunk;
 using Microsoft.SemanticKernel;
+using Microsoft.SemanticKernel.ChatCompletion;
+using Microsoft.AspNetCore.Http.HttpResults;
+using System.Collections.Concurrent;
 
 namespace AIHousingAssistant.Application.Services
 {
@@ -59,19 +62,19 @@ namespace AIHousingAssistant.Application.Services
             if (file == null || file.Length == 0)
                 throw new ArgumentException("File is empty", nameof(file));
 
-           
+
 
             // 1) Save locally
             var filePath = await FileHelper.SaveFileAsync(file, _providerSettings.ProcessingFolder);
             var source = FileHelper.GetSafeFileNameFromPath(filePath);
 
             // 2) Extract
-           var textExtracted= await FileHelper.ExtractDocumentAsync(filePath, source);
-           
+            var textExtracted = await FileHelper.ExtractDocumentAsync(filePath, source);
+
 
             // 3) Chunk
             var chunks = await _chunkService.CreateChunksAsync(textExtracted, ragUiRequest, source);
-            
+
             if (chunks == null || chunks.Count == 0)
                 throw new InvalidOperationException("No text chunks were generated from the document.");
 
@@ -94,7 +97,7 @@ namespace AIHousingAssistant.Application.Services
             // Use a switch expression to dynamically select the search strategy (Hybrid, Semantic, or Pure Vector)
             // The full ragRequest object is passed to IVectorStore to enable dynamic provider selection 
             // and retrieval limit (TopSimilarity).
-           // ragRequest.TopSimilarity = 3;
+            // ragRequest.TopSimilarity = 3;
             List<VectorChunk>? chunks = ragRequest.SearchMode switch
             {
                 // Hybrid Search: Combines semantic search with keyword filtering.
@@ -130,7 +133,7 @@ namespace AIHousingAssistant.Application.Services
             // 2. Generation (Answer Synthesis)
             // Combine the content of all retrieved chunks into a single context string for the LLM.
             var context = string.Join("\n\n---\n\n", usedChunks.Select(c => c.Content));
-            var answer = await ExtractAnswerFromChunkAsync(ragRequest.Query, context);
+            var answer = await ExtractAnswerFromChunkAsync(ragRequest, context);
 
             if (string.IsNullOrWhiteSpace(answer))
                 answer = "No related answer found.";
@@ -146,57 +149,131 @@ namespace AIHousingAssistant.Application.Services
         }
 
 
-        // --------------------------------------------
 
 
-        // --------------------------------------------
-        private async Task<string> ExtractAnswerFromChunkAsync(string query, string chunkContent)
+        private async Task<string> ExtractAnswerFromChunkAsync(RagUiRequest ragRequest, string chunkContent)
         {
-           // return chunkContent;
-
-            //return chunkContent;
+            // 1️⃣ Validate inputs: return empty if no chunkContent
             if (string.IsNullOrWhiteSpace(chunkContent))
                 return string.Empty;
 
-            if (string.IsNullOrWhiteSpace(query))
+            // 2️⃣ Return chunkContent directly if no user query
+            if (string.IsNullOrWhiteSpace(ragRequest.Query))
                 return chunkContent.Trim();
 
-            var prompt = $@"
-You are an AI assistant for a housing and maintenance system.
+            // 3️⃣ Resolve the Chat Completion Service from Semantic Kernel
+            var chatService = _kernel.GetRequiredService<IChatCompletionService>();
 
-You will receive:
-- CONTEXT: a piece of a knowledge base.
-- QUESTION: a user question.
+            // 4️⃣ Retrieve persistent history for this session
+            var persistentHistory = _historyService.GetOrCreateHistory(ragRequest.SessionId);
 
-Your task:
-- Answer the QUESTION using ONLY the information in the CONTEXT.
-- If the answer is present, respond with a short, direct answer (one or two sentences).
-- Do NOT mention the word CONTEXT.
-- Do NOT include unrelated information.
-- If the answer is not in the CONTEXT, say: ""I don't know based on the provided information.""
+            // 5️⃣ Create a temporary ChatHistory for this execution
+            var temporaryHistory = new ChatHistory();
+
+            // 6️⃣ Add system instructions to guide AI behavior
+            temporaryHistory.AddSystemMessage(@"
+You are an AI assistant.
+Answer the user's question based on the provided CONTEXT or the previous conversation HISTORY.
+- For housing-related questions, use ONLY the information in the CONTEXT.
+- If the answer is not in the CONTEXT or HISTORY, say: 'I don't know based on the provided information.'
+- Keep answers short and direct (one or two sentences).
+- If the user asks about their previous questions, provide a list of those questions.
+- Do NOT mention the words CONTEXT or HISTORY in your answer.");
+
+            // 7️⃣ Prepare a textual representation of all previous user questions
+            var previousUserQuestions = string.Join("\n", persistentHistory
+                .Where(m => !string.IsNullOrWhiteSpace(m.Content))
+                .Select(m => m.Content));
+
+            // 8️⃣ Add previous user questions and current chunk + query to temporary history
+            temporaryHistory.AddUserMessage($@"
+PREVIOUS USER QUESTIONS:
+{previousUserQuestions}
 
 CONTEXT:
 {chunkContent}
 
-QUESTION:
-{query}
+NEW QUESTION:
+{ragRequest.Query}");
 
-ANSWER:
-";
+            // 9️⃣ Call the AI model to generate the response
+            var result = await chatService.GetChatMessageContentAsync(temporaryHistory, kernel: _kernel);
+            string assistantAnswer = result.ToString().Trim();
 
-            var sb = new StringBuilder();
+            // 10️⃣ Save only the current user query and assistant answer to persistent history
+            _historyService.AddUserMessage(ragRequest.SessionId, ragRequest.Query);
+            _historyService.AddAssistantMessage(ragRequest.SessionId, assistantAnswer);
 
-            await foreach (var response in _ollamaClient.GenerateAsync(prompt))
-            {
-                if (!string.IsNullOrEmpty(response.Response))
-                    sb.Append(response.Response);
-            }
-
-            return sb.ToString().Trim();
+            // 11️⃣ Return assistant's answer
+            return assistantAnswer;
         }
 
-
-
- 
     }
 }
+        // --------------------------------------------
+
+
+        // --------------------------------------------
+
+//        private async Task<string> ExtractAnswerFromChunkAsync(RagUiRequest ragRequest, string chunkContent)
+//        {
+//            // Validate inputs: if no context is provided, we can't answer.
+//            if (string.IsNullOrWhiteSpace(chunkContent))
+//                return string.Empty;
+
+//            // If there is no query, just return the raw content (fallback).
+//            if (string.IsNullOrWhiteSpace(ragRequest.Query))
+//                return chunkContent.Trim();
+
+//            // 1. Resolve the Chat Completion Service from the Semantic Kernel
+//            var chatService = _kernel.GetRequiredService<IChatCompletionService>();
+
+
+//            // 2. Retrieve the PERSISTENT history for this specific session.
+//            // This history only contains clean previous user questions and AI answers.
+//            var persistentHistory = _historyService.GetOrCreateHistory(ragRequest.SessionId);
+
+//            // 3. Create a TEMPORARY ChatHistory for this specific execution.
+//            // This ensures that bulky instructions and context chunks don't bloat our long-term memory.
+//            var temporaryHistory = new ChatHistory();
+
+//            // 4. Add the System Instructions to the temporary history.
+//            // These constraints guide the AI's behavior for this specific request.
+//            temporaryHistory.AddSystemMessage(@"
+//        You are an AI assistant.
+//        Answer the user's question based on the provided CONTEXT or the previous conversation HISTORY.
+//        - If the user asks about previous messages, refer to the conversation history.
+//        - For housing-related questions, use ONLY the information in the CONTEXT.
+//        - If the answer is not in the CONTEXT or HISTORY, say: 'I don't know based on the provided information.'
+//        - Keep answers short and direct (one or two sentences).
+//        - Do NOT mention the words CONTEXT or HISTORY in your answer.");
+
+//            // 5. Append previous clean Q&A from the persistent history to the temporary conversation.
+//            foreach (var message in persistentHistory)
+//            {
+//                temporaryHistory.Add(message);
+//            }
+
+//            // 6. Add the CURRENT Context and the NEW Query to the temporary history.
+//            // We use a verbatim string to ensure clear separation between Context and Question.
+//            temporaryHistory.AddUserMessage($@"
+//        CONTEXT:
+//        {chunkContent}
+
+//        QUESTION:
+//        {ragRequest.Query}");
+
+//            // 7. Call the AI model (Ollama) to generate the response based on the combined history.
+//            var result = await chatService.GetChatMessageContentAsync(temporaryHistory, kernel: _kernel);
+//            string assistantAnswer = result.ToString().Trim();
+
+//            // 8. SAVE ONLY the original query and the clean assistant answer to the persistent service.
+//            // This keeps our long-term session history lightweight and efficient.
+//            _historyService.AddUserMessage(ragRequest.SessionId, ragRequest.Query);
+//            _historyService.AddAssistantMessage(ragRequest.SessionId, assistantAnswer);
+
+//            return assistantAnswer;
+//        }
+
+//    }
+//}
