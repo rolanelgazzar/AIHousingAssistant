@@ -621,7 +621,8 @@
                 </div>
 
                 <div class="buttons-row">
-                    <button class="msger-send-btn" id="sendRagBtn">🔍 Ask RAG</button>
+                    <button class="msger-send-btn" id="sendRagBtn">🔍 Ask AI RAG</button>
+
         @*             <button class="msger-send-btn" id="sendButton">💬 Normal Chat</button>
                     <button class="msger-send-btn" id="sendPlannerButton">🎯 Send by Planner</button> *@
 
@@ -681,6 +682,16 @@
 
             </div>
 
+            <!-- Embedding Model -->
+            <div class="config-section">
+                <h4>🧠 RAG Model</h4>
+                <select id="ragModel">
+                    <option value="0">Ollama</option>
+                    <option value="1">Open AI</option>
+
+                </select>
+            </div>
+
             <!-- TopSimilarity -->
             <div class="config-section">
                 <h4>🤝 Top Similarity</h4>
@@ -736,6 +747,7 @@
                         } else if (currentMode === 'rag') {
                             askRag(message);
                         }
+
 
                         $('#messageInput').val('');
                     });
@@ -832,16 +844,22 @@
             .replaceAll("'", '&#039;');
         }
 
-        function askRag(message) {
+                function askRag(message) {
           const config = {
             query: message,
             vectorStoreProvider: parseInt($('#vectorStoreProvider').val(), 10),
             chunkingMode: parseInt($('#chunkingMode').val(), 10),
             embeddingModel: parseInt($('#embeddingModel').val(), 10),
             searchMode: parseInt($('#searchMode').val(), 10),
-        topSimilarity: parseInt($('#topSimilarity').val(), 10)
-                                  };
+            ragModel: parseInt($('#ragModel').val(), 10),
 
+            topSimilarity:
+              parseInt($('#searchMode').val(), 10) === 2
+                ? 1
+                : parseInt($('#topSimilarity').val(), 10)
+          };
+        
+        debugger
           addMessage(escapeHtml(message), 'user');
           showLoader();
 
@@ -869,6 +887,8 @@
                 ? `<br><strong>📌 Chunk Indexes:</strong> <span style="direction:ltr;display:inline-block">${escapeHtml(chunkIndexes.join(', '))}</span>`
                 : `<br><strong>📌 Chunk Indexes:</strong> <em>Not returned</em>`;
 
+                
+
               const configInfo = `
         🔍 <strong>RAG Results</strong><br>
         📊 Used Settings:<br>
@@ -877,6 +897,7 @@
         • Embedding: ${escapeHtml(getEmbeddingName(config.embeddingModel))}<br>
         • Search Mode: ${escapeHtml(getSearchModeName(config.searchMode))}<br>
         • topSimilarity: ${escapeHtml(config.topSimilarity)}<br>
+        • RAG Model: ${escapeHtml(getRagModelName(config.ragModel))}<br>
         ${chunksHtml}
         <br><br>
         <strong>Answer:</strong><br>${escapeHtml(answerText).replaceAll('\n', '<br>')}
@@ -895,6 +916,7 @@
             }
           });
         }
+        
 
 
 
@@ -906,14 +928,21 @@
                     addMessage(`📄 Uploading file…: ${file.name}`, 'user');
 
                     const formData = new FormData();
-                    const config = {
+          const config = {
+            query: message,
+            vectorStoreProvider: parseInt($('#vectorStoreProvider').val(), 10),
+            chunkingMode: parseInt($('#chunkingMode').val(), 10),
+            embeddingModel: parseInt($('#embeddingModel').val(), 10),
+            searchMode: parseInt($('#searchMode').val(), 10),
+            ragModel: parseInt($('#ragModel').val(), 10),
 
-                        vectorStoreProvider: parseInt($('#vectorStoreProvider').val()),
-                        chunkingMode: parseInt($('#chunkingMode').val()),
-                        embeddingModel: parseInt($('#embeddingModel').val()),
-                        searchMode: parseInt($('#searchMode').val()),
-                        topSimilarity: parseInt($('#topSimilarity').val(), 10)
-                            };
+            topSimilarity:
+              parseInt($('#searchMode').val(), 10) === 2
+                ? 1
+                : parseInt($('#topSimilarity').val(), 10)
+          };
+        
+
       
                     formData.append("file", file);
                     formData.append("config", JSON.stringify(config));
@@ -1052,6 +1081,19 @@
                      return names[value] || 'Unknown';
 
                 }
+                function getRagModelName(value) {
+
+                    const names=[
+
+                    'Ollama',
+                    'Open AI',
+                     
+                    ];
+                    
+                     return names[value] || 'Unknown';
+
+                }
+                
     </script>
 </body>
 </html>

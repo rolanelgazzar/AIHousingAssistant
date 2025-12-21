@@ -17,6 +17,9 @@ using Microsoft.SemanticKernel;
 using Microsoft.SemanticKernel.ChatCompletion;
 using Microsoft.AspNetCore.Http.HttpResults;
 using System.Collections.Concurrent;
+using AIHousingAssistant.Application.SemanticKernel;
+using AIHousingAssistant.semantic.Plugins;
+using Microsoft.SemanticKernel.Connectors.OpenAI;
 
 namespace AIHousingAssistant.Application.Services
 {
@@ -133,7 +136,16 @@ namespace AIHousingAssistant.Application.Services
             // 2. Generation (Answer Synthesis)
             // Combine the content of all retrieved chunks into a single context string for the LLM.
             var context = string.Join("\n\n---\n\n", usedChunks.Select(c => c.Content));
-            var answer = await ExtractAnswerFromChunkAsync(ragRequest, context);
+
+            string? answer = ragRequest.RagModel switch
+            {
+
+                RagModel.Ollama => await ExtractAnswerFromChunkByOllamaAsync(ragRequest, context),
+
+                RagModel.OpenAI => await ExtractAnswerFromChunkByOpenAIAsync(ragRequest, context)
+            };
+
+
 
             if (string.IsNullOrWhiteSpace(answer))
                 answer = "No related answer found.";
@@ -151,26 +163,25 @@ namespace AIHousingAssistant.Application.Services
 
 
 
-        private async Task<string> ExtractAnswerFromChunkAsync(RagUiRequest ragRequest, string chunkContent)
+        private async Task<string> ExtractAnswerFromChunkByOllamaAsync(RagUiRequest ragRequest, string chunkContent)
         {
-            // 1️⃣ Validate inputs: return empty if no chunkContent
+            // 1️⃣ Validate inputs
             if (string.IsNullOrWhiteSpace(chunkContent))
                 return string.Empty;
 
-            // 2️⃣ Return chunkContent directly if no user query
             if (string.IsNullOrWhiteSpace(ragRequest.Query))
                 return chunkContent.Trim();
 
-            // 3️⃣ Resolve the Chat Completion Service from Semantic Kernel
+            // 2️⃣ Resolve Chat Completion Service
             var chatService = _kernel.GetRequiredService<IChatCompletionService>();
 
-            // 4️⃣ Retrieve persistent history for this session
+            // 3️⃣ Retrieve persistent history
             var persistentHistory = _historyService.GetOrCreateHistory(ragRequest.SessionId);
 
-            // 5️⃣ Create a temporary ChatHistory for this execution
+            // 4️⃣ Create temporary ChatHistory
             var temporaryHistory = new ChatHistory();
 
-            // 6️⃣ Add system instructions to guide AI behavior
+            // 5️⃣ Add system instructions
             temporaryHistory.AddSystemMessage(@"
 You are an AI assistant.
 Answer the user's question based on the provided CONTEXT or the previous conversation HISTORY.
@@ -180,15 +191,15 @@ Answer the user's question based on the provided CONTEXT or the previous convers
 - If the user asks about their previous questions, provide a list of those questions.
 - Do NOT mention the words CONTEXT or HISTORY in your answer.");
 
-            // 7️⃣ Prepare a textual representation of all previous user questions
-            var previousUserQuestions = string.Join("\n", persistentHistory
-                .Where(m => !string.IsNullOrWhiteSpace(m.Content))
-                .Select(m => m.Content));
+            // 6️⃣ Prepare previous user questions
+            string previousQuestionsText = string.Join("\n", persistentHistory
+                .Where(m => m.Role == AuthorRole.User && !string.IsNullOrWhiteSpace(m.Content))
+                .Select((m, i) => $"{i + 1}. {m.Content}"));
 
-            // 8️⃣ Add previous user questions and current chunk + query to temporary history
+            // 7️⃣ Add previous questions + current chunk + new query
             temporaryHistory.AddUserMessage($@"
 PREVIOUS USER QUESTIONS:
-{previousUserQuestions}
+{previousQuestionsText}
 
 CONTEXT:
 {chunkContent}
@@ -196,84 +207,110 @@ CONTEXT:
 NEW QUESTION:
 {ragRequest.Query}");
 
-            // 9️⃣ Call the AI model to generate the response
+            // 8️⃣ Call AI model
             var result = await chatService.GetChatMessageContentAsync(temporaryHistory, kernel: _kernel);
             string assistantAnswer = result.ToString().Trim();
 
-            // 10️⃣ Save only the current user query and assistant answer to persistent history
+            // 9️⃣ Save current query and assistant answer
             _historyService.AddUserMessage(ragRequest.SessionId, ragRequest.Query);
             _historyService.AddAssistantMessage(ragRequest.SessionId, assistantAnswer);
 
-            // 11️⃣ Return assistant's answer
+            // 🔟 Return answer
             return assistantAnswer;
         }
 
+
+        
+            // Declare questionHistory as a class-level variable to store all previous questions
+            private List<string> questionHistory = new List<string>();
+
+            private async Task<string> ExtractAnswerFromChunkByOpenAIAsync(
+                RagUiRequest ragRequest,
+                string chunkContent)
+            {
+                // 1️⃣ Validate the user query to ensure it's not empty or whitespace
+                if (string.IsNullOrWhiteSpace(ragRequest.Query))
+                {
+                    throw new ArgumentException("Query cannot be empty.");
+                }
+
+                // If the user's query is asking for the previous question, return it
+                if (ragRequest.Query.Equals("What is the previous question?", StringComparison.OrdinalIgnoreCase))
+                {
+                    if (questionHistory.Any())
+                    {
+                        return questionHistory.LastOrDefault() ?? "No previous question found.";
+                    }
+                    else
+                    {
+                        return "No previous question found."; // No question history yet
+                    }
+                }
+
+                try
+                {
+                    // ---------------------------
+                    // 2️⃣ Build the Kernel for OpenRouter
+                    // ---------------------------
+                    var kernelBuilder = SemanticKernelHelper.BuildKernel(AIProvider.OpenRouter, _providerSettings);
+                    var kernel = SemanticKernelHelper.Build(kernelBuilder);
+
+                    // ---------------------------
+                    // 3️⃣ Get ChatCompletionService from the Kernel
+                    // ---------------------------
+                    var chatService = kernel.GetRequiredService<Microsoft.SemanticKernel.ChatCompletion.IChatCompletionService>();
+
+                    // ---------------------------
+                    // 4️⃣ Prepare chat history and system/user messages
+                    // ---------------------------
+                    var chatHistory = new Microsoft.SemanticKernel.ChatCompletion.ChatHistory();
+
+                    // System message: define AI behavior
+                    chatHistory.AddSystemMessage("You are a helpful AI assistant.");
+
+                    // User message: question + document chunk
+                    chatHistory.AddUserMessage($@"
+The user has asked: ""{ragRequest.Query}"". 
+Use the document chunk provided below to generate a clear and concise answer that directly addresses the user's question. Ensure that all relevant details from the document are included in your response:
+
+{chunkContent}
+");
+
+                    // Add the user's query to the question history
+                    questionHistory.Add(ragRequest.Query);
+
+                    // ---------------------------
+                    // 5️⃣ Execution settings
+                    // ---------------------------
+                    Microsoft.SemanticKernel.Connectors.OpenAI.OpenAIPromptExecutionSettings? executionSettings = null;
+
+                    // ---------------------------
+                    // 6️⃣ Call OpenRouter AI
+                    // ---------------------------
+                    var response = await chatService.GetChatMessageContentAsync(chatHistory, executionSettings, kernel);
+
+                    // Trim and clean up the response content, if it exists
+                    string botResponse = response.Content?.Trim() ?? string.Empty;
+
+                    // ---------------------------
+                    // 7️⃣ Return the AI answer
+                    // ---------------------------
+                    return botResponse;
+                }
+                catch (Exception ex)
+                {
+                    // Log or handle the exception if necessary, preserving the original stack trace
+                    throw new ApplicationException("An error occurred while processing the query with OpenRouter AI.", ex);
+                }
+            }
+        }
+
     }
-}
-        // --------------------------------------------
 
 
-        // --------------------------------------------
 
-//        private async Task<string> ExtractAnswerFromChunkAsync(RagUiRequest ragRequest, string chunkContent)
-//        {
-//            // Validate inputs: if no context is provided, we can't answer.
-//            if (string.IsNullOrWhiteSpace(chunkContent))
-//                return string.Empty;
-
-//            // If there is no query, just return the raw content (fallback).
-//            if (string.IsNullOrWhiteSpace(ragRequest.Query))
-//                return chunkContent.Trim();
-
-//            // 1. Resolve the Chat Completion Service from the Semantic Kernel
-//            var chatService = _kernel.GetRequiredService<IChatCompletionService>();
+    
 
 
-//            // 2. Retrieve the PERSISTENT history for this specific session.
-//            // This history only contains clean previous user questions and AI answers.
-//            var persistentHistory = _historyService.GetOrCreateHistory(ragRequest.SessionId);
 
-//            // 3. Create a TEMPORARY ChatHistory for this specific execution.
-//            // This ensures that bulky instructions and context chunks don't bloat our long-term memory.
-//            var temporaryHistory = new ChatHistory();
-
-//            // 4. Add the System Instructions to the temporary history.
-//            // These constraints guide the AI's behavior for this specific request.
-//            temporaryHistory.AddSystemMessage(@"
-//        You are an AI assistant.
-//        Answer the user's question based on the provided CONTEXT or the previous conversation HISTORY.
-//        - If the user asks about previous messages, refer to the conversation history.
-//        - For housing-related questions, use ONLY the information in the CONTEXT.
-//        - If the answer is not in the CONTEXT or HISTORY, say: 'I don't know based on the provided information.'
-//        - Keep answers short and direct (one or two sentences).
-//        - Do NOT mention the words CONTEXT or HISTORY in your answer.");
-
-//            // 5. Append previous clean Q&A from the persistent history to the temporary conversation.
-//            foreach (var message in persistentHistory)
-//            {
-//                temporaryHistory.Add(message);
-//            }
-
-//            // 6. Add the CURRENT Context and the NEW Query to the temporary history.
-//            // We use a verbatim string to ensure clear separation between Context and Question.
-//            temporaryHistory.AddUserMessage($@"
-//        CONTEXT:
-//        {chunkContent}
-
-//        QUESTION:
-//        {ragRequest.Query}");
-
-//            // 7. Call the AI model (Ollama) to generate the response based on the combined history.
-//            var result = await chatService.GetChatMessageContentAsync(temporaryHistory, kernel: _kernel);
-//            string assistantAnswer = result.ToString().Trim();
-
-//            // 8. SAVE ONLY the original query and the clean assistant answer to the persistent service.
-//            // This keeps our long-term session history lightweight and efficient.
-//            _historyService.AddUserMessage(ragRequest.SessionId, ragRequest.Query);
-//            _historyService.AddAssistantMessage(ragRequest.SessionId, assistantAnswer);
-
-//            return assistantAnswer;
-//        }
-
-//    }
-//}
+     

@@ -1,0 +1,8 @@
+﻿Upload file
+→ Split to chunks
+→ Create embeddings
+→ Store
+→ Search by similarity
+→ Top 3 chunks
+→ Prompt
+→ Answer

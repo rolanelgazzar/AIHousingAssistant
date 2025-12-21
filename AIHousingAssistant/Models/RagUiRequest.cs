@@ -11,6 +11,9 @@ namespace AIHousingAssistant.Models
         public  SearchMode SearchMode { get; set; }
         public int TopSimilarity { get; set; }
         public string SessionId { get; set; }
+        public RagModel RagModel { get; set; }
+
+        
     }
 
 }
