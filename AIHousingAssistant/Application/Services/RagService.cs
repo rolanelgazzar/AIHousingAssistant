@@ -20,7 +20,9 @@ using System.Collections.Concurrent;
 using AIHousingAssistant.Application.SemanticKernel;
 using AIHousingAssistant.semantic.Plugins;
 using Microsoft.SemanticKernel.Connectors.OpenAI;
-
+using Microsoft.KernelMemory;
+using Microsoft.KernelMemory.AI.OpenAI;
+using AIHousingAssistant.Application.Services.Interfaces.Tools;
 namespace AIHousingAssistant.Application.Services
 {
     public class RagService : IRagService
@@ -56,38 +58,51 @@ namespace AIHousingAssistant.Application.Services
         }
 
         // --------------------------------------------
-        // Process uploaded document and store vectors using selected provider
-        public async Task ProcessDocumentAsync(
-            IFormFile file,
-           RagUiRequest ragUiRequest
-            )
+        //  Process uploaded document and store vectors using selected provider
+        public async Task ProcessDocumentByRagAsync(List<IFormFile> files, RagUiRequest ragUiRequest)
         {
-            if (file == null || file.Length == 0)
-                throw new ArgumentException("File is empty", nameof(file));
+            // Check if the list is null or empty
+            if (files == null || files.Count == 0)
+                throw new ArgumentException("No files provided for processing.");
 
+            // Loop through each file in the list
+            foreach (var file in files)
+            {
+                // Skip empty files
+                if (file == null || file.Length == 0)
+                    continue;
 
+                try
+                {
+                    // 1) Save the file locally to the processing folder
+                    var filePath = await FileHelper.SaveFileAsync(file, _providerSettings.ProcessingFolder);
+                    var source = FileHelper.GetSafeFileNameFromPath(filePath);
 
-            // 1) Save locally
-            var filePath = await FileHelper.SaveFileAsync(file, _providerSettings.ProcessingFolder);
-            var source = FileHelper.GetSafeFileNameFromPath(filePath);
+                    // 2) Extract text from the saved document
+                    var textExtracted = await FileHelper.ExtractDocumentAsync(filePath, source);
 
-            // 2) Extract
-            var textExtracted = await FileHelper.ExtractDocumentAsync(filePath, source);
+                    // 3) Split text into chunks based on the selected RagUiRequest configuration
+                    var chunks = await _chunkService.CreateChunksAsync(textExtracted, ragUiRequest, source);
 
+                    if (chunks == null || chunks.Count == 0)
+                    {
+                        // Log or handle files that produce no content
+                        continue;
+                    }
 
-            // 3) Chunk
-            var chunks = await _chunkService.CreateChunksAsync(textExtracted, ragUiRequest, source);
-
-            if (chunks == null || chunks.Count == 0)
-                throw new InvalidOperationException("No text chunks were generated from the document.");
-
-            // 4) Store vectors in the selected vector store
-            //var store = _vectorStoreResolver.Resolve(ragUiRequest.VectorStoreProvider);
-            await _vectorStore.StoreTextChunksAsVectorsAsync(chunks, ragUiRequest);
+                    // 4) Store generated vectors in the selected Vector Database
+                    await _vectorStore.StoreTextChunksAsVectorsAsync(chunks, ragUiRequest);
+                }
+                catch (Exception ex)
+                {
+                    // You can log the error for a specific file here and continue with others
+                    // _logger.LogError($"Error processing file {file.FileName}: {ex.Message}");
+                    throw; // Or rethrow if you want to stop the entire process
+                }
+            }
         }
 
-
-        // --------------------------------------------
+        // ----------------------------------s----------
         // New unified method
         public async Task<RagAnswerResponse> AskRagAsync(RagUiRequest ragRequest)
         {
@@ -137,13 +152,14 @@ namespace AIHousingAssistant.Application.Services
             // Combine the content of all retrieved chunks into a single context string for the LLM.
             var context = string.Join("\n\n---\n\n", usedChunks.Select(c => c.Content));
 
-            string? answer = ragRequest.RagModel switch
+            string? answer = ragRequest.AIProvider switch
             {
 
-                RagModel.Ollama => await ExtractAnswerFromChunkByOllamaAsync(ragRequest, context),
-
-                RagModel.OpenAI => await ExtractAnswerFromChunkByOpenAIAsync(ragRequest, context)
+                AIProvider.Ollama => await ExtractAnswerFromChunkByOllamaAsync(ragRequest, context),
+                AIProvider.KernelMemory => await ExtractAnswerFromChunkByOpenRouterKernelMemoryAsync(ragRequest),
+                AIProvider.OpenRouter => await ExtractAnswerFromChunkByOpenAIAsync(ragRequest, context)
             };
+
 
 
 
@@ -220,92 +236,152 @@ NEW QUESTION:
         }
 
 
-        
-            // Declare questionHistory as a class-level variable to store all previous questions
-            private List<string> questionHistory = new List<string>();
 
-            private async Task<string> ExtractAnswerFromChunkByOpenAIAsync(
-                RagUiRequest ragRequest,
-                string chunkContent)
+        // Declare questionHistory as a class-level variable to store all previous questions
+        private List<string> questionHistory = new List<string>();
+
+        private async Task<string> ExtractAnswerFromChunkByOpenAIAsync(
+            RagUiRequest ragRequest,
+            string chunkContent)
+        {
+            // 1️⃣ Validate the user query to ensure it's not empty or whitespace
+            if (string.IsNullOrWhiteSpace(ragRequest.Query))
             {
-                // 1️⃣ Validate the user query to ensure it's not empty or whitespace
-                if (string.IsNullOrWhiteSpace(ragRequest.Query))
+                throw new ArgumentException("Query cannot be empty.");
+            }
+
+            // If the user's query is asking for the previous question, return it
+            if (ragRequest.Query.Equals("What is the previous question?", StringComparison.OrdinalIgnoreCase))
+            {
+                if (questionHistory.Any())
                 {
-                    throw new ArgumentException("Query cannot be empty.");
+                    return questionHistory.LastOrDefault() ?? "No previous question found.";
                 }
-
-                // If the user's query is asking for the previous question, return it
-                if (ragRequest.Query.Equals("What is the previous question?", StringComparison.OrdinalIgnoreCase))
+                else
                 {
-                    if (questionHistory.Any())
-                    {
-                        return questionHistory.LastOrDefault() ?? "No previous question found.";
-                    }
-                    else
-                    {
-                        return "No previous question found."; // No question history yet
-                    }
+                    return "No previous question found."; // No question history yet
                 }
+            }
 
-                try
-                {
-                    // ---------------------------
-                    // 2️⃣ Build the Kernel for OpenRouter
-                    // ---------------------------
-                    var kernelBuilder = SemanticKernelHelper.BuildKernel(AIProvider.OpenRouter, _providerSettings);
-                    var kernel = SemanticKernelHelper.Build(kernelBuilder);
+            try
+            {
+                // ---------------------------
+                // 2️⃣ Build the Kernel for OpenRouter
+                // ---------------------------
+                var kernelBuilder = SemanticKernelHelper.BuildKernel(AIProvider.OpenRouter, _providerSettings);
+                var kernel = SemanticKernelHelper.Build(kernelBuilder);
 
-                    // ---------------------------
-                    // 3️⃣ Get ChatCompletionService from the Kernel
-                    // ---------------------------
-                    var chatService = kernel.GetRequiredService<Microsoft.SemanticKernel.ChatCompletion.IChatCompletionService>();
+                // ---------------------------
+                // 3️⃣ Get ChatCompletionService from the Kernel
+                // ---------------------------
+                var chatService = kernel.GetRequiredService<Microsoft.SemanticKernel.ChatCompletion.IChatCompletionService>();
 
-                    // ---------------------------
-                    // 4️⃣ Prepare chat history and system/user messages
-                    // ---------------------------
-                    var chatHistory = new Microsoft.SemanticKernel.ChatCompletion.ChatHistory();
+                // ---------------------------
+                // 4️⃣ Prepare chat history and system/user messages
+                // ---------------------------
+                var chatHistory = new Microsoft.SemanticKernel.ChatCompletion.ChatHistory();
 
-                    // System message: define AI behavior
-                    chatHistory.AddSystemMessage("You are a helpful AI assistant.");
+                // System message: define AI behavior
+                chatHistory.AddSystemMessage("You are a helpful AI assistant.");
 
-                    // User message: question + document chunk
-                    chatHistory.AddUserMessage($@"
+                // User message: question + document chunk
+                chatHistory.AddUserMessage($@"
 The user has asked: ""{ragRequest.Query}"". 
 Use the document chunk provided below to generate a clear and concise answer that directly addresses the user's question. Ensure that all relevant details from the document are included in your response:
 
 {chunkContent}
 ");
 
-                    // Add the user's query to the question history
-                    questionHistory.Add(ragRequest.Query);
+                // Add the user's query to the question history
+                questionHistory.Add(ragRequest.Query);
 
-                    // ---------------------------
-                    // 5️⃣ Execution settings
-                    // ---------------------------
-                    Microsoft.SemanticKernel.Connectors.OpenAI.OpenAIPromptExecutionSettings? executionSettings = null;
+                // ---------------------------
+                // 5️⃣ Execution settings
+                // ---------------------------
+                Microsoft.SemanticKernel.Connectors.OpenAI.OpenAIPromptExecutionSettings? executionSettings = null;
 
-                    // ---------------------------
-                    // 6️⃣ Call OpenRouter AI
-                    // ---------------------------
-                    var response = await chatService.GetChatMessageContentAsync(chatHistory, executionSettings, kernel);
+                // ---------------------------
+                // 6️⃣ Call OpenRouter AI
+                // ---------------------------
+                var response = await chatService.GetChatMessageContentAsync(chatHistory, executionSettings, kernel);
 
-                    // Trim and clean up the response content, if it exists
-                    string botResponse = response.Content?.Trim() ?? string.Empty;
+                // Trim and clean up the response content, if it exists
+                string botResponse = response.Content?.Trim() ?? string.Empty;
 
-                    // ---------------------------
-                    // 7️⃣ Return the AI answer
-                    // ---------------------------
-                    return botResponse;
-                }
-                catch (Exception ex)
-                {
-                    // Log or handle the exception if necessary, preserving the original stack trace
-                    throw new ApplicationException("An error occurred while processing the query with OpenRouter AI.", ex);
-                }
+                // ---------------------------
+                // 7️⃣ Return the AI answer
+                // ---------------------------
+                return botResponse;
+            }
+            catch (Exception ex)
+            {
+                // Log or handle the exception if necessary, preserving the original stack trace
+                throw new ApplicationException("An error occurred while processing the query with OpenRouter AI.", ex);
             }
         }
 
+
+
+
+        private async Task<string> ExtractAnswerFromChunkByOpenRouterKernelMemoryAsync(RagUiRequest ragRequest)
+        {
+            if (string.IsNullOrWhiteSpace(ragRequest.Query))
+                throw new ArgumentException("Query cannot be empty.");
+
+            try
+            {
+                string filePath = Path.Combine(Directory.GetCurrentDirectory(), "ProcessingDocs", "Advanced_RAG_Chunking_Semantic_Test.docx");
+
+                if (!File.Exists(filePath))
+                    throw new FileNotFoundException($"The specified document was not found: {filePath}");
+
+                var openRouterConfig = new OpenAIConfig
+                {
+                    APIKey = _providerSettings.OpenRouterAI.ApiKey ?? "YOUR_API_KEY",
+                    TextModel = _providerSettings.OpenRouterAI.Model,
+                    EmbeddingModel = "text-embedding-3-small",
+                    Endpoint = _providerSettings.OpenRouterAI.ApiUrlSkills
+                };
+
+                var memory = new KernelMemoryBuilder()
+                    .WithOpenAI(openRouterConfig)
+                    .Build<MemoryServerless>();
+
+                // ---------------------------------------------------------
+                // 1. Generate a consistent ID based on the file name 
+                // (Don't use Guid.NewGuid() here if you want to check existence)
+                // ---------------------------------------------------------
+                string documentId = FileHelper.GetSafeFileNameFromPath(filePath);
+
+                // ---------------------------------------------------------
+                // 2. Check if the document already exists in memory
+                // ---------------------------------------------------------
+                bool isReady = await memory.IsDocumentReadyAsync(documentId);
+
+                if (!isReady)
+                {
+                    // Only import if it's not already there
+                    await memory.ImportDocumentAsync(filePath, documentId: documentId);
+                }
+
+                // ---------------------------------------------------------
+                // 3. Execute the RAG Query
+                // ---------------------------------------------------------
+                var result = await memory.AskAsync(ragRequest.Query);
+
+                return result.Result;
+            }
+            catch (Exception ex)
+            {
+                return $"An error occurred during memory processing: {ex.Message}";
+            }
+        }
+
+ 
+
+
     }
+}
 
 
 

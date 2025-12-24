@@ -1,11 +1,14 @@
-﻿namespace AIHousingAssistant.Application.Enum
+﻿using Xceed.Drawing;
+
+namespace AIHousingAssistant.Application.Enum
 {
     public enum AIProvider
     {
-        SemanticOnly,
+        Ollama,
         OpenRouter,
-        OpenAI,
-        AzureOpenAI,
-        Ollama
+        KernelMemory,
+        AzureOpenAI
     }
 }
+
+

@@ -9,3 +9,7 @@ http://localhost:6333/dashboard#/collections
 
 
 https://forloop.co.uk/qdrant-dotnet-client/documentation/quickstart.html?tabs=net
+
+
+------------------
+ollama serve

@@ -1,36 +1,29 @@
 [
   {
     "Index": 0,
-    "Content": "Advanced RAG Chunking \u0026 Search Evaluation DocumentPurpose:This document is intentionally LONG and REPEATED to test:1. Chunking behavior (multiple chunks generation)2. Semantic understanding across distant sections3. Retrieval accuracy using:   - Vector Search   - Semantic Search   - Hybrid SearchKey idea:The SAME topics (e.g., LOGIN, PAYMENTS) appear at the BEGINNING and the ENDto clearly show the difference between pure vector similarity and semantic understanding.SECTION 1: AUTHENTICATION \u0026 LOGIN (INTRO)Login is the primary entry point to the system.Users must provide a valid email and password to access their account.If the credentials are incorrect, the system responds with HTTP 401 Unauthorized.After five consecutive failed login attempts, the account is temporarily locked.Security is a core requirement in the login process.Password hashing, rate limiting, and audit logging are enforced.SECTION 2: USER SESSION MANAGEMENTOnce logged in, a user session is created.Sessions expire",
-    "Source": "Advanced_RAG_Chunking_Semantic_Test.docx",
+    "Content": "Customer Support Knowledge Base \u2013 Sample RAG DocumentThis Word file is a small sample knowledge base that you can use to test Retrieval-Augmented Generation (RAG). It contains multiple sections, FAQs, and structured information so you can try chunking, embedding, and querying.1. Product OverviewOur product, AI Housing Assistant, is an AI-powered web application designed to help property managers and tenants manage housing requests, maintenance tickets, and communication. The assistant can answer common questions, guide users through processes, and summarize housing policies.Key capabilities include:- Answering FAQs about rent, maintenance, and contracts.- Guiding tenants to submit maintenance requests correctly.- Providing step-by-step instructions for moving in or moving out.- Summarizing long policy documents into short, user-friendly answers.2. Housing Policies (Summary)Tenants are required to pay rent on or before the 5th day of each month. Late payments may incur a fee after a",
+    "Source": "RAG_Sample_Knowledge_Document.docx",
     "Page": null,
     "Vector": null
   },
   {
     "Index": 1,
-    "Content": "enforced.SECTION 2: USER SESSION MANAGEMENTOnce logged in, a user session is created.Sessions expire after 30 minutes of inactivity.Refreshing activity will extend the session duration.Session tokens are stored securely and rotated periodically.Unauthorized session reuse is blocked automatically.SECTION 3: PAYMENTS \u0026 BILLINGThe system supports multiple payment methods including Visa, MasterCard, and Cash.Each invoice is generated automatically once a payment request is created.Late payments will result in additional service fees.All payment transactions are logged for auditing purposes.Payment reconciliation is handled daily by the finance module.SECTION 4: REFUNDS \u0026 FINANCIAL ADJUSTMENTSRefund requests are allowed within 14 days from the purchase date.Products must remain unused and in original condition.Refund processing may take up to 7 business days.Approved refunds are returned to the original payment method.SECTION 5: WARRANTY POLICYAll hardware devices are covered by a 12-month",
-    "Source": "Advanced_RAG_Chunking_Semantic_Test.docx",
+    "Content": "required to pay rent on or before the 5th day of each month. Late payments may incur a fee after a grace period of three days. Maintenance requests should be submitted through the online portal and must include a short description, photos if possible, and preferred access times.Emergency maintenance (such as gas leaks, electrical hazards, or flooding) should be reported immediately using the emergency hotline. Non-emergency issues, like minor plumbing problems or cosmetic damage, are usually handled within 3\u20135 business days.3. Frequently Asked Questions (FAQ)Q1: How do I submit a maintenance request?A: Log in to the AI Housing Assistant portal, go to \u201CMaintenance\u201D, click \u201CNew Request\u201D, and fill in the required fields (category, description, photos, and preferred time). Then click \u201CSubmit\u201D. You will receive a confirmation message and a ticket number.Q2: How long does it take to resolve a maintenance issue?A: For non-emergency issues, the target resolution time is 3\u20135 business days.",
+    "Source": "RAG_Sample_Knowledge_Document.docx",
     "Page": null,
     "Vector": null
   },
   {
     "Index": 2,
-    "Content": "the original payment method.SECTION 5: WARRANTY POLICYAll hardware devices are covered by a 12-month warranty period.The warranty covers manufacturing defects only.Physical damage, misuse, or unauthorized repairs are not covered.Customers must present proof of purchase to claim warranty service.SECTION 6: TECHNICAL SUPPORTTechnical support is available 24/7 through email and ticketing systems.Critical incidents receive the highest priority.The standard response time is within 4 hours.Resolution time depends on issue severity and complexity.SECTION 7: LOGIN \u0026 SECURITY (DEEP DIVE)Login security is continuously monitored.Suspicious login behavior triggers alerts and secondary verification.Multi-factor authentication can be enabled to strengthen login security.Repeated failed login attempts may require captcha verification.Login logs are retained for compliance and security analysis.SECTION 8: SYSTEM AUDIT \u0026 COMPLIANCEAll user activities including login, payments, and refunds are",
-    "Source": "Advanced_RAG_Chunking_Semantic_Test.docx",
+    "Content": "a maintenance issue?A: For non-emergency issues, the target resolution time is 3\u20135 business days. Emergency issues are prioritized and handled as soon as possible, typically within the same day.Q3: Can I reschedule a maintenance visit?A: Yes, you can reschedule by opening your existing maintenance ticket in the portal and selecting a new preferred date and time. The system will notify the assigned technician of the change.Q4: How do I request to move out?A: Go to the \u201CMove-Out Requests\u201D section in the portal, fill in your intended move-out date, reason for leaving, and forwarding contact information. You will receive a checklist of tasks to complete before your final inspection.Q5: Does the AI assistant see my personal data?A: The AI assistant only accesses the minimum data required to answer your question or perform an action. All data is processed according to the organization\u2019s privacy and security policies.4. Example Queries for RAG TestingYou can use the following example queries",
+    "Source": "RAG_Sample_Knowledge_Document.docx",
     "Page": null,
     "Vector": null
   },
   {
     "Index": 3,
-    "Content": "8: SYSTEM AUDIT \u0026 COMPLIANCEAll user activities including login, payments, and refunds are audited.Audit logs are immutable and retained for regulatory compliance.Access to audit data is restricted to authorized administrators only.SECTION 9: LOGIN SUMMARY (END OF DOCUMENT)To summarize, login is the gateway to all system functionality.A secure and reliable login process ensures system integrity.Login failures, retries, session handling, and monitoringare critical components of overall platform security.Suggested Search Queries for Evaluation- How does login work?- What happens after multiple failed login attempts?- What payment methods are supported?- Does warranty cover physical damage?- How long does a refund take?- How is login security monitored?Expected Evaluation Notes- Recursive splitters will generate MANY chunks due to document length.- Vector search may retrieve login chunks from only ONE area.- Semantic search should retrieve login chunks from BOTH beginning and end.-",
-    "Source": "Advanced_RAG_Chunking_Semantic_Test.docx",
-    "Page": null,
-    "Vector": null
-  },
-  {
-    "Index": 4,
-    "Content": "from only ONE area.- Semantic search should retrieve login chunks from BOTH beginning and end.- Hybrid search should rank the most relevant login chunks higher.",
-    "Source": "Advanced_RAG_Chunking_Semantic_Test.docx",
+    "Content": "and security policies.4. Example Queries for RAG TestingYou can use the following example queries to test your RAG pipeline against this document:What is the deadline for paying rent each month?How do I submit a new maintenance request?What is the policy for emergency maintenance?How long does it usually take to fix non-emergency issues?Can the AI assistant see all of my personal data?When you run RAG, the system should retrieve the relevant parts of this document and generate accurate, concise answers based on them.",
+    "Source": "RAG_Sample_Knowledge_Document.docx",
     "Page": null,
     "Vector": null
   }

@@ -20,7 +20,7 @@ namespace AIHousingAssistant.Application.SemanticKernel
             {
                 AIProvider.AzureOpenAI => BuildWithAzure(settings.AzureOpenAI),
                 AIProvider.OpenRouter => BuildWithOpenRouter(settings.OpenRouterAI),
-                AIProvider.OpenAI => BuildWithOpenAI(settings.OpenAI),
+              //  AIProvider.OpenAI => BuildWithOpenAI(settings.OpenAI),
                 _ => BuildWithSemanticOnly()
             };
 
@@ -98,10 +98,6 @@ namespace AIHousingAssistant.Application.SemanticKernel
             return provider switch
             {
                 AIProvider.AzureOpenAI => new OpenAIPromptExecutionSettings
-                {
-                    ToolCallBehavior = ToolCallBehavior.AutoInvokeKernelFunctions
-                },
-                AIProvider.OpenAI => new OpenAIPromptExecutionSettings
                 {
                     ToolCallBehavior = ToolCallBehavior.AutoInvokeKernelFunctions
                 },

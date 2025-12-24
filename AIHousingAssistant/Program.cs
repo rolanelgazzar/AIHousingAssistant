@@ -3,12 +3,14 @@ using AIHousingAssistant.Application.Services;
 using AIHousingAssistant.Application.Services.Chunk;
 using AIHousingAssistant.Application.Services.Embedding;
 using AIHousingAssistant.Application.Services.Interfaces;
+using AIHousingAssistant.Application.Services.Interfaces.Tools;
 using AIHousingAssistant.Application.Services.VectorDb;
 using AIHousingAssistant.Application.Services.VectorStores;
 using AIHousingAssistant.Helper;
 using AIHousingAssistant.Infrastructure.Data;
 using AIHousingAssistant.Models.Settings;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.KernelMemory;
 using Microsoft.SemanticKernel;
 using Qdrant.Client;
 using System;
@@ -27,9 +29,14 @@ builder.Services.AddScoped<IHousingService, HousingService>();
 builder.Services.AddScoped<ISummarizerService, SummarizerService>();
 builder.Services.AddSingleton<IChatHistoryService, ChatHistoryService>();
 builder.Services.AddScoped<IRagService, RagService>();
+builder.Services.AddScoped<IMemoryKernelService, MemoryKernelService>();
+builder.Services.AddScoped<IWebSearchService, WebSearchService>();
+builder.Services.AddScoped<IPluginDbService, PluginDbService>();
+builder.Services.AddScoped<IDirectChatService, DirectChatService>();
 
 builder.Services.AddScoped<IChunkService, ChunkService>();
 builder.Services.AddScoped<IEmbeddingService, EmbeddingService>();
+
 
 builder.Services.AddHttpClient<HttpClientHelper>();
 

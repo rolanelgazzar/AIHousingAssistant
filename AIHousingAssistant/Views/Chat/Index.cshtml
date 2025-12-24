@@ -9,91 +9,35 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@ViewData["Title"]</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 
     <style type="text/css">
-
-        /* Animations */
-        @@keyframes pulse {
-            0%, 100% {
-                opacity: 1;
-            }
-
-            50% {
-                opacity: 0.5;
-            }
-        }
-
-        @@keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(10px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        @@keyframes spin {
-            to {
-                transform: rotate(360deg);
-            }
-        }
-
-        /* Variables (Colors) */
+        /* Variables - Original Colors */
         :root {
-            /* الألوان الأساسية: الأزرق الملكي والهادئ */
             --primary-color-dark: #00008B;
             --primary-color: #4169e1;
             --secondary-color: #191970;
-            --header-bg: #4169e1; /* شريط العنوان */
-
+            --header-bg: #4169e1;
             --body-bg: linear-gradient(135deg, #f5f5dc 0%, #fff8e1 100%);
-            /* ألوان القائمة الجانبية */
             --sidebar-bg-new: #ffffff;
             --sidebar-text-color: #212529;
             --sidebar-element-bg: #f8f8e8;
-            --sidebar-element-hover: #ecece1;
-            --success-color: #28a745;
-            --danger-color: #dc3545;
-            --info-color: #17a2b8;
-            /* ألوان الأزرار الإضافية */
-            --button-text-dark: #333333;
-            --button-bg-light: #ffffff;
-            --button-border-color: rgba(65, 105, 225, 0.6);
-            --msger-chat-bg: #fffbf0;
-            /* === ألوان الفقاعات (المستخدم: أبيض، البوت: أبيض كحلي) === */
             --user-msg-bg: #FFFFFF;
             --bot-msg-bg: #F0F8FF;
-        }
-
-        /* Base Setup */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
         }
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: var(--body-bg);
             height: 100vh;
-            overflow: hidden;
-            /* التغيير الرئيسي لاتجاه الشاشة */
-            direction: ltr;
-        }
-
-        .chat-container {
+            margin: 0;
             display: flex;
-            height: 100vh;
-            width: 100%;
-            /* التغيير الرئيسي لاتجاه حاوية الشات */
-            direction: ltr;
+            overflow: hidden;
+            direction: ltr; /* Sidebar on the Left */
         }
 
-
-        /* ========== SIDEBAR (LEFT) - ORDER 1 in LTR ========== */
+        /* ========== SIDEBAR (LEFT) ========== */
         .chat-sidebar {
             width: 320px;
             background: var(--sidebar-bg-new);
@@ -101,14 +45,9 @@
             flex-direction: column;
             padding: 20px;
             overflow-y: auto;
-            /* ظل على اليمين */
             box-shadow: 2px 0 15px rgba(0,0,0,0.1);
-            /* وضعه على اليسار في نظام LTR */
-            order: 1;
-            /* تعديل الحدود */
-            border-left: none;
             border-right: 1px solid #e0e0e0;
-            direction: ltr; /* اتجاه المحتوى */
+            z-index: 10;
         }
 
         .sidebar-title {
@@ -118,8 +57,6 @@
             margin-bottom: 20px;
             padding-bottom: 12px;
             border-bottom: 3px solid var(--primary-color);
-            /* محاذاة النص لليسار */
-            text-align: left;
         }
 
         .config-section {
@@ -128,98 +65,20 @@
             padding: 15px;
             margin-bottom: 15px;
             border: 1px solid #e0e0e0;
-            direction: ltr;
         }
 
             .config-section h4 {
                 font-size: 14px;
-                color: var(--sidebar-text-color);
                 margin-bottom: 10px;
-                display: flex;
-                align-items: center;
-                gap: 8px;
-                /* محاذاة النص لليسار */
-                text-align: left;
+                color: var(--sidebar-text-color);
             }
 
-            .config-section select {
+            .config-section select, .config-section input {
                 width: 100%;
                 padding: 10px;
-                border: 1px solid #cccccc;
                 border-radius: 8px;
+                border: 1px solid #ccc;
                 font-size: 13px;
-                margin-bottom: 10px;
-                background: #ffffff;
-                color: var(--sidebar-text-color);
-                transition: all 0.3s;
-            }
-
-                .config-section select:focus {
-                    outline: none;
-                    border-color: var(--primary-color);
-                    box-shadow: 0 0 0 3px rgba(65, 105, 225, 0.4);
-                }
-
-        .config-section input {
-                width: 100%;
-                padding: 10px;
-                border: 1px solid #cccccc;
-                border-radius: 8px;
-                font-size: 13px;
-                margin-bottom: 10px;
-                background: #ffffff;
-                color: var(--sidebar-text-color);
-                transition: all 0.3s;
-            }
-
-        .badge {
-            display: inline-block;
-            padding: 4px 10px;
-            border-radius: 12px;
-            font-size: 11px;
-            font-weight: 600;
-            margin-top: 5px;
-        }
-
-        .badge-info {
-            background: var(--info-color);
-            color: #fff;
-        }
-
-        .badge-success {
-            background: var(--success-color);
-            color: #fff;
-        }
-
-        .info-box {
-            background: rgba(65, 105, 225, 0.05);
-            /* تم إزالة border-left وإضافة border-right */
-            border-left: none;
-            border-right: 4px solid var(--primary-color);
-            padding: 12px;
-            border-radius: 6px;
-            font-size: 12px;
-            color: var(--sidebar-text-color);
-            margin-top: 10px;
-            /* محاذاة النص لليسار */
-            text-align: left;
-        }
-
-        .summary-section {
-            background: var(--sidebar-element-bg);
-            border-radius: 12px;
-            padding: 15px;
-            margin-top: 15px;
-            border: 1px solid #e0e0e0;
-            direction: ltr;
-        }
-
-            .summary-section h4 {
-                color: var(--sidebar-text-color);
-                margin-bottom: 10px;
-                font-size: 14px;
-                /* محاذاة النص لليسار */
-                text-align: left;
             }
 
         .load-summary-btn {
@@ -229,871 +88,476 @@
             border: none;
             padding: 12px;
             border-radius: 8px;
-            font-weight: 600;
             cursor: pointer;
-            transition: all 0.3s;
+            font-weight: 600;
         }
 
-            .load-summary-btn:hover {
-                transform: translateY(-2px);
-                box-shadow: 0 4px 12px rgba(0, 0, 128, 0.4);
-                background: var(--primary-color);
-            }
-
-        #summaryResult {
-            margin-top: 10px;
-            padding: 10px;
-            background: #fff8e1;
-            border-radius: 6px;
-            font-size: 12px;
-            max-height: 200px;
-            overflow-y: auto;
-            color: var(--sidebar-text-color);
-            /* محاذاة النص لليسار */
-            text-align: left;
-        }
-
-
-        /* ========== MAIN CHAT (RIGHT) - ORDER 2 in LTR ========== */
+        /* ========== MAIN CHAT ========== */
         .msger {
+            flex: 1;
             display: flex;
             flex-direction: column;
-            flex: 1;
-            background: white;
-            /* وضعه على اليمين في نظام LTR */
-            order: 2;
+            background: transparent;
         }
 
         .msger-header {
             background: var(--header-bg);
             color: white;
             padding: 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
             box-shadow: 0 2px 10px rgba(0,0,0,0.2);
-            direction: ltr;
         }
 
         .msger-chat {
             flex: 1;
             overflow-y: auto;
-            padding: 20px;
-            background: var(--msger-chat-bg);
-            direction: ltr;
+            padding: 25px;
+            background: rgba(255, 255, 255, 0.5);
         }
 
-        /* Chat Messages Styling */
         .msg {
             display: flex;
             align-items: flex-end;
-            margin-bottom: 15px;
-            animation: fadeIn 0.3s;
+            margin-bottom: 20px;
         }
 
         .msg-img {
-            width: 50px;
-            height: 50px;
+            width: 45px;
+            height: 45px;
             border-radius: 50%;
-            background-size: cover;
-            background-position: center;
             margin: 0 10px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
-            border: 3px solid var(--primary-color-dark);
+            border: 2px solid var(--primary-color);
+            background-size: cover;
         }
 
         .msg-bubble {
-            max-width: 550px;
-            padding: 15px 18px;
+            max-width: 70%;
+            padding: 15px;
             border-radius: 18px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
         }
 
-        /* === رسالة البوت (يجب أن تظهر على اليسار) === */
-        .left-msg {
-            justify-content: flex-start; /* يدفع الرسالة لليسار */
-            direction: ltr;
+        .left-msg .msg-bubble {
+            background: var(--bot-msg-bg);
+            border-bottom-left-radius: 4px;
         }
 
-            .left-msg .msg-bubble {
-                background: var(--bot-msg-bg);
-                color: var(--secondary-color);
-                /* قلب نصف القطر للذيل ليصبح على اليسار */
-                border-bottom-left-radius: 4px;
-                border-bottom-right-radius: 18px;
-                border: 1px solid #e2e8f0;
-            }
-
-            /* الصورة على يسار الفقاعة */
-            .left-msg .msg-img {
-                order: 0;
-                margin-right: 10px;
-                margin-left: 0;
-            }
-            /* تعديل نصف قطر الفقاعة للذيل ليصبح على اليسار */
-            .left-msg .msg-bubble {
-                border-bottom-left-radius: 4px;
-                border-bottom-right-radius: 18px;
-            }
-
-
-        /* === رسالة المستخدم (يجب أن تظهر على اليمين) === */
         .right-msg {
-            justify-content: flex-end; /* يدفع الرسالة لليمين */
-            direction: ltr;
+            flex-direction: row-reverse;
         }
 
             .right-msg .msg-bubble {
                 background: var(--user-msg-bg);
-                color: var(--sidebar-text-color);
-                /* قلب نصف القطر للذيل ليصبح على اليمين */
                 border-bottom-right-radius: 4px;
-                border-bottom-left-radius: 18px;
                 border: 1px solid #e0e0e0;
             }
 
-            /* الصورة على يمين الفقاعة */
-            .right-msg .msg-img {
-                order: 1;
-                margin-left: 10px;
-                margin-right: 0;
-            }
-            /* تعديل نصف قطر الفقاعة للذيل ليصبح على اليمين */
-            .right-msg .msg-bubble {
-                border-bottom-right-radius: 4px;
-                border-bottom-left-radius: 18px;
-            }
-
-
-        .msg-info {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 8px;
-            font-size: 12px;
-            opacity: 0.85;
-            direction: ltr;
-        }
-
-        .msg-text {
-            line-height: 1.6;
-            word-wrap: break-word;
-            direction: ltr;
-            text-align: left;
-        }
-
-
-        /* ========== INPUT AREA (الفوتر) ========== */
         .msger-inputarea {
-            padding: 20px;
-            background: #ffffff;
-            border-top: 1px solid #e2e8f0;
-            direction: ltr;
+            padding: 20px 40px;
+            background: transparent;
         }
 
-        .input-row {
+        .input-bar-wrapper {
+            background: white;
+            border-radius: 30px;
+            padding: 8px 20px;
+            box-shadow: var(--shadow-lg);
+            border: 1px solid #e2e8f0;
             display: flex;
-            gap: 10px;
-            margin-bottom: 15px;
             align-items: center;
+            gap: 12px;
         }
 
         .msger-input {
             flex: 1;
-            padding: 14px 18px;
-            border: 2px solid #e2e8f0;
-            border-radius: 25px;
+            border: none;
+            outline: none;
+            padding: 10px;
             font-size: 15px;
-            transition: all 0.3s;
-            /* محاذاة النص لليسار */
-            text-align: left;
-            direction: ltr;
-            min-height: 50px;
+            background: transparent;
+            direction: rtl;
         }
 
-            .msger-input:focus {
-                outline: none;
-                border-color: var(--primary-color);
-                box-shadow: 0 0 0 3px rgba(65, 105, 225, 0.15);
-            }
-
-        /* تنسيق الأيقونات داخل الأزرار */
-        .square-btn i {
-            font-size: 20px;
-            color: inherit;
-        }
-
-        /* زر الإرسال الرئيسي */
-        #sendButton {
-            width: auto;
-            height: auto;
-            padding: 10px 20px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            border-radius: 8px;
-            font-weight: 700;
+        .tools-dropdown {
+            border: 1px solid #dfe1e5;
+            background: #f8f9fa;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 13px;
             cursor: pointer;
-            transition: all 0.3s;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            font-size: 15px;
+        }
+
+        .send-btn {
             background: var(--primary-color);
             color: white;
+            width: 42px;
+            height: 42px;
             border: none;
-        }
-
-            #sendButton:hover {
-                transform: translateY(-2px);
-                box-shadow: 0 8px 18px rgba(0, 0, 128, 0.3);
-                background: var(--primary-color-dark);
-            }
-
-            /* تم إزالة أيقونة :after للسماح بظهور النص */
-            #sendButton:after {
-                content: none;
-            }
-
-        /* الصف الذي يحتوي على الأزرار الإضافية */
-        .buttons-row {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-            align-items: center;
-        }
-
-
-        /* أزرار الإجراءات الإضافية */
-        .msger-send-btn {
-            width: auto;
-            height: auto;
-            padding: 10px 15px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            border-radius: 8px;
-            font-weight: 700;
-            cursor: pointer;
-            transition: all 0.3s;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            font-size: 13px;
-            background: var(--button-bg-light);
-            color: var(--button-text-dark);
-            border: 2px solid var(--button-border-color);
-        }
-
-            .msger-send-btn:hover {
-                transform: translateY(-2px);
-                box-shadow: 0 8px 18px rgba(0, 0, 128, 0.3);
-                border-color: var(--primary-color);
-            }
-
-            .msger-send-btn i {
-                font-size: 20px;
-                color: var(--button-text-dark);
-                /* Added margin for separation if text is present */
-                margin-right: 8px;
-                margin-left: 0;
-            }
-
-
-        /* تحديث ألوان الأزرار الإضافية */
-        #sendPlannerButton {
-            background: #ced4da;
-            color: var(--button-text-dark);
-            border: 2px solid #adb5bd;
-        }
-
-            #sendPlannerButton:hover {
-                background: #adb5bd;
-            }
-
-        #sendRagBtn {
-            background: #ffc107;
-            color: var(--button-text-dark);
-            border: 2px solid #e0a800;
-        }
-
-            #sendRagBtn:hover {
-                background: #e0a800;
-            }
-
-        /* زر الإرفاق */
-        .attach-btn {
-            width: auto;
-            height: auto;
-            padding: 10px 15px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            border-radius: 8px;
-            font-weight: 700;
-            cursor: pointer;
-            transition: all 0.3s;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            font-size: 13px;
-            background: var(--button-bg-light);
-            color: var(--button-text-dark);
-            border: 2px solid var(--button-border-color);
-        }
-
-            .attach-btn:hover {
-                transform: translateY(-2px);
-                box-shadow: 0 8px 18px rgba(0, 0, 128, 0.3);
-                border-color: var(--primary-color);
-            }
-
-            /* تم إزالة أيقونة :after للسماح بظهور النص */
-            .attach-btn:after {
-                content: none;
-            }
-
-        .loader {
-            display: inline-block;
-            width: 20px;
-            height: 20px;
-            border: 3px solid rgba(255,255,255,0.3);
-            border-top-color: white;
             border-radius: 50%;
-            animation: spin 1s linear infinite;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
-        .initial-questions {
+        #fileNamesDisplay {
+            margin: 15px 50px;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+        }
+
+        .file-card {
+            background: #ffffff;
+            color: var(--primary-color-dark);
+            padding: 8px 12px;
+            border-radius: 10px;
+            font-size: 12px;
+            font-weight: 600;
             display: flex;
-            flex-direction: column;
-            gap: 8px;
-            direction: ltr;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            border: 1px solid #eee;
         }
 
         .question-btn {
             background: #ffffff;
-            color: var(--sidebar-text-color);
             border: 1px solid #cccccc;
-            padding: 12px 16px;
-            border-radius: 10px;
+            padding: 10px;
+            border-radius: 8px;
             cursor: pointer;
-            text-align: left;
+            margin-bottom: 5px;
+            width: 100%;
+            text-align: right;
             font-size: 13px;
-            transition: all 0.3s;
         }
-
-            .question-btn:hover {
-                background: #f0f0f0;
-                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-                transform: translateX(2px); /* تم عكس اتجاه التحرك */
-            }
-
     </style>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 </head>
 <body>
-    <div class="chat-container">
-        <!-- MAIN CHAT (RIGHT) -->
-        <section class="msger">
-            <header class="msger-header">
-                <div class="msger-header-title">
-                    <span class="status-indicator"></span>
-                    Service Bot - RAG Enhanced
-                </div>
 
-            </header>
+    <aside class="chat-sidebar">
+        <div class="sidebar-title">⚙️ Settings RAG</div>
 
-            <main class="msger-chat" id="chatBox"></main>
-
-            <div class="msger-inputarea">
-                <div class="input-row">
-                    <input type="text" id="messageInput" class="msger-input" placeholder="اكتب سؤالك هنا..." />
-
-                </div>
-
-                <div class="buttons-row">
-                    <button class="msger-send-btn" id="sendRagBtn">🔍 Ask AI RAG</button>
-
-        @*             <button class="msger-send-btn" id="sendButton">💬 Normal Chat</button>
-                    <button class="msger-send-btn" id="sendPlannerButton">🎯 Send by Planner</button> *@
-
-                    <label for="fileUpload" class="attach-btn">
-                        📎 Attach File
-                    </label>
-                    <input type="file" id="fileUpload" style="display:none;" accept=".pdf,.txt,.docx">
-                </div>
-            </div>
-        </section>
-
-        <!-- SIDEBAR (LEFT) -->
-        <div class="chat-sidebar">
-            <div class="sidebar-title">⚙️ Settings RAG</div>
-
-            <!-- Embedding Model -->
-            <div class="config-section">
-                <h4>🧠 Embedding Model</h4>
-                <select id="embeddingModel">
-                    <option value="0">Nomic Embed Text</option>
-                    <option value="1">Text Embedding 3 Small</option>
-
-                </select>
-            </div>
-
-            <!-- Chunking Strategy -->
-            <div class="config-section">
-                <h4>✂️ Chunking Strategy</h4>
-                <select id="chunkingMode">
-                    <option value="0">LangChain Recursive Text Splitter</option>
-                    <option value="1">Recursive Text Splitter</option>
-                    <option value="2">Semantic Text Blocks Grouper</option>
-                </select>
-
-            </div>
-
-            <!-- Vector Database -->
-            <div class="config-section">
-                <h4>🗄️ Vector Store Provider</h4>
-                <select id="vectorStoreProvider">
-                    <option value="0">Qdrant SDK</option>
-                    <option value="1">Qdrant Http</option>
-                    <option value="2">In-Memory</option>
-
-                </select>
-
-            </div>
-
-            <!-- Vector Database -->
-            <div class="config-section">
-                <h4>🔍 Search Mode</h4>
-                <select id="searchMode">
-                    <option value="0">Vector</option>
-                    <option value="1">Semantic</option>
-                    <option value="2">Hybrid</option>
-                </select>
-
-            </div>
-
-            <!-- Embedding Model -->
-            <div class="config-section">
-                <h4>🧠 RAG Model</h4>
-                <select id="ragModel">
-                    <option value="0">Ollama</option>
-                    <option value="1">Open AI</option>
-
-                </select>
-            </div>
-
-            <!-- TopSimilarity -->
-            <div class="config-section">
-                <h4>🤝 Top Similarity</h4>
-                <input type="text" id="topSimilarity" value="3" />
-
-            </div>
-
-
-            <div class="info-box">
-                💡 <strong>Note:</strong> Changing the settings affects new queries only.
-            </div>
-
-            <!-- Help Questions Section -->
-            <div class="config-section" style="margin-top: 20px;">
-                <h4>❓ Help Questions</h4>
-                <div id="initialQuestions"></div>
-            </div>
-
-            <!-- Summary Section -->
-            <div class="summary-section">
-                <h4>📋 Conversation Summary</h4>
-                <button class="load-summary-btn" id="loadSummaryBtn">View Summary</button>
-                <div id="summaryResult"></div>
-            </div>
+        <div class="config-section">
+            <h4>🧠 Embedding Model</h4>
+            <select id="embeddingModel">
+                <option value="0">Nomic Embed Text</option>
+                <option value="1">Text Embedding 3 Small</option>
+            </select>
         </div>
-    </div>
+
+        <div class="config-section">
+            <h4>✂️ Chunking Strategy</h4>
+            <select id="chunkingMode">
+                <option value="0">LangChain Recursive</option>
+                <option value="1">Recursive Text Splitter</option>
+                <option value="2">Semantic Text Blocks</option>
+            </select>
+        </div>
+
+        <div class="config-section">
+            <h4>🗄️ Vector Store Provider</h4>
+            <select id="vectorStoreProvider">
+                <option value="0">Qdrant SDK</option>
+                <option value="1">Qdrant Http</option>
+                <option value="2">In-Memory</option>
+            </select>
+        </div>
+
+        <div class="config-section">
+            <h4>🔍 Search Mode</h4>
+            <select id="searchMode">
+                <option value="0">Vector</option>
+                <option value="1">Semantic</option>
+                <option value="2">Hybrid</option>
+            </select>
+        </div>
+
+        <div class="config-section">
+            <h4>🧠 AI Provider</h4>
+            <select id="AIProvider">
+                <option value="0">Ollama</option>
+                <option value="1">Open AI</option>
+                <option value="2">KernelMemory</option>
+            </select>
+        </div>
+
+        <div class="config-section">
+            <h4>🤝 Top Similarity</h4>
+            <input type="text" id="topSimilarity" value="3" />
+        </div>
+
+        <div class="config-section">
+            <h4>❓ Help Questions</h4>
+            <div id="initialQuestions"></div>
+        </div>
+
+        <div class="summary-section">
+            <button class="load-summary-btn" id="loadSummaryBtn">View Summary</button>
+            <div id="summaryResult" style="margin-top:10px; font-size:12px;"></div>
+        </div>
+    </aside>
+
+    <section class="msger">
+        <header class="msger-header">
+            <div class="msger-header-title">Service Bot - RAG Enhanced</div>
+        </header>
+
+        <main class="msger-chat" id="chatBox"></main>
+
+        <div class="msger-inputarea">
+            <div class="input-bar-wrapper">
+                <label for="fileUpload" class="attach-btn" style="cursor:pointer; color:#5f6368; font-size: 1.2rem;">
+                    <i class="fas fa-plus"></i>
+                </label>
+                <input type="file" id="fileUpload" style="display:none;" multiple accept=".pdf,.txt,.docx">
+
+                <input type="text" id="messageInput" class="msger-input" placeholder="Type your question here..." style="direction: ltr; text-align: left;">
+                <select id="toolSelector" class="tools-dropdown">
+                    <option value="DirectChat" data-name="Direct Chat">🔍 Direct Chat</option>
+                    <option value="PluginDB" data-name="Plugin DB">🗄️ Plugin DB</option>
+                    <option value="Web" data-name="Web Search">🌐 Web Search</option>
+                    <option value="KernelMemory" data-name="Kernel Memory">📝 Kernel Memory</option>
+                    <option value="Rag" data-name="Custom Rag">⚙️ Custom Rag</option>
+                </select>
+
+                <button id="mainSendBtn" class="send-btn">
+                    <i class="fas fa-paper-plane"></i>
+                </button>
+            </div>
+
+            <div id="fileNamesDisplay"></div>
+        </div>
+    </section>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
     <script>
+        // Static assets
+        const imgBOT = "/images/bot.png";
+        const imgPerson = "/images/user.png";
+        let selectedFiles = [];
 
-                          const imgBOT =  "/images/bot.png";
+        $(document).ready(function() {
+            // Initial UI setup
+            addMessage("Hello! I am your smart assistant. How can I help you today?", 'bot');
+            loadInitialQuestions();
 
-                const imgPerson =  "/images/user.png";
-                const nameBOT = "Smart Assistant";
-                const namePerson = "you";
+            // File Upload Event
+            $('#fileUpload').on('change', function(e) {
+                handleFileUpload(e);
+                $(this).val('');
+            });
 
-                let currentMode = 'normal';
+            // Summary Button Event
+            $('#loadSummaryBtn').on('click', function() {
+                loadSummary();
+            });
 
-                // ========== INITIALIZATION ==========
-                $(document).ready(function() {
-                    addMessage("Hello! I am your smart assistant enhanced with RAG technology. Choose the settings and ask me any question! ", 'bot');
-                    loadInitialQuestions();
+            // Main Send Action
+            $('#mainSendBtn').on('click', function() {
+                const msg = $('#messageInput').val().trim();
+                const tool = $('#toolSelector').val();
 
-                    // Send Button (Main)
-                    $('#sendBtn').click(function() {
-                        const message = $('#messageInput').val().trim();
-                        if (!message) return;
+                if (!msg) return;
 
-                        if (currentMode === 'normal') {
-                            askChatAI(message);
-                        } else if (currentMode === 'planner') {
-                            askChatAIPlanner(message);
-                        } else if (currentMode === 'rag') {
-                            askRag(message);
-                        }
+                // Show user message
+                addMessage(msg, 'user');
+                $('#messageInput').val('');
 
-
-                        $('#messageInput').val('');
-                    });
-
-                    // Mode Buttons
-                    $('#sendButton').click(function() {
-                        currentMode = 'normal';
-                        const message = $('#messageInput').val().trim();
-                        if (!message) return;
-                        askChatAI(message);
-                        $('#messageInput').val('');
-                    });
-
-                    $('#sendPlannerButton').click(function() {
-                        currentMode = 'planner';
-                        const message = $('#messageInput').val().trim();
-                        if (!message) return;
-                        askChatAIPlanner(message);
-                        $('#messageInput').val('');
-                    });
-
-                    $('#sendRagBtn').click(function() {
-                        currentMode = 'rag';
-                        const message = $('#messageInput').val().trim();
-                        if (!message) return;
-                        askRag(message);
-                        $('#messageInput').val('');
-                    });
-
-                    // Enter key
-                    $('#messageInput').keypress(function(e) {
-                        if (e.key === 'Enter') {
-                            $('#sendBtn').click();
-                        }
-                    });
-
-                    // File Upload
-                    $('#fileUpload').change(handleFileUpload);
-
-                    // Load Summary
-                    $('#loadSummaryBtn').click(loadSummary);
-                });
-
-                // ========== API CALLS ==========
-                function askChatAI(message) {
-                    addMessage(message, 'user');
-                    showLoader();
-
-                    $.ajax({
-                        url: '/AskChatAI',
-                        type: 'POST',
-                        data: JSON.stringify(message),
-                        contentType: 'application/json',
-                        success: function(response) {
-                            hideLoader();
-                            addMessage(response.data || "لا توجد إجابة", 'bot');
-                        },
-                        error: function(xhr) {
-                            hideLoader();
-                            const error = (xhr.responseJSON && xhr.responseJSON.error) || xhr.responseText || "حدث خطأ في الاتصال";
-                            addMessage("❌ " + error, 'bot');
-                        }
-                    });
+                // Routing to specific tool functions
+                switch(tool) {
+                    case 'DirectChat':   askDirectChat(msg); break;
+                    case 'PluginDB':     askPluginDB(msg); break;
+                    case 'Web':          askWeb(msg); break;
+                    case 'Rag':          askRag(msg); break;
+                    case 'KernelMemory': askKernelMemory(msg); break;
+                    default:             askDirectChat(msg);
                 }
 
-                function askChatAIPlanner(message) {
-                    addMessage(message, 'user');
-                    showLoader();
+                // Reset local state
+                selectedFiles = [];
+                renderFiles();
+            });
+        });
 
-                    $.ajax({
-                        url: '/AskChatAI_Planner',
-                        type: 'POST',
-                        data: JSON.stringify(message),
-                        contentType: 'application/json',
-                        success: function(response) {
-                            hideLoader();
-                            addMessage(response.data || "لا توجد إجابة", 'bot');
-                        },
-                        error: function(xhr) {
-                            hideLoader();
-                            const error = (xhr.responseJSON && xhr.responseJSON.error) || xhr.responseText || "حدث خطأ في الاتصال";
-                            addMessage("❌ " + error, 'bot');
-                        }
-                    });
+        // --- Tool Call Implementations ---
+
+        function askDirectChat(q) { sendAiRequest('/AskChatAI', q); }
+        function askPluginDB(q)   { sendAiRequest('/AskPluginDB', q); }
+        function askWeb(q)        { sendAiRequest('/AskWeb', q); }
+        function askRag(q)        { sendAiRequest('/AskRag', q); }
+        function askKernelMemory(q) { sendAiRequest('/AskKernelMemory', q); }
+
+        /**
+         * Generic AJAX wrapper for AI requests
+         */
+        function sendAiRequest(url, query) {
+            const payload = {
+                Query: query,
+                VectorDbProvider: parseInt($('#vectorStoreProvider').val()),
+                ChunkingMode: parseInt($('#chunkingMode').val()),
+                EmbeddingModel: parseInt($('#embeddingModel').val()),
+                SearchMode: parseInt($('#searchMode').val()),
+                AIProvider: parseInt($('#AIProvider').val()),
+                TopSimilarity: parseInt($('#topSimilarity').val())
+            };
+
+            showLoader();
+
+            $.ajax({
+                url: url,
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify(payload),
+                success: function(res) {
+                    hideLoader();
+                    // Handle different response structures
+                    const botReply = res.data?.answer || res.data || "No response received.";
+                    addMessage(botReply, 'bot');
+                },
+                error: function(xhr) {
+                    hideLoader();
+                    const err = xhr.responseJSON?.error || "Request failed.";
+                    addMessage("❌ Error: " + err, 'bot');
                 }
-
-               function escapeHtml(str) {
-          if (str === null || str === undefined) return '';
-          return String(str)
-            .replaceAll('&', '&amp;')
-            .replaceAll('<', '&lt;')
-            .replaceAll('>', '&gt;')
-            .replaceAll('"', '&quot;')
-            .replaceAll("'", '&#039;');
+            });
         }
 
-                function askRag(message) {
-          const config = {
-            query: message,
-            vectorStoreProvider: parseInt($('#vectorStoreProvider').val(), 10),
-            chunkingMode: parseInt($('#chunkingMode').val(), 10),
-            embeddingModel: parseInt($('#embeddingModel').val(), 10),
-            searchMode: parseInt($('#searchMode').val(), 10),
-            ragModel: parseInt($('#ragModel').val(), 10),
+        // --- Helper Functions ---
 
-            topSimilarity:
-              parseInt($('#searchMode').val(), 10) === 2
-                ? 1
-                : parseInt($('#topSimilarity').val(), 10)
-          };
-        
-        debugger
-          addMessage(escapeHtml(message), 'user');
-          showLoader();
+                   function handleFileUpload(event) {
+            const files = event.target.files;
+            if (!files.length) return;
 
-          $.ajax({
-            url: '/AskRag',
-            type: 'POST',
-            data: JSON.stringify(config),
-            contentType: 'application/json',
-            success: function (response) {
-              hideLoader();
+            // Capture selected options text for the success message
+            const selectedOptions = {
+                embedding: $("#embeddingModel option:selected").text(),
+                vectorDb: $("#vectorStoreProvider option:selected").text(),
+                searchMode: $("#searchMode option:selected").text(),
+                aiProvider: $("#AIProvider option:selected").text(),
+                tool: $("#toolSelector option:selected").attr("data-name") || $("#toolSelector option:selected").text()
+            };
 
-              const data = response && response.data ? response.data : null;
+            const formData = new FormData();
+            // Temporarily store files to be uploaded
+            const currentUploadSet = Array.from(files);
 
-              const answerText =
-                (typeof data === 'string')
-                  ? data
-                  : (data && data.answer ? data.answer : "لم يتم العثور على إجابة");
+            currentUploadSet.forEach(f => {
+                formData.append("files", f);
+                selectedFiles.push(f);
+            });
 
-              const chunkIndexes =
-                (data && typeof data === 'object' && Array.isArray(data.chunkIndexes))
-                  ? data.chunkIndexes
-                  : [];
+            renderFiles();
 
-              const chunksHtml = chunkIndexes.length
-                ? `<br><strong>📌 Chunk Indexes:</strong> <span style="direction:ltr;display:inline-block">${escapeHtml(chunkIndexes.join(', '))}</span>`
-                : `<br><strong>📌 Chunk Indexes:</strong> <em>Not returned</em>`;
+            // Append metadata for RAG processing
+            formData.append("VectorDbProvider", $('#vectorStoreProvider').val());
+            formData.append("ChunkingMode", $('#chunkingMode').val());
+            formData.append("EmbeddingModel", $('#embeddingModel').val());
+            formData.append("SearchMode", $('#searchMode').val());
+            formData.append("AIProvider", $('#AIProvider').val());
+            formData.append("ToolsSearchBy", $('#toolSelector').val());
+            formData.append("TopSimilarity", $('#topSimilarity').val());
 
-                
+            // Show processing loader
+            showLoader("Proceeding documents...");
 
-              const configInfo = `
-        🔍 <strong>RAG Results</strong><br>
-        📊 Used Settings:<br>
-        • Vector Store: ${escapeHtml(getVectorStoreName(config.vectorStoreProvider))}<br>
-        • Chunking: ${escapeHtml(getChunkingName(config.chunkingMode))}<br>
-        • Embedding: ${escapeHtml(getEmbeddingName(config.embeddingModel))}<br>
-        • Search Mode: ${escapeHtml(getSearchModeName(config.searchMode))}<br>
-        • topSimilarity: ${escapeHtml(config.topSimilarity)}<br>
-        • RAG Model: ${escapeHtml(getRagModelName(config.ragModel))}<br>
-        ${chunksHtml}
-        <br><br>
-        <strong>Answer:</strong><br>${escapeHtml(answerText).replaceAll('\n', '<br>')}
-              `;
+            $.ajax({
+                url: '/UploadDocument',
+                type: 'POST',
+                data: formData,
+                contentType: false,
+                processData: false,
+                success: function() {
+                    hideLoader();
 
-              addMessage(configInfo, 'bot');
-            },
-            error: function (xhr) {
-              hideLoader();
-              const error =
-                (xhr.responseJSON && (xhr.responseJSON.error || xhr.responseJSON.message))
-                || xhr.responseText
-                || "حدث خطأ في RAG";
+                    // Construct a detailed success message
+                    let successDetail = `
+                        <b>✅ Documents Uploaded & Processed successfully!</b><br/>
+                        <small style="color: #555;">
+                            <b>Model:</b> ${selectedOptions.embedding} <br/>
+                            <b>Vector DB:</b> ${selectedOptions.vectorDb} <br/>
+                            <b>Search:</b> ${selectedOptions.searchMode} <br/>
+                            <b>AI Provider:</b> ${selectedOptions.aiProvider} <br/>
+                            <b>Tool Used:</b> ${selectedOptions.tool}
+                        </small>
+                    `;
 
-              addMessage("❌ " + escapeHtml(error), 'bot');
-            }
-          });
+                    addMessage(successDetail, 'bot');
+                },
+                error: function(xhr) {
+                    hideLoader();
+
+                    // 1. Clear the global files array on error
+                    selectedFiles = [];
+
+                    // 2. Refresh the UI to remove the file cards
+                    renderFiles();
+
+                    // 3. Display the error message from the server
+                    const err = xhr.responseJSON?.error || "Upload failed.";
+                    addMessage("❌ Error: " + err, 'bot');
+
+                    // 4. Reset the file input element so the user can try again
+                    $(event.target).val('');
+                }
+            });
         }
-        
 
+        function renderFiles() {
+            const display = $('#fileNamesDisplay');
+            display.empty();
+            selectedFiles.forEach((file, i) => {
+                display.append(`
+                    <div class="file-card">
+                        <span><i class="fas fa-file"></i> ${file.name}</span>
+                        <i class="fas fa-trash file-delete-btn" style="color:red; cursor:pointer" onclick="removeFile(${i})"></i>
+                    </div>`);
+            });
+        }
 
+        window.removeFile = function(i) {
+            selectedFiles.splice(i, 1);
+            renderFiles();
+        };
 
-                // ========== FILE UPLOAD ==========
-                function handleFileUpload(event) {
-                    const file = event.target.files[0];
-                    if (!file) return;
-
-                    addMessage(`📄 Uploading file…: ${file.name}`, 'user');
-
-                    const formData = new FormData();
-          const config = {
-            query: message,
-            vectorStoreProvider: parseInt($('#vectorStoreProvider').val(), 10),
-            chunkingMode: parseInt($('#chunkingMode').val(), 10),
-            embeddingModel: parseInt($('#embeddingModel').val(), 10),
-            searchMode: parseInt($('#searchMode').val(), 10),
-            ragModel: parseInt($('#ragModel').val(), 10),
-
-            topSimilarity:
-              parseInt($('#searchMode').val(), 10) === 2
-                ? 1
-                : parseInt($('#topSimilarity').val(), 10)
-          };
-        
-
-      
-                    formData.append("file", file);
-                    formData.append("config", JSON.stringify(config));
-
-                    showLoader();
-                    $.ajax({
-                        url: '/UploadDocument',
-                        type: 'POST',
-                        data: formData,
-                        contentType: false,
-                        processData: false,
-                        success: function(response) {
-                            hideLoader();
-        addMessage(`✅ "${file.name}" uploaded successfully!<br><br>✅ Processing and indexing completed successfully.`, 'bot');
-                             },
-                        error: function(xhr) {
-                            hideLoader();
-        const error = (xhr.responseJSON && xhr.responseJSON.error) || "File upload failed";
-                                    addMessage("❌ " + error, 'bot');
-                        }
-                    });
-                }
-
-                // ========== INITIAL QUESTIONS ==========
-                function loadInitialQuestions() {
-                    $.ajax({
-                        url: '/GetInitialQuestions',
-                        type: 'GET',
-                        success: function(response) {
-                            if (response.success && response.data && response.data.length > 0) {
-                                showInitialQuestions(response.data);
-                            }
-                        },
-                        error: function() {
-                            console.warn("Failed to load initial questions");
-                        }
-                    });
-                }
-
-                function showInitialQuestions(questions) {
+        function loadInitialQuestions() {
+            $.get('/GetInitialQuestions', function(res) {
+                if (res.success) {
                     const container = $('#initialQuestions');
                     container.empty();
-                    questions.forEach(q => {
+                    res.data.forEach(q => {
                         const btn = $(`<button class="question-btn">${q}</button>`);
-                        btn.click(function() {
+                        btn.on('click', function() {
                             $('#messageInput').val(q);
-                            $('#sendBtn').click();
+                            $('#mainSendBtn').click();
                         });
                         container.append(btn);
                     });
                 }
+            });
+        }
 
-                // ========== LOAD SUMMARY ==========
-                function loadSummary() {
-        $('#summaryResult').html('<img src="/images/loader.gif" class="loader" />');
+        function loadSummary() {
+            $('#summaryResult').text('Processing...');
+            $.get('/SummarizationChatHistory', function(res) {
+                $('#summaryResult').text(res.success ? res.summary : "No summary.");
+            });
+        }
 
+        function addMessage(text, sender) {
+            const isUser = sender === 'user';
+            const html = `
+                <div class="msg ${isUser ? 'right-msg' : 'left-msg'}">
+                    <div class="msg-img" style="background-image: url(${isUser ? imgPerson : imgBOT})"></div>
+                    <div class="msg-bubble"><div class="msg-text">${text}</div></div>
+                </div>`;
+            $('#chatBox').append(html);
+            $('#chatBox').scrollTop($('#chatBox')[0].scrollHeight);
+        }
 
-                    $.ajax({
-                        url: '/SummarizationChatHistory',
-                        type: 'GET',
-                        success: function(response) {
-                            if (response.success && response.summary) {
-                                $('#summaryResult').html(`<div>${response.summary}</div>`);
-                            } else {
-                                $('#summaryResult').html('<p style="color: #fc8181;">لا يوجد ملخص متاح</p>');
-                            }
-                        },
-                        error: function() {
-                            $('#summaryResult').html('<p style="color: #fc8181;">حدث خطأ أثناء تحميل الملخص</p>');
-                        }
-                    });
-                }
-
-                // ========== UI HELPERS ==========
-                function addMessage(text, sender) {
-                    const time = new Date().toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' });
-                    const isUser = sender === 'user';
-
-                    const msgDiv = `
-                        <div class="msg ${isUser ? 'right' : 'left'}-msg">
-                            <div class="msg-img" style="background-image: url('${isUser ? imgPerson : imgBOT}')"></div>
-                            <div class="msg-bubble">
-                                <div class="msg-info">
-                                    <div class="msg-info-name">${isUser ? namePerson : nameBOT}</div>
-                                    <div class="msg-info-time">${time}</div>
-                                </div>
-                                <div class="msg-text">${text}</div>
-                            </div>
-                        </div>
-                    `;
-
-                    $('#chatBox').append(msgDiv);
-                    $('#chatBox').scrollTop($('#chatBox')[0].scrollHeight);
-                }
-
-                function showLoader() {
-                    addMessage('<img src="/images/loader.gif" class="loader"/>', 'bot');
-                }
-
-                function hideLoader() {
-                    $('#chatBox .msg:last-child').remove();
-                }
-
-                // ========== HELPER FUNCTIONS ==========
-                function getVectorStoreName(value) {
-                    const names = [ 'Qdrant SDK', 'Qdrant Http','In-Memory'];
-                    return names[value] || 'Unknown';
-                }
-
-                function getChunkingName(value) {
-                    const names = [
-                        'LangChain Recursive',
-                         'Recursive Text Splitter',
-                         'Semantic Text Blocks Grouper'
-                     
-                    ];
-                    return names[value] || 'Unknown';
-                }
-
-                function getEmbeddingName(value) {
-                    const names=[
-                    'Nomic Embed Text',
-                    'Text Embedding 3 small'
-                    ];
-                     return names[value] || 'Unknown';
-
-                }
-                function getSearchModeName(value) {
-                  
-                    const names=[
-
-                    'Vector',
-                    'Semantic',
-                     'Hybrid'
-                    ];
-                     return names[value] || 'Unknown';
-
-                }
-                function getRagModelName(value) {
-
-                    const names=[
-
-                    'Ollama',
-                    'Open AI',
-                     
-                    ];
-                    
-                     return names[value] || 'Unknown';
-
-                }
-                
+        function showLoader() {
+            addMessage('<i class="fas fa-spinner fa-spin"></i> Processing documents, please wait...', 'bot');
+        }        function hideLoader() { $('#chatBox .msg:last-child').has('.fa-spinner').remove(); }
     </script>
 </body>
 </html>

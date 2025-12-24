@@ -1,241 +1,143 @@
-﻿using AIHousingAssistant.Application.Enum;
-using AIHousingAssistant.semantic.Plugins;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.SemanticKernel.Connectors.OpenAI;
-using Microsoft.SemanticKernel;
+﻿using Microsoft.AspNetCore.Mvc;
+using AIHousingAssistant.Application.Enum;
+using AIHousingAssistant.Application.Services.Interfaces;
+using AIHousingAssistant.Application.Services.Interfaces.Tools;
+using AIHousingAssistant.Models;
 using AIHousingAssistant.Models.Settings;
 using Microsoft.Extensions.Options;
-using Microsoft.EntityFrameworkCore;
-using Newtonsoft.Json;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
-using System.Linq;
-using Microsoft.SemanticKernel.Services;
-using AIHousingAssistant.Application.Services.Interfaces;
-using AIHousingAssistant.Application.SemanticKernel;
-using AIHousingAssistant.Models;
 
 namespace AIHousingAssistant.Controllers
 {
     public class ChatController : Controller
     {
+        // Core services
         private readonly IHousingService _housingService;
         private readonly IChatHistoryService _chatHistoryService;
-        private readonly ProviderSettings _providerSettings;
         private readonly ISummarizerService _summarizer;
+
+        // Tool-specific interfaces
+        private readonly IMemoryKernelService _kernelMemoryService;
+        private readonly IDirectChatService _directChatService;
+        private readonly IPluginDbService _pluginDbService;
         private readonly IRagService _ragService;
+        private readonly IWebSearchService _webSearchService;
 
-        public ChatController(IHousingService housingService, IChatHistoryService chatHistoryService,
-            IOptions<ProviderSettings> providerSettings
-            , ISummarizerService summarizer
-            , IRagService ragService)
-            
-
+        public ChatController(
+            IHousingService housingService,
+            IChatHistoryService chatHistoryService,
+            ISummarizerService summarizer,
+            IMemoryKernelService kernelMemoryService,
+            IDirectChatService directChatService,
+            IPluginDbService pluginDbService,
+            IRagService ragService,
+            IWebSearchService webSearchService)
         {
             _housingService = housingService;
             _chatHistoryService = chatHistoryService;
-            _providerSettings = providerSettings.Value;
             _summarizer = summarizer;
+            _kernelMemoryService = kernelMemoryService;
+            _directChatService = directChatService;
+            _pluginDbService = pluginDbService;
             _ragService = ragService;
-
+            _webSearchService = webSearchService;
         }
-        public IActionResult Index()
-        {
-            return View();
-        }
-        [HttpPost("AskChatAI_Planner")]
-        public async Task<IActionResult> AskChatAI_Planner([FromBody] string query)
-        {
-            if (string.IsNullOrWhiteSpace(query))
-                return BadRequest("Query cannot be empty.");
 
-            try
-            {
-                // ---------------------------
-                // 1. Build the Kernel and add the HousingPlugin
-                // ---------------------------
-                var kernelBuilder = SemanticKernelHelper.BuildKernel(AIProvider.OpenRouter, _providerSettings);
-                SemanticKernelHelper.AddPlugin(kernelBuilder, new HousingPlugin(_housingService));
-                var kernel = SemanticKernelHelper.Build(kernelBuilder);
+        public IActionResult Index() => View();
 
-                // ---------------------------
-                // 2. Get or create semantic session
-                // ---------------------------
-                string sessionId = GetOrCreateSessionId();
-
-                var history = _chatHistoryService.GetOrCreateHistory(sessionId);
-
-                // ---------------------------
-                // 3. Save user's message
-                // ---------------------------
-                _chatHistoryService.AddUserMessage(sessionId, query);
-
-                // ---------------------------
-                // 4. Get default prompt execution settings based on the AI provider
-                // ---------------------------
-                var settings = new OpenAIPromptExecutionSettings
-                {
-                    ToolCallBehavior = ToolCallBehavior.AutoInvokeKernelFunctions
-                };
-
-                var result = await kernel.InvokePromptAsync(query, new(settings));
-                string botResponse = result.GetValue<string>();
-                ///----------------
-
-                // ---------------------------
-                // 5. Save bot's response
-                // ---------------------------
-                _chatHistoryService.AddAssistantMessage(sessionId, botResponse);
-
-                return Ok(new { Success = true, Data = botResponse });
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, new { Success = false, Error = ex.Message });
-            }
-        }
+        #region AI Chat Endpoints (Unified Request)
 
         [HttpPost("AskChatAI")]
-        public async Task<IActionResult> AskChatAI([FromBody] string query)
+        public async Task<IActionResult> AskChatAI([FromBody] RagUiRequest ragRequest)
         {
-            /*
-             "The Planner feature in Semantic Kernel has been deprecated in the current SDK version we are using. Instead of kernel.Planning or kernel.CreatePlanner(), we now rely on direct function invocation via Plugins and InvokePromptAsync. Any multi-step reasoning or task sequences need to be implemented manually in the code."
-             */
-            if (string.IsNullOrWhiteSpace(query))
-                return BadRequest("Query cannot be empty.");
+            // Handles direct AI chat with general knowledge
+            return await ExecuteAskAction(() => _directChatService.AskDirectChatAsync(ragRequest), ragRequest);
+        }
+
+        [HttpPost("AskRag")]
+        public async Task<IActionResult> AskRagAsync([FromBody] RagUiRequest ragRequest)
+        {
+            // Handles traditional RAG with vector store
+            return await ExecuteAskAction(() => _ragService.AskRagAsync(ragRequest), ragRequest);
+        }
+
+        [HttpPost("AskKernelMemory")]
+        public async Task<IActionResult> AskKernelMemoryAsync([FromBody] RagUiRequest ragRequest)
+        {
+            // Handles search using Kernel Memory library
+            return await ExecuteAskAction(() => _kernelMemoryService.AskMemoryKernelAsync(ragRequest), ragRequest);
+        }
+
+        [HttpPost("AskPluginDB")]
+        public async Task<IActionResult> AskPluginDBAsync([FromBody] RagUiRequest ragRequest)
+        {
+            // Handles natural language queries to a SQL database
+            return await ExecuteAskAction(() => _pluginDbService.AskPluginDBAsync(ragRequest), ragRequest);
+        }
+
+        [HttpPost("AskWeb")]
+        public async Task<IActionResult> AskWebAsync([FromBody] RagUiRequest ragRequest)
+        {
+            // Handles AI-powered web searching
+            return await ExecuteAskAction(() => _webSearchService.AskWebAsync(ragRequest), ragRequest);
+        }
+
+        #endregion
+
+        #region Document Management
+
+        [HttpPost("UploadDocument")]
+        public async Task<IActionResult> UploadDocument([FromForm] List<IFormFile> files, [FromForm] RagUiRequest request)
+        {
+            // Ensure files were actually uploaded
+            if (files == null || files.Count == 0)
+                return BadRequest(new { success = false, error = "No files uploaded" });
 
             try
             {
-                // 1. Build the Kernel and add the HousingPlugin
-                var kernelBuilder = SemanticKernelHelper.BuildKernel(AIProvider.OpenRouter, _providerSettings);
-                SemanticKernelHelper.AddPlugin(kernelBuilder, new HousingPlugin(_housingService));
-                var kernel = SemanticKernelHelper.Build(kernelBuilder);
-
-                // 2. Get or create semantic session
-                string sessionId = GetOrCreateSessionId();
-              
-                var history = _chatHistoryService.GetOrCreateHistory(sessionId);
-
-                // 3. Save user's message
-                _chatHistoryService.AddUserMessage(sessionId, query);
-
-                string functionName = DetermineSkill(query);
-                string unitType = ExtractUnitType(query);
-
-                var function = kernel.Plugins.GetFunction("HousingPlugin", functionName);
-                var result = await function.InvokeAsync(kernel, new KernelArguments
+                // Route processing based on the tool selected in the UI
+                if (request.ToolsSearchBy == SearchToolType.KernelMemory)
                 {
-                    ["type"] = unitType
+                    await _kernelMemoryService.ProcessDocumentByKernelMemoryAsync(files, request);
+                }
+                else if (request.ToolsSearchBy == SearchToolType.Rag)
+                {
+                    await _ragService.ProcessDocumentByRagAsync(files, request);
+                }
+                else
+                {
+                    // Block uploading if the selected tool does not support document indexing
+                    return BadRequest(new
+                    {
+                        success = false,
+                        error = $"Document upload is not supported for the selected tool: {request.ToolsSearchBy}. Please select RAG or Kernel Memory."
+                    });
+                }
+
+                return Ok(new
+                {
+                    success = true,
+                    fileCount = files.Count,
+                    message = $"Successfully processed {files.Count} documents."
                 });
-
-                string botResponse = result.GetValue<string>();
-
-                
-                return Ok(new { Success = true, Data = botResponse });
-                
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new { Success = false, Error = ex.Message });
+                // Handle document processing exceptions
+                return StatusCode(500, new { success = false, error = ex.Message });
             }
         }
-        private string ExtractUnitType(string query)
-        {
-            if (query.Contains("شقة") || query.Contains("شقق")) return "شقة";
-            if (query.Contains("فيلا") || query.Contains("فلل")) return "فيلا";
-            return "وحدة";
-        }
+        #endregion
 
-        private string DetermineSkill(string query)
-        {
-            if (query.Contains("كم") || query.Contains("عدد")) return "GetAvailableUnitsCountAsync";
-            if (query.Contains("هل") || query.Contains("موجود")) return "CheckAvailabilityAsync";
-            return "GetAllAvailableGroupedAsync"; // fallback if no specific match
-        }
+        #region Helper APIs (Questions & History)
 
-        #region Normal API
         [HttpGet("GetInitialQuestions")]
         public async Task<IActionResult> GetInitialQuestions()
         {
             try
             {
+                // Fetches suggested questions for the chat UI
                 var questions = await _housingService.GetInitialQuestionsAsync();
-
-                if (questions.Count == 0)
-                    return NotFound(new { success = false, error = "No initial questions found." });
-
                 return Ok(new { success = true, data = questions });
-            }
-            catch (JsonReaderException ex)
-            {
-                return BadRequest(new { success = false, error = $"Error parsing JSON: {ex.Message}" });
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, new { success = false, error = $"An error occurred: {ex.Message}" });
-            }
-        }
-        #endregion
-
-        #region  History
-        [HttpGet("SummarizationChatHistory")]
-        public async Task<IActionResult> SummarizationChatHistory()
-        {
-            // 2. Get or create semantic session
-            var sessionId = GetOrCreateSessionId();
-          
-
-            if (string.IsNullOrWhiteSpace(sessionId))
-                return BadRequest(new { success = false, error = "No active session" });
-            ///set history to test
-            //var history = _chatHistoryService.GetOrCreateHistory(sessionId);
-
-            //    _chatHistoryService.AddUserMessage(sessionId, "test test test test ");
-            /////////////////////
-    
-                var history = _chatHistoryService.GetChatHistory(sessionId);
-
-            if (history == null)
-                return NotFound(new { success = false, error = "No history found" });
-
-            var summary = await _summarizer.SummarizeChatAsync(history);
-
-            return Ok(new { success = true, summary });
-        }
-
-        private string GetOrCreateSessionId()
-        {
-            var id = HttpContext.Session.GetString("SessionId");
-
-            if (string.IsNullOrEmpty(id))
-            {
-                id = Guid.NewGuid().ToString();
-                HttpContext.Session.SetString("SessionId", id);
-            }
-
-            return id;
-        }
-
-
-        #endregion
-        #region upload
-        [HttpPost("UploadDocument")]
-        public async Task<IActionResult> UploadDocument(IFormFile file, [FromForm] string config)
-        {
-            if (file == null || file.Length == 0)
-                return BadRequest(new { success = false, error = "No file uploaded" });
-
-            try
-            {
-                RagUiRequest request = JsonConvert.DeserializeObject<RagUiRequest>(config);
-
-                await _ragService.ProcessDocumentAsync(file, request);
-
-                return Ok(new
-                {
-                    success = true,
-                    fileName = file.FileName,
-                    message = "File uploaded and RAG processing started."
-                });
             }
             catch (Exception ex)
             {
@@ -243,35 +145,62 @@ namespace AIHousingAssistant.Controllers
             }
         }
 
+        [HttpGet("SummarizationChatHistory")]
+        public async Task<IActionResult> SummarizationChatHistory()
+        {
+            // Generates a short summary of the current session conversation
+            var sessionId = GetOrCreateSessionId();
+            var history = _chatHistoryService.GetChatHistory(sessionId);
+
+            if (history == null)
+                return NotFound(new { success = false, error = "No history found" });
+
+            var summary = await _summarizer.SummarizeChatAsync(history);
+            return Ok(new { success = true, summary });
+        }
 
         #endregion
-        [HttpPost("AskRag")]
-        public async Task<IActionResult> AskRagAsync([FromBody] RagUiRequest ragRequest)
+
+        #region Private Methods
+
+        /// <summary>
+        /// Centralized wrapper to manage sessions, validation, and error handling for AI requests
+        /// </summary>
+        private async Task<IActionResult> ExecuteAskAction<T>(Func<Task<T>> action, RagUiRequest request)
         {
-            // Check if the request body is null
-            if (ragRequest == null)
-            {
-                return BadRequest(new { error = "Request body is empty." });
-            }
+            // Basic query validation
+            if (request == null || string.IsNullOrWhiteSpace(request.Query))
+                return BadRequest(new { error = "Request or Query cannot be empty." });
 
             try
             {
-                ragRequest.SessionId=GetOrCreateSessionId();
-                var reply = await _ragService.AskRagAsync(ragRequest);
+                // Link request to the current session ID
+                request.SessionId = GetOrCreateSessionId();
 
-                // Return the DTO (contains Answer, ChunkIndexes, and Sources)
-                return Ok(new { data = reply });
+                // Execute the specific tool service
+                var result = await action();
+
+                return Ok(new { data = result });
             }
             catch (Exception ex)
             {
-                // Log the error and return a 500 status code
-                return StatusCode(500, new { error = "An error occurred while processing your request.", details = ex.Message });
+                // Return 500 status on internal failures
+                return StatusCode(500, new { error = "An error occurred during processing.", details = ex.Message });
             }
         }
 
+        private string GetOrCreateSessionId()
+        {
+            // Retrieve session ID from cookie or generate a new one
+            var id = HttpContext.Session.GetString("SessionId");
+            if (string.IsNullOrEmpty(id))
+            {
+                id = Guid.NewGuid().ToString();
+                HttpContext.Session.SetString("SessionId", id);
+            }
+            return id;
+        }
 
-
-
-
+        #endregion
     }
 }
