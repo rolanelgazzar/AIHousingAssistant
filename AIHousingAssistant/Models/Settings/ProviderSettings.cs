@@ -43,7 +43,11 @@ namespace AIHousingAssistant.Models.Settings
         {
         public string Endpoint { get; set; } 
     public string Model { get; set; } = string.Empty;
-        }
+        public string EmbeddingModel { get; set; } = string.Empty;
+
+        public string TextModel { get; set; } = string.Empty;
+
+    }
     public class OllamaEmbeddingSettings
     {
         public string Endpoint { get; set; }

@@ -116,5 +116,40 @@ namespace AIHousingAssistant.Helper
                 throw new Exception("Unsupported file type");
 
         }
+
+        public static string GetProcessingRoot(string processingFolderPath)
+        {
+            if (string.IsNullOrWhiteSpace(processingFolderPath))
+                throw new ArgumentException("ProcessingFolderPath cannot be empty");
+
+            var rootPath = Path.Combine(
+                Directory.GetCurrentDirectory(),
+                processingFolderPath
+            );
+
+            if (!Directory.Exists(rootPath))
+                Directory.CreateDirectory(rootPath);
+
+            return rootPath;
+        }
+
+        public static string GetSessionPath(
+            string processingFolderPath,
+            string sessionId)
+        {
+            if (string.IsNullOrWhiteSpace(sessionId))
+                throw new ArgumentException("SessionId cannot be empty");
+
+            var sessionPath = Path.Combine(
+                GetProcessingRoot(processingFolderPath),
+                sessionId
+            );
+
+            if (!Directory.Exists(sessionPath))
+                Directory.CreateDirectory(sessionPath);
+
+            return sessionPath;
+        }
     }
 }
+
