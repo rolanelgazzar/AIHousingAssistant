@@ -1,0 +1,6 @@
+# Worksheet 1
+
+"City        ", "Min Cost         ", "Max Cost"
+"Riyadh      ", "4000", "5000"
+"Jeddah      ", "5000", "8000"
+"Makkah      ", "8000", "10000"

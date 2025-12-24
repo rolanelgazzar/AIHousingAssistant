@@ -1,0 +1,16 @@
+ access all system-related reports
+- Account management
+5. Technical Requirements
+- Web-based and mobile-responsive system
+- Secure login and role-based access
+- Arabic and English language support
+- Integration with HRMS and internal directories (e.g., LDAP)
+- Notification and reminder capabilities
+- REST API availability for system integration
+6. Non-Functional Requirements
+- High system performance for real-time tracking
+- User-friendly interface for non-technical roles
+- Data encryption and compliance with privacy standards
+- Support for offline usage with sync-on-reconnect
+- Modular structure to enable/disable features by role
+- SLA tracking and automated escalations

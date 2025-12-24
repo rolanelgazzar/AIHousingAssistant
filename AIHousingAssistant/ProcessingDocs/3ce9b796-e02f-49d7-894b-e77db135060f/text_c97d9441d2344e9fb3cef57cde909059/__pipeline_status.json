@@ -1,0 +1,149 @@
+{
+  "index": "3ce9b796-e02f-49d7-894b-e77db135060f",
+  "document_id": "text_c97d9441d2344e9fb3cef57cde909059",
+  "execution_id": "1dd9378c5ded4bda85262ce0ea37d1ee",
+  "steps": [
+    "extract",
+    "partition",
+    "gen_embeddings",
+    "save_records"
+  ],
+  "remaining_steps": [],
+  "completed_steps": [
+    "extract",
+    "partition",
+    "gen_embeddings",
+    "save_records"
+  ],
+  "tags": {
+    "source": [
+      "file-text"
+    ],
+    "sessionId": [
+      "3ce9b796-e02f-49d7-894b-e77db135060f"
+    ]
+  },
+  "creation": "2025-12-24T19:38:01.6274752+00:00",
+  "last_update": "2025-12-24T19:38:04.8631838+00:00",
+  "files": [
+    {
+      "id": "e8c06a63c9444d0c9dd9bbdbad5371e9",
+      "name": "content.txt",
+      "size": 590,
+      "mime_type": "text/plain",
+      "artifact_type": "Undefined",
+      "partition_number": 0,
+      "section_number": 0,
+      "tags": {
+        "source": [
+          "file-text"
+        ],
+        "sessionId": [
+          "3ce9b796-e02f-49d7-894b-e77db135060f"
+        ]
+      },
+      "processed_by": [
+        "extract"
+      ],
+      "generated_files": {
+        "content.txt.extract.txt": {
+          "id": "49cc5fc2bb534c13bd20fd73d480f9ba",
+          "name": "content.txt.extract.txt",
+          "size": 590,
+          "mime_type": "text/plain",
+          "artifact_type": "ExtractedText",
+          "partition_number": 0,
+          "section_number": 0,
+          "tags": {
+            "source": [
+              "file-text"
+            ],
+            "sessionId": [
+              "3ce9b796-e02f-49d7-894b-e77db135060f"
+            ]
+          },
+          "parent_id": "e8c06a63c9444d0c9dd9bbdbad5371e9",
+          "source_partition_id": "",
+          "content_sha256": "",
+          "processed_by": [
+            "extract",
+            "partition"
+          ]
+        },
+        "content.txt.extract.json": {
+          "id": "30c34aa2acf04b32943e5f4a04a3f128",
+          "name": "content.txt.extract.json",
+          "size": 590,
+          "mime_type": "text/plain",
+          "artifact_type": "ExtractedContent",
+          "partition_number": 0,
+          "section_number": 0,
+          "tags": {
+            "source": [
+              "file-text"
+            ],
+            "sessionId": [
+              "3ce9b796-e02f-49d7-894b-e77db135060f"
+            ]
+          },
+          "parent_id": "e8c06a63c9444d0c9dd9bbdbad5371e9",
+          "source_partition_id": "",
+          "content_sha256": "",
+          "processed_by": [
+            "extract"
+          ]
+        },
+        "content.txt.partition.0.txt": {
+          "id": "1f7a28f039a94757acb2f63d00f397d9",
+          "name": "content.txt.partition.0.txt",
+          "size": 590,
+          "mime_type": "text/plain",
+          "artifact_type": "TextPartition",
+          "partition_number": 0,
+          "section_number": 0,
+          "tags": {
+            "source": [
+              "file-text"
+            ],
+            "sessionId": [
+              "3ce9b796-e02f-49d7-894b-e77db135060f"
+            ]
+          },
+          "parent_id": "e8c06a63c9444d0c9dd9bbdbad5371e9",
+          "source_partition_id": "",
+          "content_sha256": "d297886a32f035ec72fb3217b1dfd7abb337893766a48692c53495dfde2900d5",
+          "processed_by": [
+            "partition",
+            "gen_embeddings/AI.Ollama.OllamaTextEmbeddingGenerator/__"
+          ]
+        },
+        "content.txt.partition.0.txt.AI.Ollama.OllamaTextEmbeddingGenerator.__.text_embedding": {
+          "id": "94c0fce46a93470b9c62596c21f6d699",
+          "name": "content.txt.partition.0.txt.AI.Ollama.OllamaTextEmbeddingGenerator.__.text_embedding",
+          "size": 9725,
+          "mime_type": "float[]",
+          "artifact_type": "TextEmbeddingVector",
+          "partition_number": 0,
+          "section_number": 0,
+          "tags": {
+            "source": [
+              "file-text"
+            ],
+            "sessionId": [
+              "3ce9b796-e02f-49d7-894b-e77db135060f"
+            ]
+          },
+          "parent_id": "e8c06a63c9444d0c9dd9bbdbad5371e9",
+          "source_partition_id": "1f7a28f039a94757acb2f63d00f397d9",
+          "content_sha256": "",
+          "processed_by": [
+            "gen_embeddings",
+            "save_records"
+          ]
+        }
+      }
+    }
+  ],
+  "args": {},
+  "previous_executions_to_purge": []
+}

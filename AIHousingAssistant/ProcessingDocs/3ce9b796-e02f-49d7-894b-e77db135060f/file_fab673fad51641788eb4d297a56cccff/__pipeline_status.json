@@ -1,0 +1,197 @@
+{
+  "index": "3ce9b796-e02f-49d7-894b-e77db135060f",
+  "document_id": "file_fab673fad51641788eb4d297a56cccff",
+  "execution_id": "67f7e5150a4d4b1eaf884590f6115747",
+  "steps": [
+    "extract",
+    "partition",
+    "gen_embeddings",
+    "save_records"
+  ],
+  "remaining_steps": [],
+  "completed_steps": [
+    "extract",
+    "partition",
+    "gen_embeddings",
+    "save_records"
+  ],
+  "tags": {
+    "source": [
+      "upload"
+    ],
+    "sessionId": [
+      "3ce9b796-e02f-49d7-894b-e77db135060f"
+    ]
+  },
+  "creation": "2025-12-24T19:38:05.8209761+00:00",
+  "last_update": "2025-12-24T19:38:07.0709659+00:00",
+  "files": [
+    {
+      "id": "45b165e9d4c940c789eea3c019801f06",
+      "name": "RFI_from_BRD_Housing_Management_System.docx",
+      "size": 28593,
+      "mime_type": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+      "artifact_type": "Undefined",
+      "partition_number": 0,
+      "section_number": 0,
+      "tags": {
+        "source": [
+          "upload"
+        ],
+        "sessionId": [
+          "3ce9b796-e02f-49d7-894b-e77db135060f"
+        ]
+      },
+      "processed_by": [
+        "extract"
+      ],
+      "generated_files": {
+        "RFI_from_BRD_Housing_Management_System.docx.extract.txt": {
+          "id": "f16d256d8ffb4b7895871854479f81d9",
+          "name": "RFI_from_BRD_Housing_Management_System.docx.extract.txt",
+          "size": 1887,
+          "mime_type": "text/plain",
+          "artifact_type": "ExtractedText",
+          "partition_number": 0,
+          "section_number": 0,
+          "tags": {
+            "source": [
+              "upload"
+            ],
+            "sessionId": [
+              "3ce9b796-e02f-49d7-894b-e77db135060f"
+            ]
+          },
+          "parent_id": "45b165e9d4c940c789eea3c019801f06",
+          "source_partition_id": "",
+          "content_sha256": "",
+          "processed_by": [
+            "extract",
+            "partition"
+          ]
+        },
+        "RFI_from_BRD_Housing_Management_System.docx.extract.json": {
+          "id": "41f86206f2e64b4c859fd9fea2cb0b38",
+          "name": "RFI_from_BRD_Housing_Management_System.docx.extract.json",
+          "size": 1887,
+          "mime_type": "text/plain",
+          "artifact_type": "ExtractedContent",
+          "partition_number": 0,
+          "section_number": 0,
+          "tags": {
+            "source": [
+              "upload"
+            ],
+            "sessionId": [
+              "3ce9b796-e02f-49d7-894b-e77db135060f"
+            ]
+          },
+          "parent_id": "45b165e9d4c940c789eea3c019801f06",
+          "source_partition_id": "",
+          "content_sha256": "",
+          "processed_by": [
+            "extract"
+          ]
+        },
+        "RFI_from_BRD_Housing_Management_System.docx.partition.0.txt": {
+          "id": "a7c1b5df92c64dba9a8fe2abab1d7495",
+          "name": "RFI_from_BRD_Housing_Management_System.docx.partition.0.txt",
+          "size": 1459,
+          "mime_type": "text/plain",
+          "artifact_type": "TextPartition",
+          "partition_number": 0,
+          "section_number": 0,
+          "tags": {
+            "source": [
+              "upload"
+            ],
+            "sessionId": [
+              "3ce9b796-e02f-49d7-894b-e77db135060f"
+            ]
+          },
+          "parent_id": "45b165e9d4c940c789eea3c019801f06",
+          "source_partition_id": "",
+          "content_sha256": "4e31808f8b0ea06568511c478a6b02cb8779bcd1c4707389e98cd079044d64b4",
+          "processed_by": [
+            "partition",
+            "gen_embeddings/AI.Ollama.OllamaTextEmbeddingGenerator/__"
+          ]
+        },
+        "RFI_from_BRD_Housing_Management_System.docx.partition.1.txt": {
+          "id": "b2be467674f441debd9d3085e0fa15ea",
+          "name": "RFI_from_BRD_Housing_Management_System.docx.partition.1.txt",
+          "size": 680,
+          "mime_type": "text/plain",
+          "artifact_type": "TextPartition",
+          "partition_number": 1,
+          "section_number": 0,
+          "tags": {
+            "source": [
+              "upload"
+            ],
+            "sessionId": [
+              "3ce9b796-e02f-49d7-894b-e77db135060f"
+            ]
+          },
+          "parent_id": "45b165e9d4c940c789eea3c019801f06",
+          "source_partition_id": "",
+          "content_sha256": "d2c66978d947882b896b8ea19b14a7c833aac8123acfb75811d14d14ed828baa",
+          "processed_by": [
+            "partition",
+            "gen_embeddings/AI.Ollama.OllamaTextEmbeddingGenerator/__"
+          ]
+        },
+        "RFI_from_BRD_Housing_Management_System.docx.partition.0.txt.AI.Ollama.OllamaTextEmbeddingGenerator.__.text_embedding": {
+          "id": "014f94d333984db5addc995a2bb54d18",
+          "name": "RFI_from_BRD_Housing_Management_System.docx.partition.0.txt.AI.Ollama.OllamaTextEmbeddingGenerator.__.text_embedding",
+          "size": 9739,
+          "mime_type": "float[]",
+          "artifact_type": "TextEmbeddingVector",
+          "partition_number": 0,
+          "section_number": 0,
+          "tags": {
+            "source": [
+              "upload"
+            ],
+            "sessionId": [
+              "3ce9b796-e02f-49d7-894b-e77db135060f"
+            ]
+          },
+          "parent_id": "45b165e9d4c940c789eea3c019801f06",
+          "source_partition_id": "a7c1b5df92c64dba9a8fe2abab1d7495",
+          "content_sha256": "",
+          "processed_by": [
+            "gen_embeddings",
+            "save_records"
+          ]
+        },
+        "RFI_from_BRD_Housing_Management_System.docx.partition.1.txt.AI.Ollama.OllamaTextEmbeddingGenerator.__.text_embedding": {
+          "id": "3f673cb912d74fc4bb8b782d391558ff",
+          "name": "RFI_from_BRD_Housing_Management_System.docx.partition.1.txt.AI.Ollama.OllamaTextEmbeddingGenerator.__.text_embedding",
+          "size": 9758,
+          "mime_type": "float[]",
+          "artifact_type": "TextEmbeddingVector",
+          "partition_number": 1,
+          "section_number": 0,
+          "tags": {
+            "source": [
+              "upload"
+            ],
+            "sessionId": [
+              "3ce9b796-e02f-49d7-894b-e77db135060f"
+            ]
+          },
+          "parent_id": "45b165e9d4c940c789eea3c019801f06",
+          "source_partition_id": "b2be467674f441debd9d3085e0fa15ea",
+          "content_sha256": "",
+          "processed_by": [
+            "gen_embeddings",
+            "save_records"
+          ]
+        }
+      }
+    }
+  ],
+  "args": {},
+  "previous_executions_to_purge": []
+}

@@ -7,6 +7,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="ProcessingDocs\**" />
+    <Content Remove="ProcessingDocs\**" />
+    <EmbeddedResource Remove="ProcessingDocs\**" />
+    <None Remove="ProcessingDocs\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="DocumentFormat.OpenXml" Version="3.3.0" />
     <PackageReference Include="LangChain.NET" Version="0.0.2" />
     <PackageReference Include="LangChain.Splitters.CSharp" Version="0.17.1-dev.51" />

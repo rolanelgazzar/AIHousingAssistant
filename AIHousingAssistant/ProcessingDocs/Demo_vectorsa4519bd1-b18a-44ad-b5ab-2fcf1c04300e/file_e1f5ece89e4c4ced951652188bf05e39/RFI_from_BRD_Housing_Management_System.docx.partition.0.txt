@@ -1,0 +1,28 @@
+RFI – Housing Management System
+1. Document Header
+This RFI is issued to gather vendor insights and technical capabilities required to implement a complete Housing Management System. The system will support digital workflows for housing requests, unit management, maintenance tracking, and administrative control across multiple user roles.
+2. Submission Guidelines
+- Submission Deadline: April 10, 2025
+- Submission Format: PDF or Word
+- Submission Email: housing-rfi@organization.org
+- Subject: RFI – Housing Management System – [Vendor Name]
+- Required Attachments: Company profile, past projects, system capabilities, answers to Section 7
+3. General Terms
+- This RFI is exploratory and does not constitute a commitment to purchase.
+- Information submitted will be used to finalize the scope and evaluate vendor fit.
+- All responses will be treated as confidential unless stated otherwise.
+4. Scope of Work + Business Requirements
+1. Employee Portal
+- Submit housing requests and track progress
+- Request maintenance or move-out
+- View previous requests and receive system notifications
+- Account management: change password, logout
+2. System Admin Panel
+- Add users and assign permissions
+- Generate and access all system-related reports
+- Account management
+5. Technical Requirements
+- Web-based and mobile-responsive system
+- Secure login and role-based access
+- Arabic and English language support
+- Integration with HRMS and internal directories (e.g.

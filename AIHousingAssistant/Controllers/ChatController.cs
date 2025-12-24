@@ -49,22 +49,19 @@ namespace AIHousingAssistant.Controllers
         [HttpPost("AskChatAI")]
         public async Task<IActionResult> AskChatAI([FromBody] RagUiRequest ragRequest)
         {
-            ragRequest.AIProvider= AIProvider.OpenRouter;
-            // Handles direct AI chat with general knowledge
+            ragRequest.AIProvider = AIProvider.OpenRouter;
             return await ExecuteAskAction(() => _directChatService.AskDirectChatAsync(ragRequest), ragRequest);
         }
 
         [HttpPost("AskRag")]
         public async Task<IActionResult> AskRagAsync([FromBody] RagUiRequest ragRequest)
         {
-            // Handles traditional RAG with vector store
             return await ExecuteAskAction(() => _ragService.AskRagAsync(ragRequest), ragRequest);
         }
 
         [HttpPost("AskKernelMemory")]
         public async Task<IActionResult> AskKernelMemoryAsync([FromBody] RagUiRequest ragRequest)
         {
-            // Handles search using Kernel Memory library
             return await ExecuteAskAction(() => _kernelMemoryService.AskMemoryKernelAsync(ragRequest), ragRequest);
         }
 
@@ -72,22 +69,15 @@ namespace AIHousingAssistant.Controllers
         public async Task<IActionResult> AskPluginDBAsync([FromBody] RagUiRequest ragRequest)
         {
             ragRequest.AIProvider = AIProvider.OpenRouter;
-
-            // Handles natural language queries to a SQL database
             return await ExecuteAskAction(() => _pluginDbService.AskPluginDBAsync(ragRequest), ragRequest);
         }
-
-
 
         [HttpPost("AskWeb")]
         public async Task<IActionResult> AskWebAsync([FromBody] RagUiRequest ragRequest)
         {
             ragRequest.AIProvider = AIProvider.OpenRouter;
-
-            // Handles AI-powered web searching
             return await ExecuteAskAction(() => _webSearchService.AskWebAsync(ragRequest), ragRequest);
         }
-
 
         #endregion
 
@@ -96,13 +86,14 @@ namespace AIHousingAssistant.Controllers
         [HttpPost("UploadDocument")]
         public async Task<IActionResult> UploadDocument([FromForm] List<IFormFile> files, [FromForm] RagUiRequest request)
         {
-            // Ensure files were actually uploaded
             if (files == null || files.Count == 0)
                 return BadRequest(new { success = false, error = "No files uploaded" });
 
             try
             {
-                // Route processing based on the tool selected in the UI
+                // Assign current SessionId before processing to ensure tags match during search
+                request.SessionId = GetOrCreateSessionId();
+
                 if (request.ToolsSearchBy == SearchToolType.KernelMemory)
                 {
                     await _kernelMemoryService.ProcessDocumentByKernelMemoryAsync(files, request);
@@ -113,7 +104,6 @@ namespace AIHousingAssistant.Controllers
                 }
                 else
                 {
-                    // Block uploading if the selected tool does not support document indexing
                     return BadRequest(new
                     {
                         success = false,
@@ -125,15 +115,16 @@ namespace AIHousingAssistant.Controllers
                 {
                     success = true,
                     fileCount = files.Count,
+                    sessionId = request.SessionId,
                     message = $"Successfully processed {files.Count} documents."
                 });
             }
             catch (Exception ex)
             {
-                // Handle document processing exceptions
                 return StatusCode(500, new { success = false, error = ex.Message });
             }
         }
+
         #endregion
 
         #region Helper APIs (Questions & History)
@@ -143,7 +134,6 @@ namespace AIHousingAssistant.Controllers
         {
             try
             {
-                // Fetches suggested questions for the chat UI
                 var questions = await _housingService.GetInitialQuestionsAsync();
                 return Ok(new { success = true, data = questions });
             }
@@ -156,7 +146,6 @@ namespace AIHousingAssistant.Controllers
         [HttpGet("SummarizationChatHistory")]
         public async Task<IActionResult> SummarizationChatHistory()
         {
-            // Generates a short summary of the current session conversation
             var sessionId = GetOrCreateSessionId();
             var history = _chatHistoryService.GetChatHistory(sessionId);
 
@@ -171,35 +160,28 @@ namespace AIHousingAssistant.Controllers
 
         #region Private Methods
 
-        /// <summary>
-        /// Centralized wrapper to manage sessions, validation, and error handling for AI requests
-        /// </summary>
         private async Task<IActionResult> ExecuteAskAction<T>(Func<Task<T>> action, RagUiRequest request)
         {
-            // Basic query validation
             if (request == null || string.IsNullOrWhiteSpace(request.Query))
                 return BadRequest(new { error = "Request or Query cannot be empty." });
 
             try
             {
-                // Link request to the current session ID
+                // Ensure the search request uses the same session as the upload
                 request.SessionId = GetOrCreateSessionId();
 
-                // Execute the specific tool service
                 var result = await action();
 
                 return Ok(new { data = result });
             }
             catch (Exception ex)
             {
-                // Return 500 status on internal failures
                 return StatusCode(500, new { error = "An error occurred during processing.", details = ex.Message });
             }
         }
 
         private string GetOrCreateSessionId()
         {
-            // Retrieve session ID from cookie or generate a new one
             var id = HttpContext.Session.GetString("SessionId");
             if (string.IsNullOrEmpty(id))
             {

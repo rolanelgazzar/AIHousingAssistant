@@ -1,0 +1,149 @@
+{
+  "index": "3ce9b796-e02f-49d7-894b-e77db135060f",
+  "document_id": "file_3ad066cbc34945f4a2b0e0a88519fe55",
+  "execution_id": "79b2fe9deeaa4e55a82ff86e1c471a9b",
+  "steps": [
+    "extract",
+    "partition",
+    "gen_embeddings",
+    "save_records"
+  ],
+  "remaining_steps": [],
+  "completed_steps": [
+    "extract",
+    "partition",
+    "gen_embeddings",
+    "save_records"
+  ],
+  "tags": {
+    "source": [
+      "upload"
+    ],
+    "sessionId": [
+      "3ce9b796-e02f-49d7-894b-e77db135060f"
+    ]
+  },
+  "creation": "2025-12-24T19:38:04.8684076+00:00",
+  "last_update": "2025-12-24T19:38:05.8196005+00:00",
+  "files": [
+    {
+      "id": "9c2bec962545497ba9e33c7935094f4c",
+      "name": "Project_Overview_Housing_System_Updated.pdf",
+      "size": 1843,
+      "mime_type": "application/pdf",
+      "artifact_type": "Undefined",
+      "partition_number": 0,
+      "section_number": 0,
+      "tags": {
+        "source": [
+          "upload"
+        ],
+        "sessionId": [
+          "3ce9b796-e02f-49d7-894b-e77db135060f"
+        ]
+      },
+      "processed_by": [
+        "extract"
+      ],
+      "generated_files": {
+        "Project_Overview_Housing_System_Updated.pdf.extract.txt": {
+          "id": "9d826a8c30544e5ea3689ef2639533f6",
+          "name": "Project_Overview_Housing_System_Updated.pdf.extract.txt",
+          "size": 822,
+          "mime_type": "text/plain",
+          "artifact_type": "ExtractedText",
+          "partition_number": 0,
+          "section_number": 0,
+          "tags": {
+            "source": [
+              "upload"
+            ],
+            "sessionId": [
+              "3ce9b796-e02f-49d7-894b-e77db135060f"
+            ]
+          },
+          "parent_id": "9c2bec962545497ba9e33c7935094f4c",
+          "source_partition_id": "",
+          "content_sha256": "",
+          "processed_by": [
+            "extract",
+            "partition"
+          ]
+        },
+        "Project_Overview_Housing_System_Updated.pdf.extract.json": {
+          "id": "aedb588e0d9f4491bdf5593738c3b47f",
+          "name": "Project_Overview_Housing_System_Updated.pdf.extract.json",
+          "size": 822,
+          "mime_type": "text/plain",
+          "artifact_type": "ExtractedContent",
+          "partition_number": 0,
+          "section_number": 0,
+          "tags": {
+            "source": [
+              "upload"
+            ],
+            "sessionId": [
+              "3ce9b796-e02f-49d7-894b-e77db135060f"
+            ]
+          },
+          "parent_id": "9c2bec962545497ba9e33c7935094f4c",
+          "source_partition_id": "",
+          "content_sha256": "",
+          "processed_by": [
+            "extract"
+          ]
+        },
+        "Project_Overview_Housing_System_Updated.pdf.partition.0.txt": {
+          "id": "70a55c41d8f946ca93a0cff660030fda",
+          "name": "Project_Overview_Housing_System_Updated.pdf.partition.0.txt",
+          "size": 822,
+          "mime_type": "text/plain",
+          "artifact_type": "TextPartition",
+          "partition_number": 0,
+          "section_number": 0,
+          "tags": {
+            "source": [
+              "upload"
+            ],
+            "sessionId": [
+              "3ce9b796-e02f-49d7-894b-e77db135060f"
+            ]
+          },
+          "parent_id": "9c2bec962545497ba9e33c7935094f4c",
+          "source_partition_id": "",
+          "content_sha256": "08a6bd7eb6ac19b45ef8959813a0c719db209356b72a817d12cbe928785fa099",
+          "processed_by": [
+            "partition",
+            "gen_embeddings/AI.Ollama.OllamaTextEmbeddingGenerator/__"
+          ]
+        },
+        "Project_Overview_Housing_System_Updated.pdf.partition.0.txt.AI.Ollama.OllamaTextEmbeddingGenerator.__.text_embedding": {
+          "id": "6f41804605e74750aa4f0f6e0c8be964",
+          "name": "Project_Overview_Housing_System_Updated.pdf.partition.0.txt.AI.Ollama.OllamaTextEmbeddingGenerator.__.text_embedding",
+          "size": 9744,
+          "mime_type": "float[]",
+          "artifact_type": "TextEmbeddingVector",
+          "partition_number": 0,
+          "section_number": 0,
+          "tags": {
+            "source": [
+              "upload"
+            ],
+            "sessionId": [
+              "3ce9b796-e02f-49d7-894b-e77db135060f"
+            ]
+          },
+          "parent_id": "9c2bec962545497ba9e33c7935094f4c",
+          "source_partition_id": "70a55c41d8f946ca93a0cff660030fda",
+          "content_sha256": "",
+          "processed_by": [
+            "gen_embeddings",
+            "save_records"
+          ]
+        }
+      }
+    }
+  ],
+  "args": {},
+  "previous_executions_to_purge": []
+}
