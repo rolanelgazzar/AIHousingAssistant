@@ -376,8 +376,8 @@
                 }
 
                 // Reset local state
-                selectedFiles = [];
-                renderFiles();
+               // selectedFiles = [];
+               // renderFiles();
             });
         });
 
@@ -427,6 +427,7 @@
         // --- Helper Functions ---
 
                    function handleFileUpload(event) {
+                       removeAllFiles();
             const files = event.target.files;
             if (!files.length) return;
 
@@ -518,6 +519,10 @@
 
         window.removeFile = function(i) {
             selectedFiles.splice(i, 1);
+            renderFiles();
+        };
+        window.removeAllFiles = function() {
+            selectedFiles = [];
             renderFiles();
         };
 
