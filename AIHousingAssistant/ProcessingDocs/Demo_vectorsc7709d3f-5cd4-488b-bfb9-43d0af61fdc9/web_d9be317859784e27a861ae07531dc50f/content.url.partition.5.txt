@@ -1,0 +1,61 @@
+NET with Kernel Memory
+              
+              
+                  
+                      #rag
+                      #dotnet
+                      #llm
+                      #ai
+                  
+            
+          
+
+          
+              
+  
+    
+      
+        .NET AI / ML Highlights (2 Part Series)
+      
+    
+
+    
+
+          
+            1
+            Building a Digital Dungeon Master with Semantic Kernel, C#, and Azure
+          
+
+          
+            2
+            Document Search in .NET with Kernel Memory
+          
+    
+  
+
+            
+                I recently discovered the Kernel Memory library for document indexing, web scraping, semantic search, and LLM-based question answering. The capabilities, flexibility, and simplicity of this library are so fantastic that it's quickly ascended my list of favorite AI libraries to work with for RAG search, document search, or AI-based question answering.
+
+
+
+
+
+In this article I'll walk you through what Kernel Memory is and how you can use the C# version of this library to quickly index, search, and chat with knowledge stored in documents or web pages.
+
+
+  
+  
+  Kernel Memory, a flexible document indexing and RAG search library
+
+
+At its core, Kernel Memory is all about ingesting information in various sources, indexing it, storing it in a vector storage solution, and providing a means for searching and question answering with this indexed knowledge.
+
+
+
+We'll walk through a full small application in this article, but here's a simple implementation to help orient you:
+
+
+
+IKernelMemory memory = new KernelMemoryBuilder()
+    .WithOpenAI(openAiConfig)
+    .

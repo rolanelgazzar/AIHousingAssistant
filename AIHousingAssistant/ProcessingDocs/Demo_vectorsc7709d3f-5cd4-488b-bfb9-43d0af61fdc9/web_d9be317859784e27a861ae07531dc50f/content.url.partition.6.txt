@@ -1,0 +1,47 @@
+ answering with this indexed knowledge.
+
+
+
+We'll walk through a full small application in this article, but here's a simple implementation to help orient you:
+
+
+
+IKernelMemory memory = new KernelMemoryBuilder()
+    .WithOpenAI(openAiConfig)
+    .Build();
+
+await memory.ImportDocumentAsync("TheGuide.pdf");
+
+string question = "What is the answer to the question of life, the universe, and everything?"
+MemoryAnswer answer = await memory.AskAsync(question);
+
+string reply = answer.Result;
+console.WriteLine(reply);
+
+
+
+    Enter fullscreen mode
+    
+
+
+    Exit fullscreen mode
+    
+
+
+
+
+
+
+
+
+In this snippet we see that:
+
+
+Kernel Memory uses a standard builder API allowing you to add in various sources that are relevant to you (here an OpenAI text and embedding model)
+Kernel Memory provides Import methods allowing you to index documents, text, and web pages and store them in its current vector store
+Kernel Memory provides a convenient way of asking questions to an LLM and providing your information as a RAG data source
+
+
+In this short example we're using the default volatile memory vector store which is built into Kernel Memory for demonstration purposes, but you could just as easily use an existing vector storage provider such as Qdrant, Azure AI Search, Postgres, Redis, or others.
+
+Likewise, Kernel Memory supports a wide range of LLMs and other ingestion data sources including OpenAI, Anthropic, ONNX, and even locally-running Ollama models.

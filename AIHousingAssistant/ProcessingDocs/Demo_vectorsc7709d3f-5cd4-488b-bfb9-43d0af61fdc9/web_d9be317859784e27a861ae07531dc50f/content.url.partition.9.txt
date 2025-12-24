@@ -1,0 +1,56 @@
+3-small"
+}
+
+
+
+    Enter fullscreen mode
+    
+
+
+    Exit fullscreen mode
+    
+
+
+
+
+
+
+
+
+With our configuration loaded, we now jump into creating our IKernelMemory instance, where we'll need to provide information on what model, endpoints and keys to use:
+
+
+
+OpenAIConfig openAiConfig = new()
+{
+    APIKey = settings.OpenAIKey,
+    Endpoint = settings.OpenAIEndpoint,
+    EmbeddingModel = settings.EmbeddingModelName,
+    TextModel = settings.TextModelName,
+};
+IKernelMemory memory = new KernelMemoryBuilder()
+    .WithOpenAI(openAiConfig)
+    .Build();
+
+IAnsiConsole console = AnsiConsole.Console;
+console.MarkupLine("[green]KernelMemory initialized.[/]");
+
+
+
+    Enter fullscreen mode
+    
+
+
+    Exit fullscreen mode
+    
+
+
+
+
+
+
+
+
+This creates and configures our Kernel Memory instance using an OpenAI text and embeddings model. The text completion model will be used for conversations with our data using the AskAsync method while the embeddings model is used to generate a vector representing different chunks of documents that are indexed as well as the search queries when the memory instance is searched.
+
+By default Kernel Memory is using a volatile in-memory vector store that gets completely discarded and recreated every time the application runs. This is not a production-level solution, but is fine for quick demonstrations on low volumes of data. For larger-scale scenarios or production usage you would use a dedicated vector storage solution and connect it to Kernel Memory when building your IKernelMemory instance.

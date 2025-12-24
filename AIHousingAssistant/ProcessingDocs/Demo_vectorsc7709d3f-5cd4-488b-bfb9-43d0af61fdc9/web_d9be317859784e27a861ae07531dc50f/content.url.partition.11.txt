@@ -1,0 +1,32 @@
+ md, txt, docx, pptx, xlsx, and other formats", "Doc-Id");
+
+await memory.ImportDocumentAsync("Facts.txt", "Repository-Facts");
+
+await memory.ImportWebPageAsync("https://LeadingEDJE.com", "Leading-EDJE-Web-Page");
+await memory.ImportWebPageAsync("https://microsoft.github.io/kernel-memory/",
+                                "KernelMemory-Web-Page", 
+                                new TagCollection { "GitHub"});
+
+console.MarkupLine("[green]Documents imported.[/]");
+
+
+
+    Enter fullscreen mode
+    
+
+
+    Exit fullscreen mode
+    
+
+
+
+
+
+
+
+
+This code indexes a pair of raw strings, a Facts.txt file included with the repository, and a pair of web pages: Leading EDJE's web site (my employer, an IT services consultancy in Columbus, Ohio) and the GitHub repository for Kernel Memory.
+
+Note that as we index anything we can just give it a data source, or we could give it a data source and a document Id, or we could provide additional tag or index metadata as well.
+
+Using tags and indexes you can annotate the documents you insert as belonging to certain collections. This allows you to filter down to certain groups of documents later on when searching or asking questions which supports critical scenarios such as restricting information available to different users based on which organization they're in or their security role.
