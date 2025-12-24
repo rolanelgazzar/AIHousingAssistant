@@ -11,6 +11,8 @@ namespace AIHousingAssistant.Models.Settings
         public OllamaEmbeddingSettings OllamaEmbedding { get; set; } = new();
 
         public QDrantSettings QDrant { get; set; } = new();
+
+        public GoogleConnector GoogleConnector { get; set; } = new();
         public string  ProcessingFolder { get; set; }
         public string VectorStoreFilename { get; set; }
         public string ChunksFileName { get; set; }
@@ -58,6 +60,12 @@ namespace AIHousingAssistant.Models.Settings
     {
         public string Endpoint { get; set; }
 
+    }
+
+    public class GoogleConnector
+    {
+        public string ApiKey { get; set; } = string.Empty;
+        public string SearchEngineId { get; set; } = string.Empty;
     }
 
 }

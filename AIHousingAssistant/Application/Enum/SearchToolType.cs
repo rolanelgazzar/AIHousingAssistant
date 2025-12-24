@@ -10,7 +10,8 @@ namespace AIHousingAssistant.Application.Enum
         PluginDB,
         Web,
         Rag,
-        KernelMemory,
+        KernelMemory
+        
     }
 }
 

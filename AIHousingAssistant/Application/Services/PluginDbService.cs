@@ -32,7 +32,7 @@ namespace AIHousingAssistant.Application.Services
             try
             {
                 // 1. Build the Kernel dynamically based on the UI selected AI Provider
-                var kernelBuilder = SemanticKernelHelper.BuildKernel(AIProvider.OpenRouter, _providerSettings);
+                var kernelBuilder = SemanticKernelHelper.BuildKernel(ragRequest.AIProvider, _providerSettings);
 
                 // 2. Register the Housing Plugin
                 SemanticKernelHelper.AddPlugin(kernelBuilder, new HousingPlugin(_housingService));

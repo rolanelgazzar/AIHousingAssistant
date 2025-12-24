@@ -23,8 +23,10 @@
     <PackageReference Include="Microsoft.KernelMemory.AI.OpenAI" Version="0.98.250508.3" />
     <PackageReference Include="Microsoft.KernelMemory.Core" Version="0.98.250508.3" />
     <PackageReference Include="Microsoft.SemanticKernel" Version="1.67.1" />
+    <PackageReference Include="Microsoft.SemanticKernel.Connectors.Google" Version="1.68.0-alpha" />
     <PackageReference Include="Microsoft.SemanticKernel.Connectors.Ollama" Version="1.67.1-alpha" />
     <PackageReference Include="Microsoft.SemanticKernel.Connectors.Qdrant" Version="1.68.0-preview" />
+    <PackageReference Include="Microsoft.SemanticKernel.Plugins.Web" Version="1.68.0-alpha" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="8.0.0" />
     <PackageReference Include="UglyToad.PdfPig" Version="1.7.0-custom-5" />

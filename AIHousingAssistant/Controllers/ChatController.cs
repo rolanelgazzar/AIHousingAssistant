@@ -49,6 +49,7 @@ namespace AIHousingAssistant.Controllers
         [HttpPost("AskChatAI")]
         public async Task<IActionResult> AskChatAI([FromBody] RagUiRequest ragRequest)
         {
+            ragRequest.AIProvider= AIProvider.OpenRouter;
             // Handles direct AI chat with general knowledge
             return await ExecuteAskAction(() => _directChatService.AskDirectChatAsync(ragRequest), ragRequest);
         }
@@ -70,16 +71,23 @@ namespace AIHousingAssistant.Controllers
         [HttpPost("AskPluginDB")]
         public async Task<IActionResult> AskPluginDBAsync([FromBody] RagUiRequest ragRequest)
         {
+            ragRequest.AIProvider = AIProvider.OpenRouter;
+
             // Handles natural language queries to a SQL database
             return await ExecuteAskAction(() => _pluginDbService.AskPluginDBAsync(ragRequest), ragRequest);
         }
 
+
+
         [HttpPost("AskWeb")]
         public async Task<IActionResult> AskWebAsync([FromBody] RagUiRequest ragRequest)
         {
+            ragRequest.AIProvider = AIProvider.OpenRouter;
+
             // Handles AI-powered web searching
             return await ExecuteAskAction(() => _webSearchService.AskWebAsync(ragRequest), ragRequest);
         }
+
 
         #endregion
 
