@@ -206,6 +206,20 @@ Answer the user's question based on the provided CONTEXT or the previous convers
 - Keep answers short and direct (one or two sentences).
 - If the user asks about their previous questions, provide a list of those questions.
 - Do NOT mention the words CONTEXT or HISTORY in your answer.");
+            /*
+                         // 5️⃣ Add system instructions
+            temporaryHistory.AddSystemMessage(@"
+You are an AI assistant.
+Answer the user's question based on the provided CONTEXT or the previous conversation HISTORY.
+- Detect the language of the user's question and respond in the SAME language.
+- For housing-related questions, use ONLY the information in the CONTEXT.
+- If the answer is not in the CONTEXT or HISTORY, say: 'I don't know based on the provided information.'
+- Keep answers short and direct (one or two sentences).
+- If the user asks about their previous questions, provide a list of those questions.
+- Do NOT mention the words CONTEXT or HISTORY in your answer."
+            );
+             
+             */
 
             // 6️⃣ Prepare previous user questions
             string previousQuestionsText = string.Join("\n", persistentHistory
