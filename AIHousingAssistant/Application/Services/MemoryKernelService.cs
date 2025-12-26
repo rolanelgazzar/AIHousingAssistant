@@ -14,6 +14,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using AIHousingAssistant.Application.Enum;
 using Microsoft.AspNetCore.Http.HttpResults;
+using AIHousingAssistant.Application.Services.Interfaces;
 
 namespace AIHousingAssistant.Application.Services
 {
@@ -22,9 +23,12 @@ namespace AIHousingAssistant.Application.Services
         private readonly IKernelMemory _memory;
         private readonly ProviderSettings _providerSettings;
 
-        public MemoryKernelService(IOptions<ProviderSettings> providerSettings)
+        private readonly IChatHistoryService _chatHistoryService;
+
+        public MemoryKernelService(IOptions<ProviderSettings> providerSettings, IChatHistoryService chatHistoryService)
         {
             _providerSettings = providerSettings.Value;
+            _chatHistoryService = chatHistoryService;
 
             var ollamaTextConfig = new OllamaConfig
             {
@@ -132,48 +136,85 @@ namespace AIHousingAssistant.Application.Services
             if (string.IsNullOrWhiteSpace(ragRequest.Query))
                 throw new ArgumentException("Query cannot be empty");
 
-            // 1. Determine the correct collection (index) name using the session ID
             var collectionName = _providerSettings.CollectionNameBase + ragRequest.SessionId;
 
-            // Hybrid Search (Ask) - Returns a generated answer based on the context
+            // English comment: Update chat history with the user's latest message
+            _chatHistoryService.AddUserMessage(ragRequest.SessionId, ragRequest.Query);
+
+            var response = new RagAnswerResponse();
+
+            // 1. Hybrid Search Mode (RAG)
             if (ragRequest.SearchMode == SearchMode.Hybrid)
             {
-                // We specify the index (collectionName) to search only in this session's data
-                var answer = await _memory.AskAsync(ragRequest.Query,
+                var enrichedQuery = GetEnrichedQuery(ragRequest);
+
+                var answer = await _memory.AskAsync(enrichedQuery,
                     index: collectionName,
                     filter: new MemoryFilter().ByTag("sessionId", ragRequest.SessionId));
 
-                return new RagAnswerResponse
-                {
-                    Answer = answer.Result,
-                    Sources = answer.RelevantSources?.Select(s => s.SourceName).ToList() ?? new List<string>()
-                };
-            }
+                response.Answer = FormatFinalResponse(answer.Result);
+                response.Sources = answer.RelevantSources?.Select(s => s.SourceName).Distinct().ToList() ?? new List<string?>();
 
-            // Vector Search - Returns the EXACT snippets found in documents
-            if (ragRequest.SearchMode == SearchMode.Vector)
+                // English comment: Store the AI's natural language response in history
+                _chatHistoryService.AddAssistantMessage(ragRequest.SessionId, answer.Result);
+            }
+            // 2. Vector Search Mode
+            else if (ragRequest.SearchMode == SearchMode.Vector)
             {
-                // SearchAsync retrieves raw chunks from the specific session index
                 var searchResult = await _memory.SearchAsync(ragRequest.Query,
                     index: collectionName,
                     filter: new MemoryFilter().ByTag("sessionId", ragRequest.SessionId),
                     limit: 3);
 
-                // Extracting exact text from the found partitions
-                var exactSnippets = searchResult.Results
-                    .SelectMany(r => r.Partitions.Select(p => $"[Source: {r.SourceName}]: {p.Text}"))
-                    .ToList();
+                var textBlocks = new List<string>();
 
-                return new RagAnswerResponse
+                foreach (var result in searchResult.Results)
                 {
-                    Answer = exactSnippets.Any()
-                        ? string.Join("\n\n" + new string('-', 20) + "\n\n", exactSnippets)
-                        : "No exact matches found in your uploaded documents.",
-                    Sources = searchResult.Results.Select(r => r.SourceName).Distinct().ToList()
-                };
+                    // English comment: Add unique source names
+                    if (!response.Sources.Contains(result.SourceName))
+                        response.Sources.Add(result.SourceName);
+
+                    foreach (var partition in result.Partitions)
+                    {
+                        textBlocks.Add(partition.Text);
+
+                        // English comment: Capture the real similarity score (relevance) from Kernel Memory
+                        response.Similarity.Add((float)partition.Relevance);
+                    }
+                }
+
+                response.Answer = FormatFinalResponse(string.Join("\n\n", textBlocks));
+                _chatHistoryService.AddAssistantMessage(ragRequest.SessionId, "[Vector Search Results Provided]");
             }
 
-            return new RagAnswerResponse { Answer = "Invalid Search Mode", Sources = new List<string>() };
+            return response;
+        }
+
+        private string GetEnrichedQuery(RagUiRequest ragRequest)
+        {
+            var history = _chatHistoryService.GetChatHistory(ragRequest.SessionId);
+            var historySummary = history != null
+                ? string.Join("\n", history.TakeLast(5).Select(m => $"{m.Role}: {m.Content}"))
+                : string.Empty;
+
+            // English comment: Strict instructions for language matching and personalization
+            return $@"
+        Instructions:
+        1. Detect the language of the 'User Question'. If it's Arabic, respond ONLY in Arabic.
+        2. Use the 'Context History' to recognize the user's preferences.
+        3. Provide a helpful answer based on the stored documents.
+
+        Context History:
+        {historySummary}
+
+        User Question: {ragRequest.Query}";
+        }
+
+        private string FormatFinalResponse(string content)
+        {
+            // English comment: Ensure the answer is clean and trimmed for the UI
+            if (string.IsNullOrWhiteSpace(content)) return "No results found.";
+            return content.Trim();
         }
     }
     }

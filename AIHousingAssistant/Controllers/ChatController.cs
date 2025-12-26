@@ -172,7 +172,7 @@ namespace AIHousingAssistant.Controllers
 
                 var result = await action();
 
-                return Ok(new { data = result });
+                return Ok( result );
             }
             catch (Exception ex)
             {
@@ -182,6 +182,7 @@ namespace AIHousingAssistant.Controllers
 
         private string GetOrCreateSessionId()
         {
+            return "1";
             var id = HttpContext.Session.GetString("SessionId");
             if (string.IsNullOrEmpty(id))
             {

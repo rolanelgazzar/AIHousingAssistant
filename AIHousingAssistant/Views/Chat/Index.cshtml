@@ -392,9 +392,11 @@
         /**
          * Generic AJAX wrapper for AI requests
          */
-        function sendAiRequest(url, query) {
+                  function sendAiRequest(url, query) {
+            // English comment: Prepare the request payload with selected UI values
             const payload = {
                 Query: query,
+                SessionId: "User_123", // English comment: Maintain session for history context
                 VectorDbProvider: parseInt($('#vectorStoreProvider').val()),
                 ChunkingMode: parseInt($('#chunkingMode').val()),
                 EmbeddingModel: parseInt($('#embeddingModel').val()),
@@ -412,9 +414,42 @@
                 data: JSON.stringify(payload),
                 success: function(res) {
                     hideLoader();
-                    // Handle different response structures
-                    const botReply = res.data?.answer || res.data || "No response received.";
-                    addMessage(botReply, 'bot');
+
+                    // English comment: Map response data (adjusting for camelCase)
+                    const botReply = res.answer || "No response received.";
+                    const sources = res.sources || [];
+                    const chunkIndexes = res.chunkIndexes || [];
+                    const similarities = res.similarity || [];
+
+                    // English comment: Get the text label for the selected search mode
+                    const searchModeLabel = $('#searchMode option:selected').text();
+
+                    // English comment: Construct the metadata header
+                    let metadataHtml = "";
+                    if (sources.length > 0 || chunkIndexes.length > 0) {
+                        // English comment: Styling the box to appear as a header above the text
+                        metadataHtml += `<div class="metadata-box" style="font-size: 0.8em; border-bottom: 1px solid #ddd; margin-bottom: 8px; padding-bottom: 5px; color: #666;">`;
+
+                        // English comment: Display the Search Mode used for this specific request
+                        metadataHtml += `🔍 <b>Search Mode:</b> ${searchModeLabel}<br/>`;
+
+                        if (sources.length > 0) {
+                            metadataHtml += `📚 <b>Sources:</b> ${[...new Set(sources)].join(', ')}<br/>`;
+                        }
+                        if (chunkIndexes.length > 0) {
+                            metadataHtml += `🧩 <b>Chunk Indexes:</b> ${chunkIndexes.join(', ')}<br/>`;
+                        }
+                        if (similarities.length > 0) {
+                            const topScore = (Math.max(...similarities) * 100).toFixed(1);
+                            metadataHtml += `🎯 <b>TopK:</b> ${topScore}%`;
+                        }
+
+                        metadataHtml += `</div>`;
+                    }
+
+                    // English comment: Combine metadata at the TOP, then the bot answer
+                    const fullMessage = `${metadataHtml}${botReply}`;
+                    addMessage(fullMessage, 'bot');
                 },
                 error: function(xhr) {
                     hideLoader();
@@ -424,7 +459,7 @@
             });
         }
 
-        // --- Helper Functions ---
+                // --- Helper Functions ---
 
                    function handleFileUpload(event) {
                        removeAllFiles();
