@@ -11,7 +11,7 @@ namespace AIHousingAssistant.Application.Enum
 }
 public static class EmbeddingModelExtensions
 {
-    public static string MapToModelId(this EmbeddingModel model, OllamaEmbeddingSettings settings)
+    public static string MapToModelId(this EmbeddingModel model, EmbeddingModelSettings settings)
     {
         // Try map first using enum name as key
         if (settings?.EmbeddingModelMap != null &&
@@ -22,8 +22,8 @@ public static class EmbeddingModelExtensions
         }
 
         // Fallback to Default from appsettings
-        if (!string.IsNullOrWhiteSpace(settings?.Default))
-            return settings.Default;
+        if (!string.IsNullOrWhiteSpace(settings?.DefaultModel))
+            return settings.DefaultModel;
 
         // Final fallback
         return "nomic-embed-text";

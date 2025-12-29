@@ -1,0 +1,50 @@
+ to conduct the search itself is straightforward and intuitive:
+
+
+
+string search = console.Ask&lt;string&gt;("What do you want to search for?");
+console.MarkupLineInterpolated($"[yellow]Searching for '{search}'...[/]");
+
+SearchResult results = await memory.SearchAsync(search);
+
+
+
+    Enter fullscreen mode
+    
+
+
+    Exit fullscreen mode
+    
+
+
+
+
+
+
+
+
+The SearchResult object organizes its results into different citations representing different documents searched. Within each citation will be different sets of partitions which represent different chunks of the document which are indexed and stored for data retrieval. This is important because documents and web pages can be very long and you want to match only on the most relevant portions of a document when performing a search.
+
+Each partition has a relevance score stored as a decimal percentage value ranging from 0 to 1.
+
+Using Spectre.Console, you can loop over these citations and partitions and create a display table using the following code:
+
+
+
+Table table = new Table()
+  .AddColumns("Document", "Partition", "Section", "Score", "Text");
+
+foreach (var citation in results.Results)
+{
+  foreach (var part in citation.Partitions)
+  {
+    string snippet = part.Text;
+    if (part.Text.Length &gt; 100)
+    {
+      snippet = part.Text[..100] + "...";
+    }
+
+    table.AddRow(citation.DocumentId, part.PartitionNumber.ToString(), part.SectionNumber.ToString(), part.Relevance.ToString("P2"), snippet);
+  }
+}
+

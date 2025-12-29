@@ -1,0 +1,149 @@
+{
+  "index": "Demo_vectors1",
+  "document_id": "file_747edc51b1ac475da3ad36b56af758f3",
+  "execution_id": "b5fbe881aef94dbb80ef174eaa65b716",
+  "steps": [
+    "extract",
+    "partition",
+    "gen_embeddings",
+    "save_records"
+  ],
+  "remaining_steps": [],
+  "completed_steps": [
+    "extract",
+    "partition",
+    "gen_embeddings",
+    "save_records"
+  ],
+  "tags": {
+    "source": [
+      "upload"
+    ],
+    "sessionId": [
+      "1"
+    ]
+  },
+  "creation": "2025-12-28T12:38:29.4625392+00:00",
+  "last_update": "2025-12-28T12:38:32.8425152+00:00",
+  "files": [
+    {
+      "id": "3fd471bcdc954056ba50a2b7a67388fe",
+      "name": "Project_Overview_Housing_System_Updated.pdf",
+      "size": 1843,
+      "mime_type": "application/pdf",
+      "artifact_type": "Undefined",
+      "partition_number": 0,
+      "section_number": 0,
+      "tags": {
+        "source": [
+          "upload"
+        ],
+        "sessionId": [
+          "1"
+        ]
+      },
+      "processed_by": [
+        "extract"
+      ],
+      "generated_files": {
+        "Project_Overview_Housing_System_Updated.pdf.extract.txt": {
+          "id": "a23f7dc0d32245a6aa4b2577c524387e",
+          "name": "Project_Overview_Housing_System_Updated.pdf.extract.txt",
+          "size": 822,
+          "mime_type": "text/plain",
+          "artifact_type": "ExtractedText",
+          "partition_number": 0,
+          "section_number": 0,
+          "tags": {
+            "source": [
+              "upload"
+            ],
+            "sessionId": [
+              "1"
+            ]
+          },
+          "parent_id": "3fd471bcdc954056ba50a2b7a67388fe",
+          "source_partition_id": "",
+          "content_sha256": "",
+          "processed_by": [
+            "extract",
+            "partition"
+          ]
+        },
+        "Project_Overview_Housing_System_Updated.pdf.extract.json": {
+          "id": "de73b27c33244d1396ca6a1b8ab3df45",
+          "name": "Project_Overview_Housing_System_Updated.pdf.extract.json",
+          "size": 822,
+          "mime_type": "text/plain",
+          "artifact_type": "ExtractedContent",
+          "partition_number": 0,
+          "section_number": 0,
+          "tags": {
+            "source": [
+              "upload"
+            ],
+            "sessionId": [
+              "1"
+            ]
+          },
+          "parent_id": "3fd471bcdc954056ba50a2b7a67388fe",
+          "source_partition_id": "",
+          "content_sha256": "",
+          "processed_by": [
+            "extract"
+          ]
+        },
+        "Project_Overview_Housing_System_Updated.pdf.partition.0.txt": {
+          "id": "1cac45c99108467fb0b73310447f486c",
+          "name": "Project_Overview_Housing_System_Updated.pdf.partition.0.txt",
+          "size": 822,
+          "mime_type": "text/plain",
+          "artifact_type": "TextPartition",
+          "partition_number": 0,
+          "section_number": 0,
+          "tags": {
+            "source": [
+              "upload"
+            ],
+            "sessionId": [
+              "1"
+            ]
+          },
+          "parent_id": "3fd471bcdc954056ba50a2b7a67388fe",
+          "source_partition_id": "",
+          "content_sha256": "08a6bd7eb6ac19b45ef8959813a0c719db209356b72a817d12cbe928785fa099",
+          "processed_by": [
+            "partition",
+            "gen_embeddings/AI.Ollama.OllamaTextEmbeddingGenerator/__"
+          ]
+        },
+        "Project_Overview_Housing_System_Updated.pdf.partition.0.txt.AI.Ollama.OllamaTextEmbeddingGenerator.__.text_embedding": {
+          "id": "4c43f5681b8447e0addc831636f7834c",
+          "name": "Project_Overview_Housing_System_Updated.pdf.partition.0.txt.AI.Ollama.OllamaTextEmbeddingGenerator.__.text_embedding",
+          "size": 9744,
+          "mime_type": "float[]",
+          "artifact_type": "TextEmbeddingVector",
+          "partition_number": 0,
+          "section_number": 0,
+          "tags": {
+            "source": [
+              "upload"
+            ],
+            "sessionId": [
+              "1"
+            ]
+          },
+          "parent_id": "3fd471bcdc954056ba50a2b7a67388fe",
+          "source_partition_id": "1cac45c99108467fb0b73310447f486c",
+          "content_sha256": "",
+          "processed_by": [
+            "gen_embeddings",
+            "save_records"
+          ]
+        }
+      }
+    }
+  ],
+  "args": {},
+  "previous_executions_to_purge": []
+}

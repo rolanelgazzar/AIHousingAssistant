@@ -16,11 +16,14 @@ namespace AIHousingAssistant.Application.SemanticKernel
         /// </summary>
         public static IKernelBuilder BuildKernel(AIProvider provider, ProviderSettings settings)
         {
+            // English comment: Switch between different AI providers based on configuration
             var builder = provider switch
             {
                 AIProvider.AzureOpenAI => BuildWithAzure(settings.AzureOpenAI),
                 AIProvider.OpenRouter => BuildWithOpenRouter(settings.OpenRouterAI),
-              //  AIProvider.OpenAI => BuildWithOpenAI(settings.OpenAI),
+                AIProvider.Ollama => BuildWithOllama(settings.Ollama),
+                // English comment: Direct integration for Groq LPU
+                AIProvider.Groq => BuildWithGroq(settings.Groq),
                 _ => BuildWithSemanticOnly()
             };
 
@@ -30,6 +33,7 @@ namespace AIHousingAssistant.Application.SemanticKernel
         // ---------------------------
         // Internal helpers for each AI provider
         // ---------------------------
+
         private static IKernelBuilder BuildWithAzure(AzureSettings azure)
         {
             var builder = Kernel.CreateBuilder();
@@ -59,42 +63,51 @@ namespace AIHousingAssistant.Application.SemanticKernel
             return builder;
         }
 
+        private static IKernelBuilder BuildWithGroq(GroqSettings settings)
+        {
+            // English comment: Groq is OpenAI-compliant, so we use the OpenAI connector 
+            // but point it to the Groq API endpoint.
+            var builder = Kernel.CreateBuilder();
+            builder.AddOpenAIChatCompletion(
+                modelId: settings.Model,
+                apiKey: settings.ApiKey,
+                endpoint: new Uri(settings.Endpoint) // Standard: https://api.groq.com/openai/v1
+            );
+            return builder;
+        }
+
+        private static IKernelBuilder BuildWithOllama(OllamaSettings ollama)
+        {
+            var builder = Kernel.CreateBuilder();
+            builder.AddOllamaChatCompletion(
+                modelId: ollama.Model,
+                endpoint: new Uri(ollama.Endpoint)
+            );
+            return builder;
+        }
+
         private static IKernelBuilder BuildWithSemanticOnly()
         {
             return Kernel.CreateBuilder();
         }
-        private static IKernelBuilder BuildWithOllama(OllamaSettings ollama)
-        {
-            // Create a kernel builder
-            var builder = Kernel.CreateBuilder();
 
-            // Add Ollama chat completion connector
-            builder.AddOllamaChatCompletion(
-                modelId: ollama.Model,           // Model name from settings
-                endpoint: new Uri(ollama.Endpoint) // Ollama endpoint
-                                                   // serviceId: ollama.ServiceId    // Optional
-            );
+        // ---------------------------
+        // Helper Methods
+        // ---------------------------
 
-            return builder;
-        }
-        // ---------------------------
-        // Add plugin to the kernel builder
-        // ---------------------------
         public static void AddPlugin(IKernelBuilder kernel, object plugin)
         {
             kernel.Plugins.AddFromObject(plugin);
         }
 
-        // ---------------------------
-        // Build the final Kernel
-        // ---------------------------
         public static Kernel Build(IKernelBuilder kernel)
         {
             return kernel.Build();
         }
+
         public static OpenAIPromptExecutionSettings? GetDefaultPromptSettings(AIProvider provider)
         {
-            // Return default prompt execution settings for providers that support OpenAI settings
+            // English comment: Define default execution behavior for different providers
             return provider switch
             {
                 AIProvider.AzureOpenAI => new OpenAIPromptExecutionSettings
@@ -105,15 +118,19 @@ namespace AIHousingAssistant.Application.SemanticKernel
                 {
                     ToolCallBehavior = ToolCallBehavior.AutoInvokeKernelFunctions
                 },
-                AIProvider.Ollama => null, // Ollama does not use OpenAIPromptExecutionSettings
+                // English comment: Groq settings with Temperature 0 for factual RAG accuracy
+                AIProvider.Groq => new OpenAIPromptExecutionSettings
+                {
+                    ToolCallBehavior = ToolCallBehavior.AutoInvokeKernelFunctions,
+                    Temperature = 0,
+                    MaxTokens = 1024
+                },
+                AIProvider.Ollama => null,
                 _ => new OpenAIPromptExecutionSettings
                 {
                     ToolCallBehavior = ToolCallBehavior.AutoInvokeKernelFunctions
                 }
             };
-
         }
-
-
     }
 }

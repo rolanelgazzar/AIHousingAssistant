@@ -1,10 +1,10 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using AIHousingAssistant.Application.Enum;
 using AIHousingAssistant.Application.Services.Interfaces;
-using AIHousingAssistant.Application.Services.Interfaces.Tools;
 using AIHousingAssistant.Models;
 using AIHousingAssistant.Models.Settings;
 using Microsoft.Extensions.Options;
+using AIHousingAssistant.Application.Services.ChatTools.Interfaces;
 
 namespace AIHousingAssistant.Controllers
 {

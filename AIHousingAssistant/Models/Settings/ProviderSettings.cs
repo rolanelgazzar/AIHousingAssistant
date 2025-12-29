@@ -7,8 +7,13 @@ namespace AIHousingAssistant.Models.Settings
         public AzureSettings AzureOpenAI { get; set; } = new();
         public OpenRouterSettings OpenRouterAI { get; set; } = new();
         public OpenAISettings OpenAI { get; set; } = new();
+        public GroqSettings Groq { get; set; } = new();
         public OllamaSettings Ollama { get; set; } = new();
-        public OllamaEmbeddingSettings OllamaEmbedding { get; set; } = new();
+        // Property name must match "ChatModel" in JSON
+        public ChatModelSettings ChatModel { get; set; } = new();
+
+        // Property name must match "EmbeddingModel" in JSON
+        public EmbeddingModelSettings EmbeddingModel { get; set; } = new();
 
         public QDrantSettings QDrant { get; set; } = new();
 
@@ -25,7 +30,12 @@ namespace AIHousingAssistant.Models.Settings
         public string ApiKey { get; set; } = string.Empty;
         public string Model { get; set; } = string.Empty;
     }
-
+    public class GroqSettings
+    {
+        public string Endpoint { get; set; } = string.Empty;
+        public string ApiKey { get; set; } = string.Empty;
+        public string Model { get; set; } = string.Empty;
+    }
     public class OpenRouterSettings
     {
         public string ApiKey { get; set; } = string.Empty;
@@ -39,22 +49,27 @@ namespace AIHousingAssistant.Models.Settings
         public string ApiKey { get; set; } = string.Empty;
         public string Model { get; set; } = string.Empty;
     }
-    public class OllamaSettings
-        {
+    public class ChatModelSettings
+    {
         public string Endpoint { get; set; } 
     public string Model { get; set; } = string.Empty;
-        public string EmbeddingModel { get; set; } = string.Empty;
 
-        public string TextModel { get; set; } = string.Empty;
+        public string ApiKey { get; set; } = string.Empty;
 
     }
-    public class OllamaEmbeddingSettings
+    public class OllamaSettings
+    {
+        public string Endpoint { get; set; }
+        public string Model { get; set; } = string.Empty;
+
+
+    }
+    public class EmbeddingModelSettings
     {
         public string Endpoint { get; set; }
 
-        public string Model { get; set; } = string.Empty;
+        public string DefaultModel { get; set; } = string.Empty;
 
-        public string Default { get; set; } = string.Empty;
 
         public Dictionary<string, string> EmbeddingModelMap { get; set; } = new();
 

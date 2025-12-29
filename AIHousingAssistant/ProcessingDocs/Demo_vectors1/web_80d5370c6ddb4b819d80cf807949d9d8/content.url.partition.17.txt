@@ -1,0 +1,80 @@
+ for this technology including:
+
+
+Simple RAG search and question answering for web applications
+Indexing existing knowledge sources like Confluence or Obsidian vaults
+Providing a cost-effective and secure option for document ingestion, ensuring document data never leaves the network
+
+
+If you're curious about Kernel Memory, I'd encourage you to take a look at the GitHub Repository containing this article's code and try things yourself.
+
+I'll be writing more about Kernel Memory in a chapter in my next technical book which releases in Q3 2025, and I'm looking at revising my Digital Dungeon Master solution to take advantage of the Kernel Memory / Semantic Kernel integration. I can also see some very real ways where Kernel Memory can help offer some of Leading EDJE's current and prospective clients additional value, capabilities, and cost savings so I'm excited to share this technology with the broader technical community.
+
+It's a great time to be doing AI and ML in .NET and I'm elated to have Kernel Memory as a tool in my toolbox.
+
+
+            
+
+              
+  
+    
+      
+        .NET AI / ML Highlights (2 Part Series)
+      
+    
+
+    
+
+          
+            1
+            Building a Digital Dungeon Master with Semantic Kernel, C#, and Azure
+          
+
+          
+            2
+            Document Search in .NET with Kernel Memory
+          
+    
+  
+
+              
+          
+          
+    
+      
+        
+          Top comments (1)
+        
+      
+
+
+      
+        
+          Subscribe
+        
+      
+    
+    
+    
+
+        
+
+
+
+
+  
+
+    
+    
+    
+
+  
+    
+  
+  
+    
+      
+
+
+    
+

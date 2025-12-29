@@ -1,0 +1,24 @@
+ Extensions and Integrations
+
+
+Kernel Memory is a very powerful and flexible library with a simple API and good behaviors out of the box. It has a high degree of customizability in terms of those default behaviors for the times when you need additional control.
+
+For example, you can customize the prompts Kernel Memory uses for fact extraction and summarization, giving you more control of its behavior as a chat partner.
+
+Additionally, Kernel Memory has a number of different deployment models, ranging from in-process MemoryServerless implementations like the one described in this article to pre-built Docker containers, to web services.
+
+Kernel Memory was also built with Semantic Kernel at least partially in mind. While Semantic Kernel has its own built-in vector store capabilities, they're harder to use than Kernel Memory's options and don't have as many ingestion options. As a result, you can connect Kernel Memory into a Semantic Kernel instance, providing a RAG data source for your AI orchestration solution. In fact, there's even a pre-built SemanticKernelPlugin NuGet package built just for this purpose.
+
+
+  
+  
+  Conclusion
+
+
+I'm absolutely enamored with the Kernel Memory library and see a lot of uses for this technology including:
+
+
+Simple RAG search and question answering for web applications
+Indexing existing knowledge sources like Confluence or Obsidian vaults
+Providing a cost-effective and secure option for document ingestion, ensuring document data never leaves the network
+

@@ -1,0 +1,149 @@
+{
+  "index": "Demo_vectors1",
+  "document_id": "text_63e3fd7d897c496997dd605d4f6b8906",
+  "execution_id": "4b1f756760c641d5bf67cc2c3cbba2bb",
+  "steps": [
+    "extract",
+    "partition",
+    "gen_embeddings",
+    "save_records"
+  ],
+  "remaining_steps": [],
+  "completed_steps": [
+    "extract",
+    "partition",
+    "gen_embeddings",
+    "save_records"
+  ],
+  "tags": {
+    "source": [
+      "file-text"
+    ],
+    "sessionId": [
+      "1"
+    ]
+  },
+  "creation": "2025-12-28T11:40:41.6624365+00:00",
+  "last_update": "2025-12-28T11:40:48.9762129+00:00",
+  "files": [
+    {
+      "id": "bd32a59015e44b5988bf8c878cc75c4a",
+      "name": "content.txt",
+      "size": 590,
+      "mime_type": "text/plain",
+      "artifact_type": "Undefined",
+      "partition_number": 0,
+      "section_number": 0,
+      "tags": {
+        "source": [
+          "file-text"
+        ],
+        "sessionId": [
+          "1"
+        ]
+      },
+      "processed_by": [
+        "extract"
+      ],
+      "generated_files": {
+        "content.txt.extract.txt": {
+          "id": "0c5b4d1ee3a54b40bee2248ef804ee4a",
+          "name": "content.txt.extract.txt",
+          "size": 590,
+          "mime_type": "text/plain",
+          "artifact_type": "ExtractedText",
+          "partition_number": 0,
+          "section_number": 0,
+          "tags": {
+            "source": [
+              "file-text"
+            ],
+            "sessionId": [
+              "1"
+            ]
+          },
+          "parent_id": "bd32a59015e44b5988bf8c878cc75c4a",
+          "source_partition_id": "",
+          "content_sha256": "",
+          "processed_by": [
+            "extract",
+            "partition"
+          ]
+        },
+        "content.txt.extract.json": {
+          "id": "a6af2938d7014ab383cd4dde06e6ad21",
+          "name": "content.txt.extract.json",
+          "size": 590,
+          "mime_type": "text/plain",
+          "artifact_type": "ExtractedContent",
+          "partition_number": 0,
+          "section_number": 0,
+          "tags": {
+            "source": [
+              "file-text"
+            ],
+            "sessionId": [
+              "1"
+            ]
+          },
+          "parent_id": "bd32a59015e44b5988bf8c878cc75c4a",
+          "source_partition_id": "",
+          "content_sha256": "",
+          "processed_by": [
+            "extract"
+          ]
+        },
+        "content.txt.partition.0.txt": {
+          "id": "78ec76d0ba3c471c860cdea2a2689d37",
+          "name": "content.txt.partition.0.txt",
+          "size": 590,
+          "mime_type": "text/plain",
+          "artifact_type": "TextPartition",
+          "partition_number": 0,
+          "section_number": 0,
+          "tags": {
+            "source": [
+              "file-text"
+            ],
+            "sessionId": [
+              "1"
+            ]
+          },
+          "parent_id": "bd32a59015e44b5988bf8c878cc75c4a",
+          "source_partition_id": "",
+          "content_sha256": "d297886a32f035ec72fb3217b1dfd7abb337893766a48692c53495dfde2900d5",
+          "processed_by": [
+            "partition",
+            "gen_embeddings/AI.Ollama.OllamaTextEmbeddingGenerator/__"
+          ]
+        },
+        "content.txt.partition.0.txt.AI.Ollama.OllamaTextEmbeddingGenerator.__.text_embedding": {
+          "id": "f5a9c57a7bb148828927936b0c4a601f",
+          "name": "content.txt.partition.0.txt.AI.Ollama.OllamaTextEmbeddingGenerator.__.text_embedding",
+          "size": 9726,
+          "mime_type": "float[]",
+          "artifact_type": "TextEmbeddingVector",
+          "partition_number": 0,
+          "section_number": 0,
+          "tags": {
+            "source": [
+              "file-text"
+            ],
+            "sessionId": [
+              "1"
+            ]
+          },
+          "parent_id": "bd32a59015e44b5988bf8c878cc75c4a",
+          "source_partition_id": "78ec76d0ba3c471c860cdea2a2689d37",
+          "content_sha256": "",
+          "processed_by": [
+            "gen_embeddings",
+            "save_records"
+          ]
+        }
+      }
+    }
+  ],
+  "args": {},
+  "previous_executions_to_purge": []
+}

@@ -1,7 +1,8 @@
 ﻿using AIHousingAssistant.Application.Enum;
 using AIHousingAssistant.Application.SemanticKernel;
+using AIHousingAssistant.Application.Services.ChatTools;
+using AIHousingAssistant.Application.Services.ChatTools.Interfaces;
 using AIHousingAssistant.Application.Services.Interfaces;
-using AIHousingAssistant.Application.Services.Interfaces.Tools;
 using AIHousingAssistant.Models;
 using AIHousingAssistant.Models.Settings;
 using AIHousingAssistant.semantic.Plugins;

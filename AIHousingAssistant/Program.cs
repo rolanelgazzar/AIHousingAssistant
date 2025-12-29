@@ -1,9 +1,9 @@
 
 using AIHousingAssistant.Application.Services;
+using AIHousingAssistant.Application.Services.ChatTools;
 using AIHousingAssistant.Application.Services.Chunk;
 using AIHousingAssistant.Application.Services.Embedding;
 using AIHousingAssistant.Application.Services.Interfaces;
-using AIHousingAssistant.Application.Services.Interfaces.Tools;
 using AIHousingAssistant.Application.Services.VectorDb;
 using AIHousingAssistant.Application.Services.VectorStores;
 using AIHousingAssistant.Helper;
@@ -14,6 +14,7 @@ using Microsoft.KernelMemory;
 using Microsoft.SemanticKernel;
 using Qdrant.Client;
 using System;
+using AIHousingAssistant.Application.Services.ChatTools.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
 

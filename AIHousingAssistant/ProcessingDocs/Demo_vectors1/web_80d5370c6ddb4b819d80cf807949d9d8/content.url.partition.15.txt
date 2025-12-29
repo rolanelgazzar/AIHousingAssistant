@@ -1,0 +1,48 @@
+ end goal is to provide a reply to the user from a query they sent you, you should consider using Kernel Memory's AskAsync method.
+
+AskAsync uses the text model to summarize the result of a search and provide that string back to the user.
+
+
+
+The code for this is extremely straightforward:
+
+
+
+string question = console.Ask&lt;string&gt;("What do you want to ask?");
+console.MarkupLineInterpolated($"[yellow]Asking '{question}'...[/]");
+
+MemoryAnswer answer = await memory.AskAsync(question);
+
+console.WriteLine(answer.Result);
+
+
+
+    Enter fullscreen mode
+    
+
+
+    Exit fullscreen mode
+    
+
+
+
+
+
+
+
+
+This provides a text output from your LLM as you would expect:
+
+
+
+As you might imagine, the AskAsync method takes significantly longer than SearchAsync because it effectively is performing the search as a RAG search and then using the results to chat with the underlying LLM.
+
+If you need information about the sources cited, those are also available in the MemoryAnswer, which can be helpful for diagnostic / logging purposes or simply to let the user know what was used in answering their question - or giving them additional links to investigate.
+
+
+  
+  
+  Kernel Memory Extensions and Integrations
+
+
+Kernel Memory is a very powerful and flexible library with a simple API and good behaviors out of the box. It has a high degree of customizability in terms of those default behaviors for the times when you need additional control.

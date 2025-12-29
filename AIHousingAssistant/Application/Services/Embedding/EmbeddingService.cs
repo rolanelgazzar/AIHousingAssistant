@@ -26,9 +26,9 @@ namespace AIHousingAssistant.Application.Services.Embedding
         {
             _providerSettings = providerSettings.Value;
             // The client is initialized with the endpoint from settings
-            _client = new OllamaApiClient(_providerSettings.OllamaEmbedding.Endpoint);
+            _client = new OllamaApiClient(_providerSettings.EmbeddingModel.Endpoint);
             // The initial model is set, but will be dynamically overwritten in the methods
-            _client.SelectedModel = _providerSettings.OllamaEmbedding.Model;
+            //_client.SelectedModel = _providerSettings.OllamaEmbedding.DefaultModel;
         }
 
         // ------------------------- Single Embedding (Used for Search Query) -------------------------
@@ -46,7 +46,7 @@ namespace AIHousingAssistant.Application.Services.Embedding
                 // Normalize the text before embedding
                 text = text.Trim().ToLowerInvariant();
 
-                var modelId = embeddingModel.MapToModelId(_providerSettings.OllamaEmbedding);
+                var modelId = embeddingModel.MapToModelId(_providerSettings.EmbeddingModel);
 
                 // Set the correct model for the client before the call
                 _client.SelectedModel = modelId;

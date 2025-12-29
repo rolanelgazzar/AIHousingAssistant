@@ -6,8 +6,8 @@ namespace AIHousingAssistant.Application.Enum
     {
         Ollama,
         OpenRouter,
-        KernelMemory,
-        AzureOpenAI
+        AzureOpenAI,
+        Groq
     }
 }
 

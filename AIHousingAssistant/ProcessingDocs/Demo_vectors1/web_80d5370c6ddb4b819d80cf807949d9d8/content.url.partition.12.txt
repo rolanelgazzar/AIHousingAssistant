@@ -1,0 +1,32 @@
+ you insert as belonging to certain collections. This allows you to filter down to certain groups of documents later on when searching or asking questions which supports critical scenarios such as restricting information available to different users based on which organization they're in or their security role.
+
+Most everything about Kernel Memory is customizable as well, so you can change how documents are decoded and partitioned and you can substitute in your own web scraping provider in lieu of Kernel Memory's default one, for example.
+
+These Import calls will take a few seconds to complete, based on the size of the data, your text embeddings model, and your choice of vector storage solution. Once it completes, your data will be available for search.
+
+
+  
+  
+  Searching Documents with Kernel Memory and Text Embeddings
+
+
+With our data ingested, we can now query Kernel Memory for specific questions. This can come in one of two ways:
+
+
+
+SearchAsync which provides raw search results to be handled programmatically
+
+AskAsync which performs a search and then has an LLM respond to the question asked given the search results.
+
+
+While the search results are more complex than the ask results, we should start by exploring search as this helps us understand what Kernel Memory is doing under the hood.
+
+
+
+The code to conduct the search itself is straightforward and intuitive:
+
+
+
+string search = console.Ask&lt;string&gt;("What do you want to search for?");
+console.MarkupLineInterpolated($"[yellow]Searching for '{search}'...[/]");
+

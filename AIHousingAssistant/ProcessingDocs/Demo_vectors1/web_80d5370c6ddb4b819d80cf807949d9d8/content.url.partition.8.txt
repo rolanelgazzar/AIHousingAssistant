@@ -1,0 +1,80 @@
+Secrets&lt;Program&gt;()
+    .AddCommandLine(args)
+    .Build();
+DocSearchDemoSettings settings = config.Get&lt;DocSearchDemoSettings&gt;()!;
+
+
+
+    Enter fullscreen mode
+    
+
+
+    Exit fullscreen mode
+    
+
+
+
+
+
+
+
+
+This reads information from a local JSON file, command-line arguments, user secrets, and environment variables and stores them into a settings object that looks like this:
+
+
+
+public class DocSearchDemoSettings
+{
+    public required string OpenAIEndpoint { get; init; }
+    public required string OpenAIKey { get; init; }
+    public required string TextModelName { get; init; }
+    public required string EmbeddingModelName { get; init; }
+}
+
+
+
+    Enter fullscreen mode
+    
+
+
+    Exit fullscreen mode
+    
+
+
+
+
+
+
+
+
+Most of these settings are set in the appsettings.json file, though you should store your endpoint and key in user secrets or environment variables if you plan on working with your own keys and managing things in source control.
+
+
+
+{
+    "OpenAIEndpoint": "YourEndpoint",
+    "OpenAIKey": "YourApiKey",
+    "TextModelName": "gpt-4o-mini",
+    "EmbeddingModelName": "text-embedding-3-small"
+}
+
+
+
+    Enter fullscreen mode
+    
+
+
+    Exit fullscreen mode
+    
+
+
+
+
+
+
+
+
+With our configuration loaded, we now jump into creating our IKernelMemory instance, where we'll need to provide information on what model, endpoints and keys to use:
+
+
+
