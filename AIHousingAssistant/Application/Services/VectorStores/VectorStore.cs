@@ -240,7 +240,7 @@ namespace AIHousingAssistant.Application.Services.VectorStores
             }
         }
         private string GetCollectionName(RagUiRequest ragUiRequest) {
-            return _providerSettings.CollectionNameBase
+            return _providerSettings.CollectionNameCustomRag
              + System.Enum.GetName(typeof(ChunkingMode), ragUiRequest.ChunkingMode);
         }
     }

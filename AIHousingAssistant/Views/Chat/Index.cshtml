@@ -267,18 +267,22 @@
         <div class="config-section">
             <h4>🔍 Search Mode</h4>
             <select id="searchMode">
+                <option value="2">Hybrid</option>
+
                 <option value="0">Vector</option>
                 <option value="1">Semantic</option>
-                <option value="2">Hybrid</option>
             </select>
         </div>
 
         <div class="config-section">
             <h4>🧠 AI Provider</h4>
             <select id="AIProvider">
+                <option value="3">Groq</option>
+
                 <option value="0">Ollama</option>
-                <option value="1">Open AI</option>
-                <option value="2">KernelMemory</option>
+                <option value="1">Open Router</option>
+                <option value="2">Azure OpenAI</option>
+
             </select>
         </div>
 
@@ -451,11 +455,21 @@
                     const fullMessage = `${metadataHtml}${botReply}`;
                     addMessage(fullMessage, 'bot');
                 },
-                error: function(xhr) {
-                    hideLoader();
-                    const err = xhr.responseJSON?.error || "Request failed.";
-                    addMessage("❌ Error: " + err, 'bot');
-                }
+                        error: function(xhr) {
+            hideLoader();
+
+            let errorMessage = "An unexpected error occurred.";
+
+            // English comment: Check if the backend sent a specific error JSON
+            if (xhr.responseJSON && xhr.responseJSON.error) {
+                errorMessage = xhr.responseJSON.error;
+            } else if (xhr.responseText) {
+                errorMessage = xhr.responseText;
+            }
+
+            addMessage("❌ <b>System Error:</b><br/>" + errorMessage, 'bot');
+            console.error("Full Error Details:", xhr); // English comment: Log full details to browser console for debugging
+        }
             });
         }
 

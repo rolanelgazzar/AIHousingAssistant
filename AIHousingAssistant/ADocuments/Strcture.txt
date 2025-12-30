@@ -1,0 +1,95 @@
+﻿AIHousingAssistant/
+├── Application/
+│   ├── Enum/
+│   ├── SemanticKernel/
+│   ├── SemanticTextSplitting/
+│   └── Services/
+│       ├── ChatTools/
+│       │   ├── DirectChatService.cs
+│       │   ├── MemoryKernelService.cs
+│       │   ├── PluginDbService.cs
+│       │   ├── RagService.cs
+│       │   └── WebSearchService.cs
+│       ├── Chunking/
+│       │   └── ChunkService.cs
+│       ├── Embedding/
+│       │   └── EmbeddingService.cs
+│       └── ChatHistory/
+│           └── ChatHistoryService.cs
+├── Controllers/
+│   ├── BaseController.cs
+│   ├── ChatController.cs
+│   └── HomeController.cs
+├── Domain/
+│   ├── Entities/
+│   └── Interfaces/
+├── Helper/
+│   ├── FileHelper.cs
+│   ├── HttpClientHelper.cs
+│   └── SearchHelper.cs
+├── Infrastructure/
+│   ├── Data/
+│   └── Repositories/
+├── Models/
+│   ├── ChatMessage.cs
+│   ├── ErrorViewModel.cs
+│   ├── HousingRequestModel.cs
+│   ├── HousingResponseModel.cs
+│   ├── RagAnswerResponse.cs
+│   ├── RagChunkRecord.cs
+│   ├── RagUiRequest.cs
+│   ├── Settings/
+│   ├── TextChunk.cs
+│   └── VectorChunk.cs
+└── Views/
+    ├── _ViewImports.cshtml
+    ├── _ViewStart.cshtml
+    ├── Chat/
+    ├── Home/
+    └── Shared/
+
+
+   workflow :
+
+   ### AI Housing Assistant - RAG Workflow Structure
+
+| Step | Action | Class / Service | Description |
+| :--- | :--- | :--- | :--- |
+| **1. Receive Query** | API Request Handling | **ChatController** | Receives the user's question, AI provider selection, and Session ID from the UI. |
+| **2. Search Context** | Semantic Search & Retrieval | **MemoryKernelService** OR **RagService** | **Option A (MemoryKernelService):** Uses Microsoft Kernel Memory to automatically search indexed vectors. <br> **Option B (RagService):** Manually retrieves relevant chunks from the VectorStore. |
+| **3. Document Ingestion** | Data Preparation | **MemoryKernelService** OR **ChunkService** | **Automated Path:** MemoryKernelService uses `ImportDocument` to handle chunking and embedding automatically. <br> **Custom Path:** RagService uses **ChunkService** (Recursive Splitter) and **EmbeddingService** (Ollama/OpenAI) manually. |
+| **4. Augment Prompt** | Context Enrichment | **MemoryKernelService** | Combines the retrieved document text with a professional system prompt to create a "Grounding" context. |
+| **5. AI Generation** | LLM Execution | **DirectChatService** OR **RagService** | Sends the enriched prompt to the LLM (GPT-4, Gemini, or Ollama) using Semantic Kernel to manage the completion. |
+| **6. Format Response** | Markdown Transformation | **MemoryKernelService** | **(Chain of Responsibility Target):** Converts raw AI output into clean Markdown (formatting tables, bolding housing terms, and ensuring RTL support). |
+| **7. History Management** | Conversation Logging | **ChatHistoryService** | Saves the user query and the AI's Markdown response into the database to maintain session context. |
+
+
+Key Technical Distinction
+1. Automated Path (MemoryKernelService)
+Workflow: ImportDocument → SearchAsync → AskAsync.
+
+Mechanism: Everything is handled automatically. The library manages the internal pipeline for chunking and embedding.
+
+English Comment: // Using Microsoft Kernel Memory for high-level abstraction and automated RAG pipelines.
+
+2. Custom Path (RagService)
+Workflow: ChunkService → EmbeddingService → VectorStore → SemanticKernel.
+
+Mechanism: Everything is manual. You have full control over how text is split and how vectors are stored.
+
+English Comment: // Implementing custom RAG logic to provide granular control over the chunking and embedding process.
+
+3. Tool-Specific Workflows
+البرنامج يحتوي على "أدوات" متخصصة، كل واحدة لها مسار مختلف:
+
+Database Tool (PluginDbService):
+
+Workflow: User Query → Semantic Kernel Plugin → SQL/Data Query → Natural Language Response.
+
+Used when asking about specific database entities like "Apartment prices".
+
+Web Search Tool (WebSearchService):
+
+Workflow: User Query → Google/Bing Connector → Scraping Web Results → Summarization.
+
+Used for real-time info like "Current housing laws 2025".

@@ -3,13 +3,16 @@ using AIHousingAssistant.Models.Settings;
 using Microsoft.SemanticKernel;
 using Microsoft.SemanticKernel.Connectors.Ollama;
 using Microsoft.SemanticKernel.Connectors.OpenAI;
+using OllamaSharp;
 using System;
 using System.Net.Http;
+using System.Net.Sockets;
 
 namespace AIHousingAssistant.Application.SemanticKernel
 {
     public static class SemanticKernelHelper
     {
+
         /// <summary>
         /// Returns an IKernelBuilder preconfigured with the chosen AI provider.
         /// Plugins can be added afterward using AddPlugin().
@@ -76,16 +79,27 @@ namespace AIHousingAssistant.Application.SemanticKernel
             return builder;
         }
 
+        // Use English comments in the code
         private static IKernelBuilder BuildWithOllama(OllamaSettings ollama)
         {
             var builder = Kernel.CreateBuilder();
-            builder.AddOllamaChatCompletion(
+
+            // Create HttpClient with extended timeout for Ollama (10 minutes)
+            var httpClient = new HttpClient
+            {
+                BaseAddress = new Uri("http://localhost:11434/"),
+                Timeout = TimeSpan.FromMinutes(10) // Increase timeout to 10 minutes
+            };
+
+            // Add Ollama chat completion service with custom HttpClient
+            builder.Services.AddOllamaChatCompletion(
                 modelId: ollama.Model,
-                endpoint: new Uri(ollama.Endpoint)
+                httpClient: httpClient,
+                serviceId: ollama.Model
             );
+
             return builder;
         }
-
         private static IKernelBuilder BuildWithSemanticOnly()
         {
             return Kernel.CreateBuilder();
@@ -105,9 +119,11 @@ namespace AIHousingAssistant.Application.SemanticKernel
             return kernel.Build();
         }
 
-        public static OpenAIPromptExecutionSettings? GetDefaultPromptSettings(AIProvider provider)
+        // Use English comments in the code
+        public static PromptExecutionSettings? GetDefaultPromptSettings(AIProvider provider)
         {
-            // English comment: Define default execution behavior for different providers
+            // English comment: Define default execution behavior. 
+            // We return the base class PromptExecutionSettings to support different providers.
             return provider switch
             {
                 AIProvider.AzureOpenAI => new OpenAIPromptExecutionSettings
@@ -116,16 +132,18 @@ namespace AIHousingAssistant.Application.SemanticKernel
                 },
                 AIProvider.OpenRouter => new OpenAIPromptExecutionSettings
                 {
-                    ToolCallBehavior = ToolCallBehavior.AutoInvokeKernelFunctions
+                    ToolCallBehavior = ToolCallBehavior.AutoInvokeKernelFunctions,
+                    Temperature = 0 // Recommended for RAG accuracy
                 },
-                // English comment: Groq settings with Temperature 0 for factual RAG accuracy
                 AIProvider.Groq => new OpenAIPromptExecutionSettings
                 {
                     ToolCallBehavior = ToolCallBehavior.AutoInvokeKernelFunctions,
                     Temperature = 0,
                     MaxTokens = 1024
                 },
+                // English comment: For Ollama, we return null or specific Ollama settings to avoid TypeMismatch errors
                 AIProvider.Ollama => null,
+
                 _ => new OpenAIPromptExecutionSettings
                 {
                     ToolCallBehavior = ToolCallBehavior.AutoInvokeKernelFunctions

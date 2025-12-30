@@ -15,7 +15,6 @@ using AIHousingAssistant.Application.Enum;
 using Microsoft.AspNetCore.Http.HttpResults;
 using AIHousingAssistant.Application.Services.Interfaces;
 using AIHousingAssistant.Application.Services.ChatTools.Interfaces;
-
 namespace AIHousingAssistant.Application.Services.ChatTools
 {
     public class MemoryKernelService : IMemoryKernelService
@@ -40,7 +39,8 @@ namespace AIHousingAssistant.Application.Services.ChatTools
             {
                 APIKey = _providerSettings.ChatModel.ApiKey, // Replace with your actual API key
                 Endpoint = _providerSettings.ChatModel.Endpoint,
-                TextModel = _providerSettings.ChatModel.Model // Best for Arabic, English, and complex tables
+                TextModel = _providerSettings.ChatModel.Model, // Best for Arabic, English, and complex tables
+
             };
             var ollamaEmbeddingConfig = new OllamaConfig
             {
@@ -68,21 +68,30 @@ namespace AIHousingAssistant.Application.Services.ChatTools
 
                 // Set temperature to 0 for consistent and factual answers
                 Temperature = 0,
-
                 // Number of document chunks to retrieve (100 is high, usually 5-10 is enough for RAG)
                 MaxMatchesCount = 10,
-
                 // Ensure enough tokens are reserved for the Arabic response
                 AnswerTokens = 1000
+            };
+            var azureDocIntelConfig = new AzureAIDocIntelConfig
+            {
+                APIKey = _providerSettings.AzureDocIntel.ApiKey,
+                Endpoint = _providerSettings.AzureDocIntel.Endpoint,
+                Auth = AzureAIDocIntelConfig.AuthTypes.APIKey,  // Add this line
+              
+
+                // English comment: Using 'Layout' mode is essential for Arabic table reconstruction
+                //    ServiceMode = AzureAIDocIntelConfig.ServiceModes.Layout
             };
             _memory = new KernelMemoryBuilder()
                 //.WithOllamaTextGeneration(ollamaTextConfig)
                 .WithOpenAITextGeneration(chatConfig) // Replaces WithOllamaTextGeneration
                 .WithOllamaTextEmbeddingGeneration(ollamaEmbeddingConfig)
                 .WithQdrantMemoryDb(qdrantConfig)
-                // Local file storage used by KernelMemory pipelines to temporarily store
-                //it persists every step of the document processing
-                // uploaded documents, extracted text, and intermediate processing artifacts
+                .WithAzureAIDocIntel(azureDocIntelConfig) 
+                                                                    // Local file storage used by KernelMemory pipelines to temporarily store
+                                                                    //it persists every step of the document processing
+                                                                    // uploaded documents, extracted text, and intermediate processing artifacts
                 .WithSimpleFileStorage(_providerSettings.ProcessingFolder)
                 // This line fixes the "input length exceeds context length" error
                 .WithCustomTextPartitioningOptions(textPartitioningOptions)
@@ -94,7 +103,7 @@ namespace AIHousingAssistant.Application.Services.ChatTools
         public async Task ProcessDocumentByKernelMemoryAsync(List<IFormFile> files, RagUiRequest ragUiRequest)
         {
             if (files == null || !files.Any()) return;
-            var collectionName = _providerSettings.CollectionNameBase + ragUiRequest.SessionId;
+            var collectionName = _providerSettings.CollectionNameKernelMemory + ragUiRequest.SessionId;
             foreach (var file in files)
             {
                 var fileName = file.FileName.ToLower();
@@ -159,7 +168,7 @@ namespace AIHousingAssistant.Application.Services.ChatTools
             if (string.IsNullOrWhiteSpace(ragRequest.Query))
                 throw new ArgumentException("Query cannot be empty");
 
-            var collectionName = _providerSettings.CollectionNameBase + ragRequest.SessionId;
+            var collectionName = _providerSettings.CollectionNameKernelMemory + ragRequest.SessionId;
 
             // English comment: Update chat history with the user's latest message
             _chatHistoryService.AddUserMessage(ragRequest.SessionId, ragRequest.Query);
@@ -215,33 +224,72 @@ namespace AIHousingAssistant.Application.Services.ChatTools
 
         private string GetEnrichedQuery(RagUiRequest ragRequest)
         {
-            // Retrieve chat history to maintain context during the conversation
+            // Retrieve recent conversation history for context
             var history = _chatHistoryService.GetChatHistory(ragRequest.SessionId);
 
-            // Take the last 5 messages to provide enough context without overwhelming the model's memory
+            // Take last 5 messages to balance context vs token usage
             var historySummary = history != null
                 ? string.Join("\n", history.TakeLast(5).Select(m => $"{m.Role}: {m.Content}"))
                 : string.Empty;
 
-            // English comments as requested:
-            // This enriched prompt guides the LLM to:
-            // 1. Match the user's language (Arabic/English).
-            // 2. Reconstruct tables from text chunks.
-            // 3. Maintain conversational continuity using history.
+            // Comprehensive system prompt with strict guidelines
             return $@"
-        ### System Instructions:
-        1. **Language Detection**: Analyze the 'User Question'. If it is in Arabic, you MUST respond in professional Arabic. If it is in English, respond in English.
-        2. **Conversational Context**: Use the 'Chat History' to recognize previous topics or user preferences mentioned in this session.
-        3. **Data & Table Extraction**: Answer using the provided document context. If you find data that represents a table or a structured list (even if the formatting is broken in the text chunks), reconstruct it into a clean, easy-to-read Markdown table.
-        4. **Source Reliability**: Only answer based on the documents. If the answer is not in the context, politely state that you don't have this information.
+### System Instructions:
 
-        ### Chat History:
-        {historySummary}
+1. **Language Detection & Response**: 
+   - Analyze the 'User Question' language carefully.
+   - If it is in Arabic, you MUST respond ENTIRELY in professional Arabic (no Chinese, no English mixing).
+   - If it is in English, respond ENTIRELY in English.
+   - NEVER mix languages or use Chinese characters in your response.
 
-        ### User Question: 
-        {ragRequest.Query}
+2. **Conversational Context**: 
+   - Use the 'Chat History' to recognize previous topics or user preferences mentioned in this session.
+   - Maintain continuity in the conversation.
 
-        ### Final Response (formatted as Markdown):";
+3. **Table Display Rules (CRITICAL)**:
+   - If the answer contains tabular data (prices, fees, comparisons, structured lists), you MUST display it as a clean Markdown table FIRST.
+   - Show the COMPLETE table with all relevant columns and rows from the document.
+   - Use the SAME language as the user's question for table headers and content.
+   - After the table, you MAY add a brief explanation (maximum 2-3 sentences) if helpful.
+   - DO NOT describe or explain the table BEFORE displaying it.
+   - Example format:
+```
+     | Column1 | Column2 | Column3 |
+     |---------|---------|---------|
+     | Data1   | Data2   | Data3   |
+     
+     Brief explanation here (optional).
+```
+
+4. **Data Extraction & Accuracy**:
+   - Extract information EXACTLY as it appears in the provided document context.
+   - When reconstructing tables from text chunks, preserve ALL data accurately.
+   - Do not summarize, skip, or modify numerical values.
+   - If data is partially formatted, reconstruct it into a proper table structure.
+
+5. **Source Reliability (STRICT)**:
+   - Answer ONLY based on the provided document context.
+   - NEVER add information from your training data or external knowledge.
+   - NEVER generate example data or hypothetical scenarios.
+   - If the exact answer is not in the documents, respond with:
+     * Arabic: ""عذراً، هذه المعلومة غير متوفرة في المستندات المتاحة.""
+     * English: ""I apologize, but this information is not available in the provided documents.""
+   - Do not make assumptions or provide general knowledge answers.
+
+6. **Formatting Guidelines**:
+   - Use clean Markdown formatting.
+   - For Arabic text, ensure proper RTL display.
+   - Keep responses concise and well-structured.
+   - Avoid unnecessary repetition.
+
+### Chat History:
+{historySummary}
+
+### User Question: 
+{ragRequest.Query}
+
+### Your Response:
+[If data is tabular: Display the complete Markdown table FIRST, then add brief explanation if needed. Use the same language as the user's question. Answer ONLY from document context - no external information or examples.]";
         }
 
         private string FormatFinalResponse(string content)

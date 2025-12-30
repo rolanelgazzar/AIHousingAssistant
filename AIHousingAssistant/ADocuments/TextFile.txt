@@ -1,0 +1,41 @@
+﻿User uploads Word/PDF
+    ↓
+ChatController receives file
+    ↓
+DocumentProcessingPipeline.Process(file)
+    ↓
+[Chain of Responsibility executes]
+    ↓
+Markdown output with tables
+    ↓
+Option A: MemoryKernelService.ImportDocument(markdown)
+OR
+Option B: ChunkService.SplitText(markdown) → RagService
+    ↓
+User asks question about the document
+    ↓
+MemoryKernelService.SearchAsync() retrieves relevant chunks
+    ↓
+AI generates response using context
+    ↓
+ChatHistoryService saves the conversation
+
+
+  📄 Document Input (Word/PDF/Excel)
+          ↓
+┌──────────────────────────────────────────┐
+│  Handler 1: MarkItDownConversionHandler   │ 
+│  (Uses MarkItDownSharp to get raw MD)    │
+└──────────────────────────────────────────┘
+          ↓
+┌──────────────────────────────────────────┐
+│  Handler 2: ArabicNormalizationHandler   │ 
+│  (Fix Arabic text flow and diacritics)   │
+└──────────────────────────────────────────┘
+          ↓
+┌──────────────────────────────────────────┐
+│  Handler 3: RTLDirectionHandler          │ 
+│  (Add HTML/CSS markers for Arabic UI)    │
+└──────────────────────────────────────────┘
+          ↓
+✅ Professional Markdown Output        ↓

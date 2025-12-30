@@ -15,6 +15,8 @@ using Microsoft.SemanticKernel;
 using Qdrant.Client;
 using System;
 using AIHousingAssistant.Application.Services.ChatTools.Interfaces;
+using AIHousingAssistant.Application.Services.DocumentProcessing;
+using AIHousingAssistant.Application.Services.DocumentProcessing.Abstractions;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -51,9 +53,14 @@ builder.Services.AddScoped<QdrantVectorDb_Sdk>();
 builder.Services.AddScoped<IVectorDB_Resolver, VectorDB_Resolver>();
 //builder.Services.AddScoped<IVectorDB, QdrantVectorDb_InMemory>();
 builder.Services.AddScoped<IVectorStore, VectorStore>();
+builder.Services.AddScoped<IDocProcessor, DocProcessor>();
 
-builder.Services.AddKernel()
-       .AddOllamaChatCompletion("llama3", new Uri("http://localhost:11434"));
+builder.Services.AddTransient<Kernel>(sp =>
+{
+    return new Kernel(sp);
+});
+//builder.Services.AddKernel()
+//       .AddOllamaChatCompletion("llama3", new Uri("http://localhost:11434"));
 //builder.Services.AddQdrantVectorStore("localhost"); // Register Qdrant Vector Store
 
 

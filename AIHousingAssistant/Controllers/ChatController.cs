@@ -176,7 +176,8 @@ namespace AIHousingAssistant.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new { error = "An error occurred during processing.", details = ex.Message });
+                var detailedError = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
+                return StatusCode(500, new { error = detailedError });
             }
         }
 

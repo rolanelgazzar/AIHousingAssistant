@@ -18,10 +18,12 @@ namespace AIHousingAssistant.Models.Settings
         public QDrantSettings QDrant { get; set; } = new();
 
         public GoogleConnector GoogleConnector { get; set; } = new();
+        public AzureDocIntelSettings AzureDocIntel { get; set; } = new();
         public string  ProcessingFolder { get; set; }
         public string VectorStoreFilename { get; set; }
+        public string CollectionNameKernelMemory { get; set; }
+        public string CollectionNameCustomRag { get; set; }
         public string ChunksFileName { get; set; }
-        public string CollectionNameBase { get; set; }
     }
 
     public class AzureSettings
@@ -86,5 +88,9 @@ namespace AIHousingAssistant.Models.Settings
         public string ApiKey { get; set; } = string.Empty;
         public string SearchEngineId { get; set; } = string.Empty;
     }
-
+    public class AzureDocIntelSettings
+    {
+        public string Endpoint { get; set; } = string.Empty;
+        public string ApiKey { get; set; } = string.Empty;
+    }
 }
