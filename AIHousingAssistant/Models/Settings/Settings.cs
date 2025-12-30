@@ -2,7 +2,7 @@
 
 namespace AIHousingAssistant.Models.Settings
 {
-    public class ProviderSettings
+    public class Settings
     {
         public AzureSettings AzureOpenAI { get; set; } = new();
         public OpenRouterSettings OpenRouterAI { get; set; } = new();

@@ -7,9 +7,9 @@ using Microsoft.Extensions.Options;
 
 public class DocProcessor : IDocProcessor
 {
-    private readonly IOptions<ProviderSettings> _settings;
+    private readonly IOptions<Settings> _settings;
 
-    public DocProcessor(IOptions<ProviderSettings> settings)
+    public DocProcessor(IOptions<Settings> settings)
     {
         _settings = settings;
     }

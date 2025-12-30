@@ -25,7 +25,7 @@ namespace AIHousingAssistant.Application.Services.VectorStores
     public class VectorStore : IVectorStore
     {
         private readonly IEmbeddingService _embeddingService;
-        private readonly ProviderSettings _providerSettings;
+        private readonly Settings _providerSettings;
         private readonly IVectorDB_Resolver _vectorDbResolver; 
         // Assumed constant payload key for filtering
         private const string ContentPayloadField = "content";
@@ -35,7 +35,7 @@ namespace AIHousingAssistant.Application.Services.VectorStores
         /// </summary>
         public VectorStore(
             IEmbeddingService embeddingService,
-            IOptions<ProviderSettings> providerSettings,
+            IOptions<Settings> providerSettings,
             IVectorDB_Resolver vectorDbResolver)
             
         {

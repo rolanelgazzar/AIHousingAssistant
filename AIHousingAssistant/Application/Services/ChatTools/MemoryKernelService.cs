@@ -20,11 +20,11 @@ namespace AIHousingAssistant.Application.Services.ChatTools
     public class MemoryKernelService : IMemoryKernelService
     {
         private readonly IKernelMemory _memory;
-        private readonly ProviderSettings _providerSettings;
+        private readonly Settings _providerSettings;
 
         private readonly IChatHistoryService _chatHistoryService;
 
-        public MemoryKernelService(IOptions<ProviderSettings> providerSettings, IChatHistoryService chatHistoryService)
+        public MemoryKernelService(IOptions<Settings> providerSettings, IChatHistoryService chatHistoryService)
         {
             _providerSettings = providerSettings.Value;
             _chatHistoryService = chatHistoryService;
@@ -224,74 +224,23 @@ namespace AIHousingAssistant.Application.Services.ChatTools
 
         private string GetEnrichedQuery(RagUiRequest ragRequest)
         {
-            // Retrieve recent conversation history for context
             var history = _chatHistoryService.GetChatHistory(ragRequest.SessionId);
-
-            // Take last 5 messages to balance context vs token usage
             var historySummary = history != null
-                ? string.Join("\n", history.TakeLast(5).Select(m => $"{m.Role}: {m.Content}"))
+                ? string.Join("\n", history.TakeLast(3).Select(m => $"{m.Role}: {m.Content}"))
                 : string.Empty;
 
-            // Comprehensive system prompt with strict guidelines
+            // Condensed Prompt focusing only on Language and Table structure
             return $@"
-### System Instructions:
+[System: Banking assistant. Use provided context only. Strict Rules:
+1. Respond in the EXACT same language as the user query.
+2. If data is tabular, you MUST use Markdown tables '|'.
+3. No external info. If missing, say: 'Information not available'.]
 
-1. **Language Detection & Response**: 
-   - Analyze the 'User Question' language carefully.
-   - If it is in Arabic, you MUST respond ENTIRELY in professional Arabic (no Chinese, no English mixing).
-   - If it is in English, respond ENTIRELY in English.
-   - NEVER mix languages or use Chinese characters in your response.
-
-2. **Conversational Context**: 
-   - Use the 'Chat History' to recognize previous topics or user preferences mentioned in this session.
-   - Maintain continuity in the conversation.
-
-3. **Table Display Rules (CRITICAL)**:
-   - If the answer contains tabular data (prices, fees, comparisons, structured lists), you MUST display it as a clean Markdown table FIRST.
-   - Show the COMPLETE table with all relevant columns and rows from the document.
-   - Use the SAME language as the user's question for table headers and content.
-   - After the table, you MAY add a brief explanation (maximum 2-3 sentences) if helpful.
-   - DO NOT describe or explain the table BEFORE displaying it.
-   - Example format:
-```
-     | Column1 | Column2 | Column3 |
-     |---------|---------|---------|
-     | Data1   | Data2   | Data3   |
-     
-     Brief explanation here (optional).
-```
-
-4. **Data Extraction & Accuracy**:
-   - Extract information EXACTLY as it appears in the provided document context.
-   - When reconstructing tables from text chunks, preserve ALL data accurately.
-   - Do not summarize, skip, or modify numerical values.
-   - If data is partially formatted, reconstruct it into a proper table structure.
-
-5. **Source Reliability (STRICT)**:
-   - Answer ONLY based on the provided document context.
-   - NEVER add information from your training data or external knowledge.
-   - NEVER generate example data or hypothetical scenarios.
-   - If the exact answer is not in the documents, respond with:
-     * Arabic: ""عذراً، هذه المعلومة غير متوفرة في المستندات المتاحة.""
-     * English: ""I apologize, but this information is not available in the provided documents.""
-   - Do not make assumptions or provide general knowledge answers.
-
-6. **Formatting Guidelines**:
-   - Use clean Markdown formatting.
-   - For Arabic text, ensure proper RTL display.
-   - Keep responses concise and well-structured.
-   - Avoid unnecessary repetition.
-
-### Chat History:
+### History:
 {historySummary}
 
-### User Question: 
-{ragRequest.Query}
-
-### Your Response:
-[If data is tabular: Display the complete Markdown table FIRST, then add brief explanation if needed. Use the same language as the user's question. Answer ONLY from document context - no external information or examples.]";
+### User: {ragRequest.Query}";
         }
-
         private string FormatFinalResponse(string content)
         {
             // English comment: Ensure the answer is clean and trimmed for the UI

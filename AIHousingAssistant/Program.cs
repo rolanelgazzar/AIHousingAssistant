@@ -24,8 +24,8 @@ builder.Services.AddControllersWithViews();
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-builder.Services.Configure<ProviderSettings>(
-    builder.Configuration.GetSection("ProviderSettings"));//builder.Services.AddScoped<IHousingService, HousingService>();
+builder.Services.Configure<Settings>(
+    builder.Configuration.GetSection("Settings"));//builder.Services.AddScoped<IHousingService, HousingService>();
 //builder.Services.AddScoped<HousingSkill>();
 //builder.Services.AddScoped<IChatHistoryService, ChatHistoryService>();
 builder.Services.AddScoped<IHousingService, HousingService>();

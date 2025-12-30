@@ -1,0 +1,26 @@
+ the following table:
+Example on calculation the foreign transaction Fee:
+Amount Due Exchange
+rate
+Amount in
+SAR
+foreign transaction
+Fee 2.75% VAT Amount Due
+1000 EUR 3.982
+SAR/EUR 3,982 SAR 3,982 * 2.75% =
+109.50 SAR
+99.55 * 15% =
+16.42
+3,982+99.55+14.9325=
+4,107. 92 SAR
+Card Type: Mada Calssic, Mada Platinum, Mada Signature, Mada Infinite
+Isuance/renew debit card Free
+Cash withdrawal /Deposit Free
+Re-issue an card withdrawn from the ATM Free
+Re-issuance of lost or damaged card or password error 3 itmes 30 SAR
+Issuance of additional card 30 SAR
+Cash withdrawal in GCC (per transaction) 10 SAR
+Balance inquiry outside the kingdom and in GCC (per transaction) 3 SAR
+Cash Withdrawal International (per transaction)
+Outside the Kingdom in addition to foreign transaction fee 25 SAR
+foreign transaction fee 2.75%

@@ -14,12 +14,12 @@ namespace AIHousingAssistant.Application.Services.VectorDb
     public class QdrantVectorDb_Http : IVectorDB
     {
         private readonly HttpClientHelper _httpClientHelper;
-        private readonly ProviderSettings _providerSettings;
+        private readonly Settings _providerSettings;
         private const string CollectionsBaseUrl = "collections";
 
         public QdrantVectorDb_Http(
             HttpClientHelper httpClientHelper,
-            IOptions<ProviderSettings> providerSettings)
+            IOptions<Settings> providerSettings)
         {
             _httpClientHelper = httpClientHelper;
             _providerSettings = providerSettings.Value;
@@ -152,14 +152,20 @@ namespace AIHousingAssistant.Application.Services.VectorDb
             try
             {
                 var exists = await IsCollectionExistedAsync(collectionName);
-                if (exists)
+                //if (exists)
+                //{
+                //    Console.WriteLine($"Collection '{collectionName}' exists. Deleting...");
+                //    bool deleted = await DeleteCollectionAsync(collectionName);
+                //    if (!deleted)
+                //        throw new InvalidOperationException($"Failed to delete collection '{collectionName}'.");
+                //}
+                if (!exists)
                 {
-                    Console.WriteLine($"Collection '{collectionName}' exists. Deleting...");
-                    bool deleted = await DeleteCollectionAsync(collectionName);
-                    if (!deleted)
-                        throw new InvalidOperationException($"Failed to delete collection '{collectionName}'.");
+                    // Create ONLY if it doesn't already exist
+                    Console.WriteLine($"Collection '{collectionName}' does not exist. Creating new collection...");
+                    await CreateCollectionAsync(collectionName, vectorSize, distance);
                 }
-
+                
                 await CreateCollectionAsync(collectionName, vectorSize, distance);
             }
             catch (Exception ex)

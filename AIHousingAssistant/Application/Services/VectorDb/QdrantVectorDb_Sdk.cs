@@ -19,13 +19,13 @@ namespace AIHousingAssistant.Application.Services.VectorDb
     /// </summary>
     public class QdrantVectorDb_Sdk : IVectorDB
     {
-        private readonly ProviderSettings _providerSettings;
+        private readonly Settings _providerSettings;
         private readonly QdrantClient _qdrantClient;
 
         /// <summary>
         /// Constructor: initializes Qdrant client with endpoint from settings.
         /// </summary>
-        public QdrantVectorDb_Sdk(IOptions<ProviderSettings> providerSettings)
+        public QdrantVectorDb_Sdk(IOptions<Settings> providerSettings)
         {
             _providerSettings = providerSettings.Value;
             _qdrantClient = new QdrantClient(_providerSettings.QDrant.Endpoint);
@@ -112,11 +112,15 @@ namespace AIHousingAssistant.Application.Services.VectorDb
         public async Task EnsureCollectionAsync(string collectionName, int vectorSize, QdrantDistance distance = QdrantDistance.Cosine)
         {
             var exists = await IsCollectionExistedAsync(collectionName);
-            if (exists)
+            //if (exists)
+            //{
+            //    await DeleteCollectionAsync(collectionName);
+            //}
+            // Logic: Create ONLY if it doesn't exist. DO NOT delete existing ones.
+            if (!exists)
             {
-                await DeleteCollectionAsync(collectionName);
+                await CreateCollectionAsync(collectionName, vectorSize, distance);
             }
-
             await CreateCollectionAsync(collectionName, vectorSize, distance);
         }
 

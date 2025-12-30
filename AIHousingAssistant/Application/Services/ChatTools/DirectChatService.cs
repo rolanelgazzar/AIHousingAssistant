@@ -13,11 +13,11 @@ namespace AIHousingAssistant.Application.Services.ChatTools
     public class DirectChatService : IDirectChatService
     {
         private readonly IChatHistoryService _chatHistoryService;
-        private readonly ProviderSettings _providerSettings;
+        private readonly Settings _providerSettings;
 
         public DirectChatService(
             IChatHistoryService chatHistoryService,
-            IOptions<ProviderSettings> providerSettings)
+            IOptions<Settings> providerSettings)
         {
             _chatHistoryService = chatHistoryService;
             _providerSettings = providerSettings.Value;

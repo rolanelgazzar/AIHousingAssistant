@@ -14,13 +14,13 @@ namespace AIHousingAssistant.Application.Services.Chunk
 {
     public class ChunkService : IChunkService
     {
-        private readonly ProviderSettings _providerSettings;
+        private readonly Settings _providerSettings;
         private readonly string _uploadFolder;
         private readonly IEmbeddingService _embeddingService; // Used for SemanticBlocksGrouper
 
         private static readonly JsonSerializerOptions SerializerOptions = new() { WriteIndented = true };
 
-        public ChunkService(IOptions<ProviderSettings> providerSettings, IEmbeddingService embeddingService)
+        public ChunkService(IOptions<Settings> providerSettings, IEmbeddingService embeddingService)
         {
             if (providerSettings == null)
                 throw new ArgumentNullException(nameof(providerSettings));

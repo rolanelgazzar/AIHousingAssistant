@@ -1,0 +1,1253 @@
+{
+  "index": "kM_Collection1",
+  "document_id": "file_ff907707f0dc443dbe0bc49a083ffbc4",
+  "execution_id": "ce81325b5f8240cd8cc2a5f1169eaa35",
+  "steps": [
+    "extract",
+    "partition",
+    "gen_embeddings",
+    "save_records"
+  ],
+  "remaining_steps": [],
+  "completed_steps": [
+    "extract",
+    "partition",
+    "gen_embeddings",
+    "save_records"
+  ],
+  "tags": {
+    "source": [
+      "upload"
+    ],
+    "sessionId": [
+      "1"
+    ]
+  },
+  "creation": "2025-12-30T14:12:54.7308531+00:00",
+  "last_update": "2025-12-30T14:13:03.284626+00:00",
+  "files": [
+    {
+      "id": "5c09f3568ad748b0bffd44b1007fe85a",
+      "name": "\u0628\u0637\u0627\u0642\u0629 \u062A\u0645\u0643\u064A\u0646 \u0628\u0644\u0633 \u0627\u0644\u0628\u0644\u0627\u062A\u064A\u0646\u064A\u0629 \u0627\u0644\u0627\u0626\u062A\u0645\u0627\u0646\u064A\u0629.docx",
+      "size": 29113,
+      "mime_type": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+      "artifact_type": "Undefined",
+      "partition_number": 0,
+      "section_number": 0,
+      "tags": {
+        "source": [
+          "upload"
+        ],
+        "sessionId": [
+          "1"
+        ]
+      },
+      "processed_by": [
+        "extract"
+      ],
+      "generated_files": {
+        "\u0628\u0637\u0627\u0642\u0629 \u062A\u0645\u0643\u064A\u0646 \u0628\u0644\u0633 \u0627\u0644\u0628\u0644\u0627\u062A\u064A\u0646\u064A\u0629 \u0627\u0644\u0627\u0626\u062A\u0645\u0627\u0646\u064A\u0629.docx.extract.txt": {
+          "id": "b005e1e591f248d19f0dd51039e0e605",
+          "name": "\u0628\u0637\u0627\u0642\u0629 \u062A\u0645\u0643\u064A\u0646 \u0628\u0644\u0633 \u0627\u0644\u0628\u0644\u0627\u062A\u064A\u0646\u064A\u0629 \u0627\u0644\u0627\u0626\u062A\u0645\u0627\u0646\u064A\u0629.docx.extract.txt",
+          "size": 9397,
+          "mime_type": "text/plain",
+          "artifact_type": "ExtractedText",
+          "partition_number": 0,
+          "section_number": 0,
+          "tags": {
+            "source": [
+              "upload"
+            ],
+            "sessionId": [
+              "1"
+            ]
+          },
+          "parent_id": "5c09f3568ad748b0bffd44b1007fe85a",
+          "source_partition_id": "",
+          "content_sha256": "",
+          "processed_by": [
+            "extract",
+            "partition"
+          ]
+        },
+        "\u0628\u0637\u0627\u0642\u0629 \u062A\u0645\u0643\u064A\u0646 \u0628\u0644\u0633 \u0627\u0644\u0628\u0644\u0627\u062A\u064A\u0646\u064A\u0629 \u0627\u0644\u0627\u0626\u062A\u0645\u0627\u0646\u064A\u0629.docx.extract.json": {
+          "id": "87e7b29c4a7642e788c75e0d33eae453",
+          "name": "\u0628\u0637\u0627\u0642\u0629 \u062A\u0645\u0643\u064A\u0646 \u0628\u0644\u0633 \u0627\u0644\u0628\u0644\u0627\u062A\u064A\u0646\u064A\u0629 \u0627\u0644\u0627\u0626\u062A\u0645\u0627\u0646\u064A\u0629.docx.extract.json",
+          "size": 9397,
+          "mime_type": "text/plain",
+          "artifact_type": "ExtractedContent",
+          "partition_number": 0,
+          "section_number": 0,
+          "tags": {
+            "source": [
+              "upload"
+            ],
+            "sessionId": [
+              "1"
+            ]
+          },
+          "parent_id": "5c09f3568ad748b0bffd44b1007fe85a",
+          "source_partition_id": "",
+          "content_sha256": "",
+          "processed_by": [
+            "extract"
+          ]
+        },
+        "\u0628\u0637\u0627\u0642\u0629 \u062A\u0645\u0643\u064A\u0646 \u0628\u0644\u0633 \u0627\u0644\u0628\u0644\u0627\u062A\u064A\u0646\u064A\u0629 \u0627\u0644\u0627\u0626\u062A\u0645\u0627\u0646\u064A\u0629.docx.partition.0.txt": {
+          "id": "0b554fc685874138a7f0ff852b5aee2d",
+          "name": "\u0628\u0637\u0627\u0642\u0629 \u062A\u0645\u0643\u064A\u0646 \u0628\u0644\u0633 \u0627\u0644\u0628\u0644\u0627\u062A\u064A\u0646\u064A\u0629 \u0627\u0644\u0627\u0626\u062A\u0645\u0627\u0646\u064A\u0629.docx.partition.0.txt",
+          "size": 606,
+          "mime_type": "text/plain",
+          "artifact_type": "TextPartition",
+          "partition_number": 0,
+          "section_number": 0,
+          "tags": {
+            "source": [
+              "upload"
+            ],
+            "sessionId": [
+              "1"
+            ]
+          },
+          "parent_id": "5c09f3568ad748b0bffd44b1007fe85a",
+          "source_partition_id": "",
+          "content_sha256": "fcd7f4f2c049e9ee9fe9033cd5ea1e677a8fb081250d7a82507962e85d085bb6",
+          "processed_by": [
+            "partition",
+            "gen_embeddings/AI.Ollama.OllamaTextEmbeddingGenerator/__"
+          ]
+        },
+        "\u0628\u0637\u0627\u0642\u0629 \u062A\u0645\u0643\u064A\u0646 \u0628\u0644\u0633 \u0627\u0644\u0628\u0644\u0627\u062A\u064A\u0646\u064A\u0629 \u0627\u0644\u0627\u0626\u062A\u0645\u0627\u0646\u064A\u0629.docx.partition.1.txt": {
+          "id": "d5f3e08d4a884bd3badd49a08c11f41c",
+          "name": "\u0628\u0637\u0627\u0642\u0629 \u062A\u0645\u0643\u064A\u0646 \u0628\u0644\u0633 \u0627\u0644\u0628\u0644\u0627\u062A\u064A\u0646\u064A\u0629 \u0627\u0644\u0627\u0626\u062A\u0645\u0627\u0646\u064A\u0629.docx.partition.1.txt",
+          "size": 592,
+          "mime_type": "text/plain",
+          "artifact_type": "TextPartition",
+          "partition_number": 1,
+          "section_number": 0,
+          "tags": {
+            "source": [
+              "upload"
+            ],
+            "sessionId": [
+              "1"
+            ]
+          },
+          "parent_id": "5c09f3568ad748b0bffd44b1007fe85a",
+          "source_partition_id": "",
+          "content_sha256": "758b2287677453b2edcf606dcab1eb75222580d5afd4f8d5d8b3e71bc9bc7725",
+          "processed_by": [
+            "partition",
+            "gen_embeddings/AI.Ollama.OllamaTextEmbeddingGenerator/__"
+          ]
+        },
+        "\u0628\u0637\u0627\u0642\u0629 \u062A\u0645\u0643\u064A\u0646 \u0628\u0644\u0633 \u0627\u0644\u0628\u0644\u0627\u062A\u064A\u0646\u064A\u0629 \u0627\u0644\u0627\u0626\u062A\u0645\u0627\u0646\u064A\u0629.docx.partition.2.txt": {
+          "id": "83f9aeb091f9422bbb3c76c5e4024912",
+          "name": "\u0628\u0637\u0627\u0642\u0629 \u062A\u0645\u0643\u064A\u0646 \u0628\u0644\u0633 \u0627\u0644\u0628\u0644\u0627\u062A\u064A\u0646\u064A\u0629 \u0627\u0644\u0627\u0626\u062A\u0645\u0627\u0646\u064A\u0629.docx.partition.2.txt",
+          "size": 440,
+          "mime_type": "text/plain",
+          "artifact_type": "TextPartition",
+          "partition_number": 2,
+          "section_number": 0,
+          "tags": {
+            "source": [
+              "upload"
+            ],
+            "sessionId": [
+              "1"
+            ]
+          },
+          "parent_id": "5c09f3568ad748b0bffd44b1007fe85a",
+          "source_partition_id": "",
+          "content_sha256": "77009c96183b6366362d2e2e20a55fa6121edf779e5e8c8864703e240bd56693",
+          "processed_by": [
+            "partition",
+            "gen_embeddings/AI.Ollama.OllamaTextEmbeddingGenerator/__"
+          ]
+        },
+        "\u0628\u0637\u0627\u0642\u0629 \u062A\u0645\u0643\u064A\u0646 \u0628\u0644\u0633 \u0627\u0644\u0628\u0644\u0627\u062A\u064A\u0646\u064A\u0629 \u0627\u0644\u0627\u0626\u062A\u0645\u0627\u0646\u064A\u0629.docx.partition.3.txt": {
+          "id": "e8049dba1c26481d8b9e954d5f1c5dc5",
+          "name": "\u0628\u0637\u0627\u0642\u0629 \u062A\u0645\u0643\u064A\u0646 \u0628\u0644\u0633 \u0627\u0644\u0628\u0644\u0627\u062A\u064A\u0646\u064A\u0629 \u0627\u0644\u0627\u0626\u062A\u0645\u0627\u0646\u064A\u0629.docx.partition.3.txt",
+          "size": 202,
+          "mime_type": "text/plain",
+          "artifact_type": "TextPartition",
+          "partition_number": 3,
+          "section_number": 0,
+          "tags": {
+            "source": [
+              "upload"
+            ],
+            "sessionId": [
+              "1"
+            ]
+          },
+          "parent_id": "5c09f3568ad748b0bffd44b1007fe85a",
+          "source_partition_id": "",
+          "content_sha256": "bb89e4552d3b72dae39e434f52de01e5a408c69edb782f29031545791cd4c3f5",
+          "processed_by": [
+            "partition",
+            "gen_embeddings/AI.Ollama.OllamaTextEmbeddingGenerator/__"
+          ]
+        },
+        "\u0628\u0637\u0627\u0642\u0629 \u062A\u0645\u0643\u064A\u0646 \u0628\u0644\u0633 \u0627\u0644\u0628\u0644\u0627\u062A\u064A\u0646\u064A\u0629 \u0627\u0644\u0627\u0626\u062A\u0645\u0627\u0646\u064A\u0629.docx.partition.4.txt": {
+          "id": "1e8577063154417ebdf96789e0fa26c1",
+          "name": "\u0628\u0637\u0627\u0642\u0629 \u062A\u0645\u0643\u064A\u0646 \u0628\u0644\u0633 \u0627\u0644\u0628\u0644\u0627\u062A\u064A\u0646\u064A\u0629 \u0627\u0644\u0627\u0626\u062A\u0645\u0627\u0646\u064A\u0629.docx.partition.4.txt",
+          "size": 628,
+          "mime_type": "text/plain",
+          "artifact_type": "TextPartition",
+          "partition_number": 4,
+          "section_number": 0,
+          "tags": {
+            "source": [
+              "upload"
+            ],
+            "sessionId": [
+              "1"
+            ]
+          },
+          "parent_id": "5c09f3568ad748b0bffd44b1007fe85a",
+          "source_partition_id": "",
+          "content_sha256": "049d8ddae96b6177ac02911378ecb0ec72e3136a4b8ca830abe405dab45cf374",
+          "processed_by": [
+            "partition",
+            "gen_embeddings/AI.Ollama.OllamaTextEmbeddingGenerator/__"
+          ]
+        },
+        "\u0628\u0637\u0627\u0642\u0629 \u062A\u0645\u0643\u064A\u0646 \u0628\u0644\u0633 \u0627\u0644\u0628\u0644\u0627\u062A\u064A\u0646\u064A\u0629 \u0627\u0644\u0627\u0626\u062A\u0645\u0627\u0646\u064A\u0629.docx.partition.5.txt": {
+          "id": "6bf9e8bd322b4572aa5f65e3f7437da8",
+          "name": "\u0628\u0637\u0627\u0642\u0629 \u062A\u0645\u0643\u064A\u0646 \u0628\u0644\u0633 \u0627\u0644\u0628\u0644\u0627\u062A\u064A\u0646\u064A\u0629 \u0627\u0644\u0627\u0626\u062A\u0645\u0627\u0646\u064A\u0629.docx.partition.5.txt",
+          "size": 258,
+          "mime_type": "text/plain",
+          "artifact_type": "TextPartition",
+          "partition_number": 5,
+          "section_number": 0,
+          "tags": {
+            "source": [
+              "upload"
+            ],
+            "sessionId": [
+              "1"
+            ]
+          },
+          "parent_id": "5c09f3568ad748b0bffd44b1007fe85a",
+          "source_partition_id": "",
+          "content_sha256": "4f1ca4c96b58e75d2152d39fa2afc44456ab35e4b0970abffecb6b700840fa9c",
+          "processed_by": [
+            "partition",
+            "gen_embeddings/AI.Ollama.OllamaTextEmbeddingGenerator/__"
+          ]
+        },
+        "\u0628\u0637\u0627\u0642\u0629 \u062A\u0645\u0643\u064A\u0646 \u0628\u0644\u0633 \u0627\u0644\u0628\u0644\u0627\u062A\u064A\u0646\u064A\u0629 \u0627\u0644\u0627\u0626\u062A\u0645\u0627\u0646\u064A\u0629.docx.partition.6.txt": {
+          "id": "7b9bb3c6e5f04be5b314e3cb5485b4ee",
+          "name": "\u0628\u0637\u0627\u0642\u0629 \u062A\u0645\u0643\u064A\u0646 \u0628\u0644\u0633 \u0627\u0644\u0628\u0644\u0627\u062A\u064A\u0646\u064A\u0629 \u0627\u0644\u0627\u0626\u062A\u0645\u0627\u0646\u064A\u0629.docx.partition.6.txt",
+          "size": 356,
+          "mime_type": "text/plain",
+          "artifact_type": "TextPartition",
+          "partition_number": 6,
+          "section_number": 0,
+          "tags": {
+            "source": [
+              "upload"
+            ],
+            "sessionId": [
+              "1"
+            ]
+          },
+          "parent_id": "5c09f3568ad748b0bffd44b1007fe85a",
+          "source_partition_id": "",
+          "content_sha256": "1ee7108cf1eb477813960c8e4537ac835ba480162f46ea7cee2f7081a8ad1644",
+          "processed_by": [
+            "partition",
+            "gen_embeddings/AI.Ollama.OllamaTextEmbeddingGenerator/__"
+          ]
+        },
+        "\u0628\u0637\u0627\u0642\u0629 \u062A\u0645\u0643\u064A\u0646 \u0628\u0644\u0633 \u0627\u0644\u0628\u0644\u0627\u062A\u064A\u0646\u064A\u0629 \u0627\u0644\u0627\u0626\u062A\u0645\u0627\u0646\u064A\u0629.docx.partition.7.txt": {
+          "id": "23543c17f6544cc3b8c0cd6a5ad35d7c",
+          "name": "\u0628\u0637\u0627\u0642\u0629 \u062A\u0645\u0643\u064A\u0646 \u0628\u0644\u0633 \u0627\u0644\u0628\u0644\u0627\u062A\u064A\u0646\u064A\u0629 \u0627\u0644\u0627\u0626\u062A\u0645\u0627\u0646\u064A\u0629.docx.partition.7.txt",
+          "size": 710,
+          "mime_type": "text/plain",
+          "artifact_type": "TextPartition",
+          "partition_number": 7,
+          "section_number": 0,
+          "tags": {
+            "source": [
+              "upload"
+            ],
+            "sessionId": [
+              "1"
+            ]
+          },
+          "parent_id": "5c09f3568ad748b0bffd44b1007fe85a",
+          "source_partition_id": "",
+          "content_sha256": "60a0836689aa633015d16fa60192ac6dce974e109495604a0392668de69657df",
+          "processed_by": [
+            "partition",
+            "gen_embeddings/AI.Ollama.OllamaTextEmbeddingGenerator/__"
+          ]
+        },
+        "\u0628\u0637\u0627\u0642\u0629 \u062A\u0645\u0643\u064A\u0646 \u0628\u0644\u0633 \u0627\u0644\u0628\u0644\u0627\u062A\u064A\u0646\u064A\u0629 \u0627\u0644\u0627\u0626\u062A\u0645\u0627\u0646\u064A\u0629.docx.partition.8.txt": {
+          "id": "91f906131917486eb20911747b0020a3",
+          "name": "\u0628\u0637\u0627\u0642\u0629 \u062A\u0645\u0643\u064A\u0646 \u0628\u0644\u0633 \u0627\u0644\u0628\u0644\u0627\u062A\u064A\u0646\u064A\u0629 \u0627\u0644\u0627\u0626\u062A\u0645\u0627\u0646\u064A\u0629.docx.partition.8.txt",
+          "size": 706,
+          "mime_type": "text/plain",
+          "artifact_type": "TextPartition",
+          "partition_number": 8,
+          "section_number": 0,
+          "tags": {
+            "source": [
+              "upload"
+            ],
+            "sessionId": [
+              "1"
+            ]
+          },
+          "parent_id": "5c09f3568ad748b0bffd44b1007fe85a",
+          "source_partition_id": "",
+          "content_sha256": "a331cd7b7a97ec6afc71f62adc4fc687d93d2a9da7720777bd0440fd9ca35cab",
+          "processed_by": [
+            "partition",
+            "gen_embeddings/AI.Ollama.OllamaTextEmbeddingGenerator/__"
+          ]
+        },
+        "\u0628\u0637\u0627\u0642\u0629 \u062A\u0645\u0643\u064A\u0646 \u0628\u0644\u0633 \u0627\u0644\u0628\u0644\u0627\u062A\u064A\u0646\u064A\u0629 \u0627\u0644\u0627\u0626\u062A\u0645\u0627\u0646\u064A\u0629.docx.partition.9.txt": {
+          "id": "7b60b78c98014be2a4d5ff6cb9586c9b",
+          "name": "\u0628\u0637\u0627\u0642\u0629 \u062A\u0645\u0643\u064A\u0646 \u0628\u0644\u0633 \u0627\u0644\u0628\u0644\u0627\u062A\u064A\u0646\u064A\u0629 \u0627\u0644\u0627\u0626\u062A\u0645\u0627\u0646\u064A\u0629.docx.partition.9.txt",
+          "size": 489,
+          "mime_type": "text/plain",
+          "artifact_type": "TextPartition",
+          "partition_number": 9,
+          "section_number": 0,
+          "tags": {
+            "source": [
+              "upload"
+            ],
+            "sessionId": [
+              "1"
+            ]
+          },
+          "parent_id": "5c09f3568ad748b0bffd44b1007fe85a",
+          "source_partition_id": "",
+          "content_sha256": "910c051d4df6f8d23d952aa001a0130abd5e02d766ed60f85de8d7573d837819",
+          "processed_by": [
+            "partition",
+            "gen_embeddings/AI.Ollama.OllamaTextEmbeddingGenerator/__"
+          ]
+        },
+        "\u0628\u0637\u0627\u0642\u0629 \u062A\u0645\u0643\u064A\u0646 \u0628\u0644\u0633 \u0627\u0644\u0628\u0644\u0627\u062A\u064A\u0646\u064A\u0629 \u0627\u0644\u0627\u0626\u062A\u0645\u0627\u0646\u064A\u0629.docx.partition.10.txt": {
+          "id": "3c5b7497baff4d1c99f3e036a892a71a",
+          "name": "\u0628\u0637\u0627\u0642\u0629 \u062A\u0645\u0643\u064A\u0646 \u0628\u0644\u0633 \u0627\u0644\u0628\u0644\u0627\u062A\u064A\u0646\u064A\u0629 \u0627\u0644\u0627\u0626\u062A\u0645\u0627\u0646\u064A\u0629.docx.partition.10.txt",
+          "size": 533,
+          "mime_type": "text/plain",
+          "artifact_type": "TextPartition",
+          "partition_number": 10,
+          "section_number": 0,
+          "tags": {
+            "source": [
+              "upload"
+            ],
+            "sessionId": [
+              "1"
+            ]
+          },
+          "parent_id": "5c09f3568ad748b0bffd44b1007fe85a",
+          "source_partition_id": "",
+          "content_sha256": "9fd7640e9f22dc98114fa1fa4d99a09636111e597154e1c3bf9568f9b8534a0c",
+          "processed_by": [
+            "partition",
+            "gen_embeddings/AI.Ollama.OllamaTextEmbeddingGenerator/__"
+          ]
+        },
+        "\u0628\u0637\u0627\u0642\u0629 \u062A\u0645\u0643\u064A\u0646 \u0628\u0644\u0633 \u0627\u0644\u0628\u0644\u0627\u062A\u064A\u0646\u064A\u0629 \u0627\u0644\u0627\u0626\u062A\u0645\u0627\u0646\u064A\u0629.docx.partition.11.txt": {
+          "id": "5ef5e1930f20424da7b7332022592a3f",
+          "name": "\u0628\u0637\u0627\u0642\u0629 \u062A\u0645\u0643\u064A\u0646 \u0628\u0644\u0633 \u0627\u0644\u0628\u0644\u0627\u062A\u064A\u0646\u064A\u0629 \u0627\u0644\u0627\u0626\u062A\u0645\u0627\u0646\u064A\u0629.docx.partition.11.txt",
+          "size": 664,
+          "mime_type": "text/plain",
+          "artifact_type": "TextPartition",
+          "partition_number": 11,
+          "section_number": 0,
+          "tags": {
+            "source": [
+              "upload"
+            ],
+            "sessionId": [
+              "1"
+            ]
+          },
+          "parent_id": "5c09f3568ad748b0bffd44b1007fe85a",
+          "source_partition_id": "",
+          "content_sha256": "34a4dfe1ff4d0049b636246f59497e7e2bd0fad4544092b3fa6ddfe9f43e67a1",
+          "processed_by": [
+            "partition",
+            "gen_embeddings/AI.Ollama.OllamaTextEmbeddingGenerator/__"
+          ]
+        },
+        "\u0628\u0637\u0627\u0642\u0629 \u062A\u0645\u0643\u064A\u0646 \u0628\u0644\u0633 \u0627\u0644\u0628\u0644\u0627\u062A\u064A\u0646\u064A\u0629 \u0627\u0644\u0627\u0626\u062A\u0645\u0627\u0646\u064A\u0629.docx.partition.12.txt": {
+          "id": "b4d70a51dcdb41ee91147eeefd189e6b",
+          "name": "\u0628\u0637\u0627\u0642\u0629 \u062A\u0645\u0643\u064A\u0646 \u0628\u0644\u0633 \u0627\u0644\u0628\u0644\u0627\u062A\u064A\u0646\u064A\u0629 \u0627\u0644\u0627\u0626\u062A\u0645\u0627\u0646\u064A\u0629.docx.partition.12.txt",
+          "size": 179,
+          "mime_type": "text/plain",
+          "artifact_type": "TextPartition",
+          "partition_number": 12,
+          "section_number": 0,
+          "tags": {
+            "source": [
+              "upload"
+            ],
+            "sessionId": [
+              "1"
+            ]
+          },
+          "parent_id": "5c09f3568ad748b0bffd44b1007fe85a",
+          "source_partition_id": "",
+          "content_sha256": "091e829dec6a2756d6a8ab667b54745f6ba987ea452c00d8a7c21981c3a1db70",
+          "processed_by": [
+            "partition",
+            "gen_embeddings/AI.Ollama.OllamaTextEmbeddingGenerator/__"
+          ]
+        },
+        "\u0628\u0637\u0627\u0642\u0629 \u062A\u0645\u0643\u064A\u0646 \u0628\u0644\u0633 \u0627\u0644\u0628\u0644\u0627\u062A\u064A\u0646\u064A\u0629 \u0627\u0644\u0627\u0626\u062A\u0645\u0627\u0646\u064A\u0629.docx.partition.13.txt": {
+          "id": "49617a817ec24424b3de55d60c1f25d4",
+          "name": "\u0628\u0637\u0627\u0642\u0629 \u062A\u0645\u0643\u064A\u0646 \u0628\u0644\u0633 \u0627\u0644\u0628\u0644\u0627\u062A\u064A\u0646\u064A\u0629 \u0627\u0644\u0627\u0626\u062A\u0645\u0627\u0646\u064A\u0629.docx.partition.13.txt",
+          "size": 168,
+          "mime_type": "text/plain",
+          "artifact_type": "TextPartition",
+          "partition_number": 13,
+          "section_number": 0,
+          "tags": {
+            "source": [
+              "upload"
+            ],
+            "sessionId": [
+              "1"
+            ]
+          },
+          "parent_id": "5c09f3568ad748b0bffd44b1007fe85a",
+          "source_partition_id": "",
+          "content_sha256": "8716511ae2bd7b41d7d00e6636b3f5a8674b6eb2d2f8ab9d9c9075b01a48a0b1",
+          "processed_by": [
+            "partition",
+            "gen_embeddings/AI.Ollama.OllamaTextEmbeddingGenerator/__"
+          ]
+        },
+        "\u0628\u0637\u0627\u0642\u0629 \u062A\u0645\u0643\u064A\u0646 \u0628\u0644\u0633 \u0627\u0644\u0628\u0644\u0627\u062A\u064A\u0646\u064A\u0629 \u0627\u0644\u0627\u0626\u062A\u0645\u0627\u0646\u064A\u0629.docx.partition.14.txt": {
+          "id": "0862f6b42bbe4ccfa38f6e3f3bcd9950",
+          "name": "\u0628\u0637\u0627\u0642\u0629 \u062A\u0645\u0643\u064A\u0646 \u0628\u0644\u0633 \u0627\u0644\u0628\u0644\u0627\u062A\u064A\u0646\u064A\u0629 \u0627\u0644\u0627\u0626\u062A\u0645\u0627\u0646\u064A\u0629.docx.partition.14.txt",
+          "size": 558,
+          "mime_type": "text/plain",
+          "artifact_type": "TextPartition",
+          "partition_number": 14,
+          "section_number": 0,
+          "tags": {
+            "source": [
+              "upload"
+            ],
+            "sessionId": [
+              "1"
+            ]
+          },
+          "parent_id": "5c09f3568ad748b0bffd44b1007fe85a",
+          "source_partition_id": "",
+          "content_sha256": "56f34f254f229cc1dee3c001ed0bc3d15bc2847cf9d32d2dcd7dfbb5711448f0",
+          "processed_by": [
+            "partition",
+            "gen_embeddings/AI.Ollama.OllamaTextEmbeddingGenerator/__"
+          ]
+        },
+        "\u0628\u0637\u0627\u0642\u0629 \u062A\u0645\u0643\u064A\u0646 \u0628\u0644\u0633 \u0627\u0644\u0628\u0644\u0627\u062A\u064A\u0646\u064A\u0629 \u0627\u0644\u0627\u0626\u062A\u0645\u0627\u0646\u064A\u0629.docx.partition.15.txt": {
+          "id": "1c1583a20f3d4721a0999b64a87c6a6a",
+          "name": "\u0628\u0637\u0627\u0642\u0629 \u062A\u0645\u0643\u064A\u0646 \u0628\u0644\u0633 \u0627\u0644\u0628\u0644\u0627\u062A\u064A\u0646\u064A\u0629 \u0627\u0644\u0627\u0626\u062A\u0645\u0627\u0646\u064A\u0629.docx.partition.15.txt",
+          "size": 693,
+          "mime_type": "text/plain",
+          "artifact_type": "TextPartition",
+          "partition_number": 15,
+          "section_number": 0,
+          "tags": {
+            "source": [
+              "upload"
+            ],
+            "sessionId": [
+              "1"
+            ]
+          },
+          "parent_id": "5c09f3568ad748b0bffd44b1007fe85a",
+          "source_partition_id": "",
+          "content_sha256": "8a2c4e04c11bc517a98138f1b80766ab57e363fc9ae6790fa17bc75848b2d919",
+          "processed_by": [
+            "partition",
+            "gen_embeddings/AI.Ollama.OllamaTextEmbeddingGenerator/__"
+          ]
+        },
+        "\u0628\u0637\u0627\u0642\u0629 \u062A\u0645\u0643\u064A\u0646 \u0628\u0644\u0633 \u0627\u0644\u0628\u0644\u0627\u062A\u064A\u0646\u064A\u0629 \u0627\u0644\u0627\u0626\u062A\u0645\u0627\u0646\u064A\u0629.docx.partition.16.txt": {
+          "id": "109d176da2c345b2bb27894cfbd8b749",
+          "name": "\u0628\u0637\u0627\u0642\u0629 \u062A\u0645\u0643\u064A\u0646 \u0628\u0644\u0633 \u0627\u0644\u0628\u0644\u0627\u062A\u064A\u0646\u064A\u0629 \u0627\u0644\u0627\u0626\u062A\u0645\u0627\u0646\u064A\u0629.docx.partition.16.txt",
+          "size": 483,
+          "mime_type": "text/plain",
+          "artifact_type": "TextPartition",
+          "partition_number": 16,
+          "section_number": 0,
+          "tags": {
+            "source": [
+              "upload"
+            ],
+            "sessionId": [
+              "1"
+            ]
+          },
+          "parent_id": "5c09f3568ad748b0bffd44b1007fe85a",
+          "source_partition_id": "",
+          "content_sha256": "51a2c2e78c89c1eb511f2ddecb1976af7edafce273bc86722ea5695ccbd9b2c3",
+          "processed_by": [
+            "partition",
+            "gen_embeddings/AI.Ollama.OllamaTextEmbeddingGenerator/__"
+          ]
+        },
+        "\u0628\u0637\u0627\u0642\u0629 \u062A\u0645\u0643\u064A\u0646 \u0628\u0644\u0633 \u0627\u0644\u0628\u0644\u0627\u062A\u064A\u0646\u064A\u0629 \u0627\u0644\u0627\u0626\u062A\u0645\u0627\u0646\u064A\u0629.docx.partition.17.txt": {
+          "id": "34e15ecb69bb469da1fce930bc07fc60",
+          "name": "\u0628\u0637\u0627\u0642\u0629 \u062A\u0645\u0643\u064A\u0646 \u0628\u0644\u0633 \u0627\u0644\u0628\u0644\u0627\u062A\u064A\u0646\u064A\u0629 \u0627\u0644\u0627\u0626\u062A\u0645\u0627\u0646\u064A\u0629.docx.partition.17.txt",
+          "size": 664,
+          "mime_type": "text/plain",
+          "artifact_type": "TextPartition",
+          "partition_number": 17,
+          "section_number": 0,
+          "tags": {
+            "source": [
+              "upload"
+            ],
+            "sessionId": [
+              "1"
+            ]
+          },
+          "parent_id": "5c09f3568ad748b0bffd44b1007fe85a",
+          "source_partition_id": "",
+          "content_sha256": "7921219dd0e4836fd16282704bbef52bc510846eea1cd47a819511cbd59cd91b",
+          "processed_by": [
+            "partition",
+            "gen_embeddings/AI.Ollama.OllamaTextEmbeddingGenerator/__"
+          ]
+        },
+        "\u0628\u0637\u0627\u0642\u0629 \u062A\u0645\u0643\u064A\u0646 \u0628\u0644\u0633 \u0627\u0644\u0628\u0644\u0627\u062A\u064A\u0646\u064A\u0629 \u0627\u0644\u0627\u0626\u062A\u0645\u0627\u0646\u064A\u0629.docx.partition.18.txt": {
+          "id": "430d13aa78c148d39693d098f9f1d0a8",
+          "name": "\u0628\u0637\u0627\u0642\u0629 \u062A\u0645\u0643\u064A\u0646 \u0628\u0644\u0633 \u0627\u0644\u0628\u0644\u0627\u062A\u064A\u0646\u064A\u0629 \u0627\u0644\u0627\u0626\u062A\u0645\u0627\u0646\u064A\u0629.docx.partition.18.txt",
+          "size": 715,
+          "mime_type": "text/plain",
+          "artifact_type": "TextPartition",
+          "partition_number": 18,
+          "section_number": 0,
+          "tags": {
+            "source": [
+              "upload"
+            ],
+            "sessionId": [
+              "1"
+            ]
+          },
+          "parent_id": "5c09f3568ad748b0bffd44b1007fe85a",
+          "source_partition_id": "",
+          "content_sha256": "978e9d1abff95bbef61b50f50fa15e8f8e7045b2dc6e3ef9443a7e7b9f94e380",
+          "processed_by": [
+            "partition",
+            "gen_embeddings/AI.Ollama.OllamaTextEmbeddingGenerator/__"
+          ]
+        },
+        "\u0628\u0637\u0627\u0642\u0629 \u062A\u0645\u0643\u064A\u0646 \u0628\u0644\u0633 \u0627\u0644\u0628\u0644\u0627\u062A\u064A\u0646\u064A\u0629 \u0627\u0644\u0627\u0626\u062A\u0645\u0627\u0646\u064A\u0629.docx.partition.19.txt": {
+          "id": "fe6fba4278c84ded99a877f9041e4003",
+          "name": "\u0628\u0637\u0627\u0642\u0629 \u062A\u0645\u0643\u064A\u0646 \u0628\u0644\u0633 \u0627\u0644\u0628\u0644\u0627\u062A\u064A\u0646\u064A\u0629 \u0627\u0644\u0627\u0626\u062A\u0645\u0627\u0646\u064A\u0629.docx.partition.19.txt",
+          "size": 557,
+          "mime_type": "text/plain",
+          "artifact_type": "TextPartition",
+          "partition_number": 19,
+          "section_number": 0,
+          "tags": {
+            "source": [
+              "upload"
+            ],
+            "sessionId": [
+              "1"
+            ]
+          },
+          "parent_id": "5c09f3568ad748b0bffd44b1007fe85a",
+          "source_partition_id": "",
+          "content_sha256": "57bd89769b096e932ce48bd885702a0d424a1152eb1ff1e7238a3f7d2b6bc1e0",
+          "processed_by": [
+            "partition",
+            "gen_embeddings/AI.Ollama.OllamaTextEmbeddingGenerator/__"
+          ]
+        },
+        "\u0628\u0637\u0627\u0642\u0629 \u062A\u0645\u0643\u064A\u0646 \u0628\u0644\u0633 \u0627\u0644\u0628\u0644\u0627\u062A\u064A\u0646\u064A\u0629 \u0627\u0644\u0627\u0626\u062A\u0645\u0627\u0646\u064A\u0629.docx.partition.20.txt": {
+          "id": "c8c629c8f4df470b95eb7aa5d139b508",
+          "name": "\u0628\u0637\u0627\u0642\u0629 \u062A\u0645\u0643\u064A\u0646 \u0628\u0644\u0633 \u0627\u0644\u0628\u0644\u0627\u062A\u064A\u0646\u064A\u0629 \u0627\u0644\u0627\u0626\u062A\u0645\u0627\u0646\u064A\u0629.docx.partition.20.txt",
+          "size": 547,
+          "mime_type": "text/plain",
+          "artifact_type": "TextPartition",
+          "partition_number": 20,
+          "section_number": 0,
+          "tags": {
+            "source": [
+              "upload"
+            ],
+            "sessionId": [
+              "1"
+            ]
+          },
+          "parent_id": "5c09f3568ad748b0bffd44b1007fe85a",
+          "source_partition_id": "",
+          "content_sha256": "1634ee840fb1625df9e8cccf6750c9041f199720cb33bdfefc9719b3204cb156",
+          "processed_by": [
+            "partition",
+            "gen_embeddings/AI.Ollama.OllamaTextEmbeddingGenerator/__"
+          ]
+        },
+        "\u0628\u0637\u0627\u0642\u0629 \u062A\u0645\u0643\u064A\u0646 \u0628\u0644\u0633 \u0627\u0644\u0628\u0644\u0627\u062A\u064A\u0646\u064A\u0629 \u0627\u0644\u0627\u0626\u062A\u0645\u0627\u0646\u064A\u0629.docx.partition.21.txt": {
+          "id": "52e779ad25be41598905b8f833911bd5",
+          "name": "\u0628\u0637\u0627\u0642\u0629 \u062A\u0645\u0643\u064A\u0646 \u0628\u0644\u0633 \u0627\u0644\u0628\u0644\u0627\u062A\u064A\u0646\u064A\u0629 \u0627\u0644\u0627\u0626\u062A\u0645\u0627\u0646\u064A\u0629.docx.partition.21.txt",
+          "size": 689,
+          "mime_type": "text/plain",
+          "artifact_type": "TextPartition",
+          "partition_number": 21,
+          "section_number": 0,
+          "tags": {
+            "source": [
+              "upload"
+            ],
+            "sessionId": [
+              "1"
+            ]
+          },
+          "parent_id": "5c09f3568ad748b0bffd44b1007fe85a",
+          "source_partition_id": "",
+          "content_sha256": "9bd7fe2d91247623f61066f286ce7cdbeb5efb8623f6afc9ceebfa5f607e1ed8",
+          "processed_by": [
+            "partition",
+            "gen_embeddings/AI.Ollama.OllamaTextEmbeddingGenerator/__"
+          ]
+        },
+        "\u0628\u0637\u0627\u0642\u0629 \u062A\u0645\u0643\u064A\u0646 \u0628\u0644\u0633 \u0627\u0644\u0628\u0644\u0627\u062A\u064A\u0646\u064A\u0629 \u0627\u0644\u0627\u0626\u062A\u0645\u0627\u0646\u064A\u0629.docx.partition.22.txt": {
+          "id": "80d130b0898b4ee695497a8a5e21eab7",
+          "name": "\u0628\u0637\u0627\u0642\u0629 \u062A\u0645\u0643\u064A\u0646 \u0628\u0644\u0633 \u0627\u0644\u0628\u0644\u0627\u062A\u064A\u0646\u064A\u0629 \u0627\u0644\u0627\u0626\u062A\u0645\u0627\u0646\u064A\u0629.docx.partition.22.txt",
+          "size": 723,
+          "mime_type": "text/plain",
+          "artifact_type": "TextPartition",
+          "partition_number": 22,
+          "section_number": 0,
+          "tags": {
+            "source": [
+              "upload"
+            ],
+            "sessionId": [
+              "1"
+            ]
+          },
+          "parent_id": "5c09f3568ad748b0bffd44b1007fe85a",
+          "source_partition_id": "",
+          "content_sha256": "35b1695bdfa20aa526f8e8e326fa760ba381ec5d353de6a3a4f0847e38c72b83",
+          "processed_by": [
+            "partition",
+            "gen_embeddings/AI.Ollama.OllamaTextEmbeddingGenerator/__"
+          ]
+        },
+        "\u0628\u0637\u0627\u0642\u0629 \u062A\u0645\u0643\u064A\u0646 \u0628\u0644\u0633 \u0627\u0644\u0628\u0644\u0627\u062A\u064A\u0646\u064A\u0629 \u0627\u0644\u0627\u0626\u062A\u0645\u0627\u0646\u064A\u0629.docx.partition.23.txt": {
+          "id": "2caf143c34084b5294ee0af889f5500c",
+          "name": "\u0628\u0637\u0627\u0642\u0629 \u062A\u0645\u0643\u064A\u0646 \u0628\u0644\u0633 \u0627\u0644\u0628\u0644\u0627\u062A\u064A\u0646\u064A\u0629 \u0627\u0644\u0627\u0626\u062A\u0645\u0627\u0646\u064A\u0629.docx.partition.23.txt",
+          "size": 291,
+          "mime_type": "text/plain",
+          "artifact_type": "TextPartition",
+          "partition_number": 23,
+          "section_number": 0,
+          "tags": {
+            "source": [
+              "upload"
+            ],
+            "sessionId": [
+              "1"
+            ]
+          },
+          "parent_id": "5c09f3568ad748b0bffd44b1007fe85a",
+          "source_partition_id": "",
+          "content_sha256": "c03dc09fc96b217fd5ca96a3e897403f6f6250d5b7dad90902b23827d8170a08",
+          "processed_by": [
+            "partition",
+            "gen_embeddings/AI.Ollama.OllamaTextEmbeddingGenerator/__"
+          ]
+        },
+        "\u0628\u0637\u0627\u0642\u0629 \u062A\u0645\u0643\u064A\u0646 \u0628\u0644\u0633 \u0627\u0644\u0628\u0644\u0627\u062A\u064A\u0646\u064A\u0629 \u0627\u0644\u0627\u0626\u062A\u0645\u0627\u0646\u064A\u0629.docx.partition.0.txt.AI.Ollama.OllamaTextEmbeddingGenerator.__.text_embedding": {
+          "id": "252e0fb4af8244fd9a5116522f836fbe",
+          "name": "\u0628\u0637\u0627\u0642\u0629 \u062A\u0645\u0643\u064A\u0646 \u0628\u0644\u0633 \u0627\u0644\u0628\u0644\u0627\u062A\u064A\u0646\u064A\u0629 \u0627\u0644\u0627\u0626\u062A\u0645\u0627\u0646\u064A\u0629.docx.partition.0.txt.AI.Ollama.OllamaTextEmbeddingGenerator.__.text_embedding",
+          "size": 9928,
+          "mime_type": "float[]",
+          "artifact_type": "TextEmbeddingVector",
+          "partition_number": 0,
+          "section_number": 0,
+          "tags": {
+            "source": [
+              "upload"
+            ],
+            "sessionId": [
+              "1"
+            ]
+          },
+          "parent_id": "5c09f3568ad748b0bffd44b1007fe85a",
+          "source_partition_id": "0b554fc685874138a7f0ff852b5aee2d",
+          "content_sha256": "",
+          "processed_by": [
+            "gen_embeddings",
+            "save_records"
+          ]
+        },
+        "\u0628\u0637\u0627\u0642\u0629 \u062A\u0645\u0643\u064A\u0646 \u0628\u0644\u0633 \u0627\u0644\u0628\u0644\u0627\u062A\u064A\u0646\u064A\u0629 \u0627\u0644\u0627\u0626\u062A\u0645\u0627\u0646\u064A\u0629.docx.partition.1.txt.AI.Ollama.OllamaTextEmbeddingGenerator.__.text_embedding": {
+          "id": "edf6effafad649aea9f817f5dc6d9c2d",
+          "name": "\u0628\u0637\u0627\u0642\u0629 \u062A\u0645\u0643\u064A\u0646 \u0628\u0644\u0633 \u0627\u0644\u0628\u0644\u0627\u062A\u064A\u0646\u064A\u0629 \u0627\u0644\u0627\u0626\u062A\u0645\u0627\u0646\u064A\u0629.docx.partition.1.txt.AI.Ollama.OllamaTextEmbeddingGenerator.__.text_embedding",
+          "size": 9924,
+          "mime_type": "float[]",
+          "artifact_type": "TextEmbeddingVector",
+          "partition_number": 1,
+          "section_number": 0,
+          "tags": {
+            "source": [
+              "upload"
+            ],
+            "sessionId": [
+              "1"
+            ]
+          },
+          "parent_id": "5c09f3568ad748b0bffd44b1007fe85a",
+          "source_partition_id": "d5f3e08d4a884bd3badd49a08c11f41c",
+          "content_sha256": "",
+          "processed_by": [
+            "gen_embeddings",
+            "save_records"
+          ]
+        },
+        "\u0628\u0637\u0627\u0642\u0629 \u062A\u0645\u0643\u064A\u0646 \u0628\u0644\u0633 \u0627\u0644\u0628\u0644\u0627\u062A\u064A\u0646\u064A\u0629 \u0627\u0644\u0627\u0626\u062A\u0645\u0627\u0646\u064A\u0629.docx.partition.2.txt.AI.Ollama.OllamaTextEmbeddingGenerator.__.text_embedding": {
+          "id": "efff2ee78aef4786b68c87bd8732aac6",
+          "name": "\u0628\u0637\u0627\u0642\u0629 \u062A\u0645\u0643\u064A\u0646 \u0628\u0644\u0633 \u0627\u0644\u0628\u0644\u0627\u062A\u064A\u0646\u064A\u0629 \u0627\u0644\u0627\u0626\u062A\u0645\u0627\u0646\u064A\u0629.docx.partition.2.txt.AI.Ollama.OllamaTextEmbeddingGenerator.__.text_embedding",
+          "size": 9903,
+          "mime_type": "float[]",
+          "artifact_type": "TextEmbeddingVector",
+          "partition_number": 2,
+          "section_number": 0,
+          "tags": {
+            "source": [
+              "upload"
+            ],
+            "sessionId": [
+              "1"
+            ]
+          },
+          "parent_id": "5c09f3568ad748b0bffd44b1007fe85a",
+          "source_partition_id": "83f9aeb091f9422bbb3c76c5e4024912",
+          "content_sha256": "",
+          "processed_by": [
+            "gen_embeddings",
+            "save_records"
+          ]
+        },
+        "\u0628\u0637\u0627\u0642\u0629 \u062A\u0645\u0643\u064A\u0646 \u0628\u0644\u0633 \u0627\u0644\u0628\u0644\u0627\u062A\u064A\u0646\u064A\u0629 \u0627\u0644\u0627\u0626\u062A\u0645\u0627\u0646\u064A\u0629.docx.partition.3.txt.AI.Ollama.OllamaTextEmbeddingGenerator.__.text_embedding": {
+          "id": "49b99d5ebcfa4ee4b4c6b2ca3c157e35",
+          "name": "\u0628\u0637\u0627\u0642\u0629 \u062A\u0645\u0643\u064A\u0646 \u0628\u0644\u0633 \u0627\u0644\u0628\u0644\u0627\u062A\u064A\u0646\u064A\u0629 \u0627\u0644\u0627\u0626\u062A\u0645\u0627\u0646\u064A\u0629.docx.partition.3.txt.AI.Ollama.OllamaTextEmbeddingGenerator.__.text_embedding",
+          "size": 9914,
+          "mime_type": "float[]",
+          "artifact_type": "TextEmbeddingVector",
+          "partition_number": 3,
+          "section_number": 0,
+          "tags": {
+            "source": [
+              "upload"
+            ],
+            "sessionId": [
+              "1"
+            ]
+          },
+          "parent_id": "5c09f3568ad748b0bffd44b1007fe85a",
+          "source_partition_id": "e8049dba1c26481d8b9e954d5f1c5dc5",
+          "content_sha256": "",
+          "processed_by": [
+            "gen_embeddings",
+            "save_records"
+          ]
+        },
+        "\u0628\u0637\u0627\u0642\u0629 \u062A\u0645\u0643\u064A\u0646 \u0628\u0644\u0633 \u0627\u0644\u0628\u0644\u0627\u062A\u064A\u0646\u064A\u0629 \u0627\u0644\u0627\u0626\u062A\u0645\u0627\u0646\u064A\u0629.docx.partition.4.txt.AI.Ollama.OllamaTextEmbeddingGenerator.__.text_embedding": {
+          "id": "f3e04303072341fb88268a6ad3b06e53",
+          "name": "\u0628\u0637\u0627\u0642\u0629 \u062A\u0645\u0643\u064A\u0646 \u0628\u0644\u0633 \u0627\u0644\u0628\u0644\u0627\u062A\u064A\u0646\u064A\u0629 \u0627\u0644\u0627\u0626\u062A\u0645\u0627\u0646\u064A\u0629.docx.partition.4.txt.AI.Ollama.OllamaTextEmbeddingGenerator.__.text_embedding",
+          "size": 9906,
+          "mime_type": "float[]",
+          "artifact_type": "TextEmbeddingVector",
+          "partition_number": 4,
+          "section_number": 0,
+          "tags": {
+            "source": [
+              "upload"
+            ],
+            "sessionId": [
+              "1"
+            ]
+          },
+          "parent_id": "5c09f3568ad748b0bffd44b1007fe85a",
+          "source_partition_id": "1e8577063154417ebdf96789e0fa26c1",
+          "content_sha256": "",
+          "processed_by": [
+            "gen_embeddings",
+            "save_records"
+          ]
+        },
+        "\u0628\u0637\u0627\u0642\u0629 \u062A\u0645\u0643\u064A\u0646 \u0628\u0644\u0633 \u0627\u0644\u0628\u0644\u0627\u062A\u064A\u0646\u064A\u0629 \u0627\u0644\u0627\u0626\u062A\u0645\u0627\u0646\u064A\u0629.docx.partition.5.txt.AI.Ollama.OllamaTextEmbeddingGenerator.__.text_embedding": {
+          "id": "8f103c19b7b448649f73c9934c0d4123",
+          "name": "\u0628\u0637\u0627\u0642\u0629 \u062A\u0645\u0643\u064A\u0646 \u0628\u0644\u0633 \u0627\u0644\u0628\u0644\u0627\u062A\u064A\u0646\u064A\u0629 \u0627\u0644\u0627\u0626\u062A\u0645\u0627\u0646\u064A\u0629.docx.partition.5.txt.AI.Ollama.OllamaTextEmbeddingGenerator.__.text_embedding",
+          "size": 9895,
+          "mime_type": "float[]",
+          "artifact_type": "TextEmbeddingVector",
+          "partition_number": 5,
+          "section_number": 0,
+          "tags": {
+            "source": [
+              "upload"
+            ],
+            "sessionId": [
+              "1"
+            ]
+          },
+          "parent_id": "5c09f3568ad748b0bffd44b1007fe85a",
+          "source_partition_id": "6bf9e8bd322b4572aa5f65e3f7437da8",
+          "content_sha256": "",
+          "processed_by": [
+            "gen_embeddings",
+            "save_records"
+          ]
+        },
+        "\u0628\u0637\u0627\u0642\u0629 \u062A\u0645\u0643\u064A\u0646 \u0628\u0644\u0633 \u0627\u0644\u0628\u0644\u0627\u062A\u064A\u0646\u064A\u0629 \u0627\u0644\u0627\u0626\u062A\u0645\u0627\u0646\u064A\u0629.docx.partition.6.txt.AI.Ollama.OllamaTextEmbeddingGenerator.__.text_embedding": {
+          "id": "b2a4806edbbd4849bec3b4a8b148d9e2",
+          "name": "\u0628\u0637\u0627\u0642\u0629 \u062A\u0645\u0643\u064A\u0646 \u0628\u0644\u0633 \u0627\u0644\u0628\u0644\u0627\u062A\u064A\u0646\u064A\u0629 \u0627\u0644\u0627\u0626\u062A\u0645\u0627\u0646\u064A\u0629.docx.partition.6.txt.AI.Ollama.OllamaTextEmbeddingGenerator.__.text_embedding",
+          "size": 9877,
+          "mime_type": "float[]",
+          "artifact_type": "TextEmbeddingVector",
+          "partition_number": 6,
+          "section_number": 0,
+          "tags": {
+            "source": [
+              "upload"
+            ],
+            "sessionId": [
+              "1"
+            ]
+          },
+          "parent_id": "5c09f3568ad748b0bffd44b1007fe85a",
+          "source_partition_id": "7b9bb3c6e5f04be5b314e3cb5485b4ee",
+          "content_sha256": "",
+          "processed_by": [
+            "gen_embeddings",
+            "save_records"
+          ]
+        },
+        "\u0628\u0637\u0627\u0642\u0629 \u062A\u0645\u0643\u064A\u0646 \u0628\u0644\u0633 \u0627\u0644\u0628\u0644\u0627\u062A\u064A\u0646\u064A\u0629 \u0627\u0644\u0627\u0626\u062A\u0645\u0627\u0646\u064A\u0629.docx.partition.7.txt.AI.Ollama.OllamaTextEmbeddingGenerator.__.text_embedding": {
+          "id": "db4ab9080a1d46e598e6e1017ca3b16c",
+          "name": "\u0628\u0637\u0627\u0642\u0629 \u062A\u0645\u0643\u064A\u0646 \u0628\u0644\u0633 \u0627\u0644\u0628\u0644\u0627\u062A\u064A\u0646\u064A\u0629 \u0627\u0644\u0627\u0626\u062A\u0645\u0627\u0646\u064A\u0629.docx.partition.7.txt.AI.Ollama.OllamaTextEmbeddingGenerator.__.text_embedding",
+          "size": 9890,
+          "mime_type": "float[]",
+          "artifact_type": "TextEmbeddingVector",
+          "partition_number": 7,
+          "section_number": 0,
+          "tags": {
+            "source": [
+              "upload"
+            ],
+            "sessionId": [
+              "1"
+            ]
+          },
+          "parent_id": "5c09f3568ad748b0bffd44b1007fe85a",
+          "source_partition_id": "23543c17f6544cc3b8c0cd6a5ad35d7c",
+          "content_sha256": "",
+          "processed_by": [
+            "gen_embeddings",
+            "save_records"
+          ]
+        },
+        "\u0628\u0637\u0627\u0642\u0629 \u062A\u0645\u0643\u064A\u0646 \u0628\u0644\u0633 \u0627\u0644\u0628\u0644\u0627\u062A\u064A\u0646\u064A\u0629 \u0627\u0644\u0627\u0626\u062A\u0645\u0627\u0646\u064A\u0629.docx.partition.8.txt.AI.Ollama.OllamaTextEmbeddingGenerator.__.text_embedding": {
+          "id": "c830d8cb4d1d4cf09f2142661af96e27",
+          "name": "\u0628\u0637\u0627\u0642\u0629 \u062A\u0645\u0643\u064A\u0646 \u0628\u0644\u0633 \u0627\u0644\u0628\u0644\u0627\u062A\u064A\u0646\u064A\u0629 \u0627\u0644\u0627\u0626\u062A\u0645\u0627\u0646\u064A\u0629.docx.partition.8.txt.AI.Ollama.OllamaTextEmbeddingGenerator.__.text_embedding",
+          "size": 9894,
+          "mime_type": "float[]",
+          "artifact_type": "TextEmbeddingVector",
+          "partition_number": 8,
+          "section_number": 0,
+          "tags": {
+            "source": [
+              "upload"
+            ],
+            "sessionId": [
+              "1"
+            ]
+          },
+          "parent_id": "5c09f3568ad748b0bffd44b1007fe85a",
+          "source_partition_id": "91f906131917486eb20911747b0020a3",
+          "content_sha256": "",
+          "processed_by": [
+            "gen_embeddings",
+            "save_records"
+          ]
+        },
+        "\u0628\u0637\u0627\u0642\u0629 \u062A\u0645\u0643\u064A\u0646 \u0628\u0644\u0633 \u0627\u0644\u0628\u0644\u0627\u062A\u064A\u0646\u064A\u0629 \u0627\u0644\u0627\u0626\u062A\u0645\u0627\u0646\u064A\u0629.docx.partition.9.txt.AI.Ollama.OllamaTextEmbeddingGenerator.__.text_embedding": {
+          "id": "1f83c6504cd5499abff5f4434e752cba",
+          "name": "\u0628\u0637\u0627\u0642\u0629 \u062A\u0645\u0643\u064A\u0646 \u0628\u0644\u0633 \u0627\u0644\u0628\u0644\u0627\u062A\u064A\u0646\u064A\u0629 \u0627\u0644\u0627\u0626\u062A\u0645\u0627\u0646\u064A\u0629.docx.partition.9.txt.AI.Ollama.OllamaTextEmbeddingGenerator.__.text_embedding",
+          "size": 9902,
+          "mime_type": "float[]",
+          "artifact_type": "TextEmbeddingVector",
+          "partition_number": 9,
+          "section_number": 0,
+          "tags": {
+            "source": [
+              "upload"
+            ],
+            "sessionId": [
+              "1"
+            ]
+          },
+          "parent_id": "5c09f3568ad748b0bffd44b1007fe85a",
+          "source_partition_id": "7b60b78c98014be2a4d5ff6cb9586c9b",
+          "content_sha256": "",
+          "processed_by": [
+            "gen_embeddings",
+            "save_records"
+          ]
+        },
+        "\u0628\u0637\u0627\u0642\u0629 \u062A\u0645\u0643\u064A\u0646 \u0628\u0644\u0633 \u0627\u0644\u0628\u0644\u0627\u062A\u064A\u0646\u064A\u0629 \u0627\u0644\u0627\u0626\u062A\u0645\u0627\u0646\u064A\u0629.docx.partition.10.txt.AI.Ollama.OllamaTextEmbeddingGenerator.__.text_embedding": {
+          "id": "061b1b0765a84b719c4aa173d5ad783d",
+          "name": "\u0628\u0637\u0627\u0642\u0629 \u062A\u0645\u0643\u064A\u0646 \u0628\u0644\u0633 \u0627\u0644\u0628\u0644\u0627\u062A\u064A\u0646\u064A\u0629 \u0627\u0644\u0627\u0626\u062A\u0645\u0627\u0646\u064A\u0629.docx.partition.10.txt.AI.Ollama.OllamaTextEmbeddingGenerator.__.text_embedding",
+          "size": 9892,
+          "mime_type": "float[]",
+          "artifact_type": "TextEmbeddingVector",
+          "partition_number": 10,
+          "section_number": 0,
+          "tags": {
+            "source": [
+              "upload"
+            ],
+            "sessionId": [
+              "1"
+            ]
+          },
+          "parent_id": "5c09f3568ad748b0bffd44b1007fe85a",
+          "source_partition_id": "3c5b7497baff4d1c99f3e036a892a71a",
+          "content_sha256": "",
+          "processed_by": [
+            "gen_embeddings",
+            "save_records"
+          ]
+        },
+        "\u0628\u0637\u0627\u0642\u0629 \u062A\u0645\u0643\u064A\u0646 \u0628\u0644\u0633 \u0627\u0644\u0628\u0644\u0627\u062A\u064A\u0646\u064A\u0629 \u0627\u0644\u0627\u0626\u062A\u0645\u0627\u0646\u064A\u0629.docx.partition.11.txt.AI.Ollama.OllamaTextEmbeddingGenerator.__.text_embedding": {
+          "id": "f141f08d881a4418bfd25aef4c0c45da",
+          "name": "\u0628\u0637\u0627\u0642\u0629 \u062A\u0645\u0643\u064A\u0646 \u0628\u0644\u0633 \u0627\u0644\u0628\u0644\u0627\u062A\u064A\u0646\u064A\u0629 \u0627\u0644\u0627\u0626\u062A\u0645\u0627\u0646\u064A\u0629.docx.partition.11.txt.AI.Ollama.OllamaTextEmbeddingGenerator.__.text_embedding",
+          "size": 9910,
+          "mime_type": "float[]",
+          "artifact_type": "TextEmbeddingVector",
+          "partition_number": 11,
+          "section_number": 0,
+          "tags": {
+            "source": [
+              "upload"
+            ],
+            "sessionId": [
+              "1"
+            ]
+          },
+          "parent_id": "5c09f3568ad748b0bffd44b1007fe85a",
+          "source_partition_id": "5ef5e1930f20424da7b7332022592a3f",
+          "content_sha256": "",
+          "processed_by": [
+            "gen_embeddings",
+            "save_records"
+          ]
+        },
+        "\u0628\u0637\u0627\u0642\u0629 \u062A\u0645\u0643\u064A\u0646 \u0628\u0644\u0633 \u0627\u0644\u0628\u0644\u0627\u062A\u064A\u0646\u064A\u0629 \u0627\u0644\u0627\u0626\u062A\u0645\u0627\u0646\u064A\u0629.docx.partition.12.txt.AI.Ollama.OllamaTextEmbeddingGenerator.__.text_embedding": {
+          "id": "85ef09c9a2754015ae21f48fc37cb62e",
+          "name": "\u0628\u0637\u0627\u0642\u0629 \u062A\u0645\u0643\u064A\u0646 \u0628\u0644\u0633 \u0627\u0644\u0628\u0644\u0627\u062A\u064A\u0646\u064A\u0629 \u0627\u0644\u0627\u0626\u062A\u0645\u0627\u0646\u064A\u0629.docx.partition.12.txt.AI.Ollama.OllamaTextEmbeddingGenerator.__.text_embedding",
+          "size": 9889,
+          "mime_type": "float[]",
+          "artifact_type": "TextEmbeddingVector",
+          "partition_number": 12,
+          "section_number": 0,
+          "tags": {
+            "source": [
+              "upload"
+            ],
+            "sessionId": [
+              "1"
+            ]
+          },
+          "parent_id": "5c09f3568ad748b0bffd44b1007fe85a",
+          "source_partition_id": "b4d70a51dcdb41ee91147eeefd189e6b",
+          "content_sha256": "",
+          "processed_by": [
+            "gen_embeddings",
+            "save_records"
+          ]
+        },
+        "\u0628\u0637\u0627\u0642\u0629 \u062A\u0645\u0643\u064A\u0646 \u0628\u0644\u0633 \u0627\u0644\u0628\u0644\u0627\u062A\u064A\u0646\u064A\u0629 \u0627\u0644\u0627\u0626\u062A\u0645\u0627\u0646\u064A\u0629.docx.partition.13.txt.AI.Ollama.OllamaTextEmbeddingGenerator.__.text_embedding": {
+          "id": "ab7b2076e8404837a79ae2d1d323952e",
+          "name": "\u0628\u0637\u0627\u0642\u0629 \u062A\u0645\u0643\u064A\u0646 \u0628\u0644\u0633 \u0627\u0644\u0628\u0644\u0627\u062A\u064A\u0646\u064A\u0629 \u0627\u0644\u0627\u0626\u062A\u0645\u0627\u0646\u064A\u0629.docx.partition.13.txt.AI.Ollama.OllamaTextEmbeddingGenerator.__.text_embedding",
+          "size": 9911,
+          "mime_type": "float[]",
+          "artifact_type": "TextEmbeddingVector",
+          "partition_number": 13,
+          "section_number": 0,
+          "tags": {
+            "source": [
+              "upload"
+            ],
+            "sessionId": [
+              "1"
+            ]
+          },
+          "parent_id": "5c09f3568ad748b0bffd44b1007fe85a",
+          "source_partition_id": "49617a817ec24424b3de55d60c1f25d4",
+          "content_sha256": "",
+          "processed_by": [
+            "gen_embeddings",
+            "save_records"
+          ]
+        },
+        "\u0628\u0637\u0627\u0642\u0629 \u062A\u0645\u0643\u064A\u0646 \u0628\u0644\u0633 \u0627\u0644\u0628\u0644\u0627\u062A\u064A\u0646\u064A\u0629 \u0627\u0644\u0627\u0626\u062A\u0645\u0627\u0646\u064A\u0629.docx.partition.14.txt.AI.Ollama.OllamaTextEmbeddingGenerator.__.text_embedding": {
+          "id": "31efceb5ff8440f48c39c347f65c2087",
+          "name": "\u0628\u0637\u0627\u0642\u0629 \u062A\u0645\u0643\u064A\u0646 \u0628\u0644\u0633 \u0627\u0644\u0628\u0644\u0627\u062A\u064A\u0646\u064A\u0629 \u0627\u0644\u0627\u0626\u062A\u0645\u0627\u0646\u064A\u0629.docx.partition.14.txt.AI.Ollama.OllamaTextEmbeddingGenerator.__.text_embedding",
+          "size": 9869,
+          "mime_type": "float[]",
+          "artifact_type": "TextEmbeddingVector",
+          "partition_number": 14,
+          "section_number": 0,
+          "tags": {
+            "source": [
+              "upload"
+            ],
+            "sessionId": [
+              "1"
+            ]
+          },
+          "parent_id": "5c09f3568ad748b0bffd44b1007fe85a",
+          "source_partition_id": "0862f6b42bbe4ccfa38f6e3f3bcd9950",
+          "content_sha256": "",
+          "processed_by": [
+            "gen_embeddings",
+            "save_records"
+          ]
+        },
+        "\u0628\u0637\u0627\u0642\u0629 \u062A\u0645\u0643\u064A\u0646 \u0628\u0644\u0633 \u0627\u0644\u0628\u0644\u0627\u062A\u064A\u0646\u064A\u0629 \u0627\u0644\u0627\u0626\u062A\u0645\u0627\u0646\u064A\u0629.docx.partition.15.txt.AI.Ollama.OllamaTextEmbeddingGenerator.__.text_embedding": {
+          "id": "cc9a95d235684d8e93822d2105a1544d",
+          "name": "\u0628\u0637\u0627\u0642\u0629 \u062A\u0645\u0643\u064A\u0646 \u0628\u0644\u0633 \u0627\u0644\u0628\u0644\u0627\u062A\u064A\u0646\u064A\u0629 \u0627\u0644\u0627\u0626\u062A\u0645\u0627\u0646\u064A\u0629.docx.partition.15.txt.AI.Ollama.OllamaTextEmbeddingGenerator.__.text_embedding",
+          "size": 9894,
+          "mime_type": "float[]",
+          "artifact_type": "TextEmbeddingVector",
+          "partition_number": 15,
+          "section_number": 0,
+          "tags": {
+            "source": [
+              "upload"
+            ],
+            "sessionId": [
+              "1"
+            ]
+          },
+          "parent_id": "5c09f3568ad748b0bffd44b1007fe85a",
+          "source_partition_id": "1c1583a20f3d4721a0999b64a87c6a6a",
+          "content_sha256": "",
+          "processed_by": [
+            "gen_embeddings",
+            "save_records"
+          ]
+        },
+        "\u0628\u0637\u0627\u0642\u0629 \u062A\u0645\u0643\u064A\u0646 \u0628\u0644\u0633 \u0627\u0644\u0628\u0644\u0627\u062A\u064A\u0646\u064A\u0629 \u0627\u0644\u0627\u0626\u062A\u0645\u0627\u0646\u064A\u0629.docx.partition.16.txt.AI.Ollama.OllamaTextEmbeddingGenerator.__.text_embedding": {
+          "id": "79eb37d7726b4d41992efc52a54c3331",
+          "name": "\u0628\u0637\u0627\u0642\u0629 \u062A\u0645\u0643\u064A\u0646 \u0628\u0644\u0633 \u0627\u0644\u0628\u0644\u0627\u062A\u064A\u0646\u064A\u0629 \u0627\u0644\u0627\u0626\u062A\u0645\u0627\u0646\u064A\u0629.docx.partition.16.txt.AI.Ollama.OllamaTextEmbeddingGenerator.__.text_embedding",
+          "size": 9894,
+          "mime_type": "float[]",
+          "artifact_type": "TextEmbeddingVector",
+          "partition_number": 16,
+          "section_number": 0,
+          "tags": {
+            "source": [
+              "upload"
+            ],
+            "sessionId": [
+              "1"
+            ]
+          },
+          "parent_id": "5c09f3568ad748b0bffd44b1007fe85a",
+          "source_partition_id": "109d176da2c345b2bb27894cfbd8b749",
+          "content_sha256": "",
+          "processed_by": [
+            "gen_embeddings",
+            "save_records"
+          ]
+        },
+        "\u0628\u0637\u0627\u0642\u0629 \u062A\u0645\u0643\u064A\u0646 \u0628\u0644\u0633 \u0627\u0644\u0628\u0644\u0627\u062A\u064A\u0646\u064A\u0629 \u0627\u0644\u0627\u0626\u062A\u0645\u0627\u0646\u064A\u0629.docx.partition.17.txt.AI.Ollama.OllamaTextEmbeddingGenerator.__.text_embedding": {
+          "id": "e802d270178a4eb9a176217adbf9c7a3",
+          "name": "\u0628\u0637\u0627\u0642\u0629 \u062A\u0645\u0643\u064A\u0646 \u0628\u0644\u0633 \u0627\u0644\u0628\u0644\u0627\u062A\u064A\u0646\u064A\u0629 \u0627\u0644\u0627\u0626\u062A\u0645\u0627\u0646\u064A\u0629.docx.partition.17.txt.AI.Ollama.OllamaTextEmbeddingGenerator.__.text_embedding",
+          "size": 9893,
+          "mime_type": "float[]",
+          "artifact_type": "TextEmbeddingVector",
+          "partition_number": 17,
+          "section_number": 0,
+          "tags": {
+            "source": [
+              "upload"
+            ],
+            "sessionId": [
+              "1"
+            ]
+          },
+          "parent_id": "5c09f3568ad748b0bffd44b1007fe85a",
+          "source_partition_id": "34e15ecb69bb469da1fce930bc07fc60",
+          "content_sha256": "",
+          "processed_by": [
+            "gen_embeddings",
+            "save_records"
+          ]
+        },
+        "\u0628\u0637\u0627\u0642\u0629 \u062A\u0645\u0643\u064A\u0646 \u0628\u0644\u0633 \u0627\u0644\u0628\u0644\u0627\u062A\u064A\u0646\u064A\u0629 \u0627\u0644\u0627\u0626\u062A\u0645\u0627\u0646\u064A\u0629.docx.partition.18.txt.AI.Ollama.OllamaTextEmbeddingGenerator.__.text_embedding": {
+          "id": "b1a628516fc74075bf1a04be3922eb9c",
+          "name": "\u0628\u0637\u0627\u0642\u0629 \u062A\u0645\u0643\u064A\u0646 \u0628\u0644\u0633 \u0627\u0644\u0628\u0644\u0627\u062A\u064A\u0646\u064A\u0629 \u0627\u0644\u0627\u0626\u062A\u0645\u0627\u0646\u064A\u0629.docx.partition.18.txt.AI.Ollama.OllamaTextEmbeddingGenerator.__.text_embedding",
+          "size": 9910,
+          "mime_type": "float[]",
+          "artifact_type": "TextEmbeddingVector",
+          "partition_number": 18,
+          "section_number": 0,
+          "tags": {
+            "source": [
+              "upload"
+            ],
+            "sessionId": [
+              "1"
+            ]
+          },
+          "parent_id": "5c09f3568ad748b0bffd44b1007fe85a",
+          "source_partition_id": "430d13aa78c148d39693d098f9f1d0a8",
+          "content_sha256": "",
+          "processed_by": [
+            "gen_embeddings",
+            "save_records"
+          ]
+        },
+        "\u0628\u0637\u0627\u0642\u0629 \u062A\u0645\u0643\u064A\u0646 \u0628\u0644\u0633 \u0627\u0644\u0628\u0644\u0627\u062A\u064A\u0646\u064A\u0629 \u0627\u0644\u0627\u0626\u062A\u0645\u0627\u0646\u064A\u0629.docx.partition.19.txt.AI.Ollama.OllamaTextEmbeddingGenerator.__.text_embedding": {
+          "id": "4cd7e582c63e434db0b5e8b7e6504aa2",
+          "name": "\u0628\u0637\u0627\u0642\u0629 \u062A\u0645\u0643\u064A\u0646 \u0628\u0644\u0633 \u0627\u0644\u0628\u0644\u0627\u062A\u064A\u0646\u064A\u0629 \u0627\u0644\u0627\u0626\u062A\u0645\u0627\u0646\u064A\u0629.docx.partition.19.txt.AI.Ollama.OllamaTextEmbeddingGenerator.__.text_embedding",
+          "size": 9925,
+          "mime_type": "float[]",
+          "artifact_type": "TextEmbeddingVector",
+          "partition_number": 19,
+          "section_number": 0,
+          "tags": {
+            "source": [
+              "upload"
+            ],
+            "sessionId": [
+              "1"
+            ]
+          },
+          "parent_id": "5c09f3568ad748b0bffd44b1007fe85a",
+          "source_partition_id": "fe6fba4278c84ded99a877f9041e4003",
+          "content_sha256": "",
+          "processed_by": [
+            "gen_embeddings",
+            "save_records"
+          ]
+        },
+        "\u0628\u0637\u0627\u0642\u0629 \u062A\u0645\u0643\u064A\u0646 \u0628\u0644\u0633 \u0627\u0644\u0628\u0644\u0627\u062A\u064A\u0646\u064A\u0629 \u0627\u0644\u0627\u0626\u062A\u0645\u0627\u0646\u064A\u0629.docx.partition.20.txt.AI.Ollama.OllamaTextEmbeddingGenerator.__.text_embedding": {
+          "id": "06442cef80d44256b99b832c89836ead",
+          "name": "\u0628\u0637\u0627\u0642\u0629 \u062A\u0645\u0643\u064A\u0646 \u0628\u0644\u0633 \u0627\u0644\u0628\u0644\u0627\u062A\u064A\u0646\u064A\u0629 \u0627\u0644\u0627\u0626\u062A\u0645\u0627\u0646\u064A\u0629.docx.partition.20.txt.AI.Ollama.OllamaTextEmbeddingGenerator.__.text_embedding",
+          "size": 9918,
+          "mime_type": "float[]",
+          "artifact_type": "TextEmbeddingVector",
+          "partition_number": 20,
+          "section_number": 0,
+          "tags": {
+            "source": [
+              "upload"
+            ],
+            "sessionId": [
+              "1"
+            ]
+          },
+          "parent_id": "5c09f3568ad748b0bffd44b1007fe85a",
+          "source_partition_id": "c8c629c8f4df470b95eb7aa5d139b508",
+          "content_sha256": "",
+          "processed_by": [
+            "gen_embeddings",
+            "save_records"
+          ]
+        },
+        "\u0628\u0637\u0627\u0642\u0629 \u062A\u0645\u0643\u064A\u0646 \u0628\u0644\u0633 \u0627\u0644\u0628\u0644\u0627\u062A\u064A\u0646\u064A\u0629 \u0627\u0644\u0627\u0626\u062A\u0645\u0627\u0646\u064A\u0629.docx.partition.21.txt.AI.Ollama.OllamaTextEmbeddingGenerator.__.text_embedding": {
+          "id": "d4cb6e3548f843e98746d9a9ace1bfa7",
+          "name": "\u0628\u0637\u0627\u0642\u0629 \u062A\u0645\u0643\u064A\u0646 \u0628\u0644\u0633 \u0627\u0644\u0628\u0644\u0627\u062A\u064A\u0646\u064A\u0629 \u0627\u0644\u0627\u0626\u062A\u0645\u0627\u0646\u064A\u0629.docx.partition.21.txt.AI.Ollama.OllamaTextEmbeddingGenerator.__.text_embedding",
+          "size": 9902,
+          "mime_type": "float[]",
+          "artifact_type": "TextEmbeddingVector",
+          "partition_number": 21,
+          "section_number": 0,
+          "tags": {
+            "source": [
+              "upload"
+            ],
+            "sessionId": [
+              "1"
+            ]
+          },
+          "parent_id": "5c09f3568ad748b0bffd44b1007fe85a",
+          "source_partition_id": "52e779ad25be41598905b8f833911bd5",
+          "content_sha256": "",
+          "processed_by": [
+            "gen_embeddings",
+            "save_records"
+          ]
+        },
+        "\u0628\u0637\u0627\u0642\u0629 \u062A\u0645\u0643\u064A\u0646 \u0628\u0644\u0633 \u0627\u0644\u0628\u0644\u0627\u062A\u064A\u0646\u064A\u0629 \u0627\u0644\u0627\u0626\u062A\u0645\u0627\u0646\u064A\u0629.docx.partition.22.txt.AI.Ollama.OllamaTextEmbeddingGenerator.__.text_embedding": {
+          "id": "99088c5184184b45a3c96f91a6e89dc9",
+          "name": "\u0628\u0637\u0627\u0642\u0629 \u062A\u0645\u0643\u064A\u0646 \u0628\u0644\u0633 \u0627\u0644\u0628\u0644\u0627\u062A\u064A\u0646\u064A\u0629 \u0627\u0644\u0627\u0626\u062A\u0645\u0627\u0646\u064A\u0629.docx.partition.22.txt.AI.Ollama.OllamaTextEmbeddingGenerator.__.text_embedding",
+          "size": 9913,
+          "mime_type": "float[]",
+          "artifact_type": "TextEmbeddingVector",
+          "partition_number": 22,
+          "section_number": 0,
+          "tags": {
+            "source": [
+              "upload"
+            ],
+            "sessionId": [
+              "1"
+            ]
+          },
+          "parent_id": "5c09f3568ad748b0bffd44b1007fe85a",
+          "source_partition_id": "80d130b0898b4ee695497a8a5e21eab7",
+          "content_sha256": "",
+          "processed_by": [
+            "gen_embeddings",
+            "save_records"
+          ]
+        },
+        "\u0628\u0637\u0627\u0642\u0629 \u062A\u0645\u0643\u064A\u0646 \u0628\u0644\u0633 \u0627\u0644\u0628\u0644\u0627\u062A\u064A\u0646\u064A\u0629 \u0627\u0644\u0627\u0626\u062A\u0645\u0627\u0646\u064A\u0629.docx.partition.23.txt.AI.Ollama.OllamaTextEmbeddingGenerator.__.text_embedding": {
+          "id": "1cc426b0ec3440b392fed7309c109948",
+          "name": "\u0628\u0637\u0627\u0642\u0629 \u062A\u0645\u0643\u064A\u0646 \u0628\u0644\u0633 \u0627\u0644\u0628\u0644\u0627\u062A\u064A\u0646\u064A\u0629 \u0627\u0644\u0627\u0626\u062A\u0645\u0627\u0646\u064A\u0629.docx.partition.23.txt.AI.Ollama.OllamaTextEmbeddingGenerator.__.text_embedding",
+          "size": 9887,
+          "mime_type": "float[]",
+          "artifact_type": "TextEmbeddingVector",
+          "partition_number": 23,
+          "section_number": 0,
+          "tags": {
+            "source": [
+              "upload"
+            ],
+            "sessionId": [
+              "1"
+            ]
+          },
+          "parent_id": "5c09f3568ad748b0bffd44b1007fe85a",
+          "source_partition_id": "2caf143c34084b5294ee0af889f5500c",
+          "content_sha256": "",
+          "processed_by": [
+            "gen_embeddings",
+            "save_records"
+          ]
+        }
+      }
+    }
+  ],
+  "args": {},
+  "previous_executions_to_purge": []
+}

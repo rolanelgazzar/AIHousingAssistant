@@ -8,7 +8,7 @@ namespace AIHousingAssistant.Application.Services.DocumentProcessing.Handlers
     public class TextNormalizationHandler : DocumentHandlerBase
     {
         public override async Task<DocumentProcessingRequest> HandleAsync(DocumentProcessingRequest request)
-        {     
+        {               return await base.HandleAsync(request);
             if (string.IsNullOrEmpty(request.Content))
                 return await base.HandleAsync(request);
 
@@ -20,7 +20,7 @@ namespace AIHousingAssistant.Application.Services.DocumentProcessing.Handlers
 
             // 3. Clean unnecessary artifacts while preserving table pipes
             request.Content = FinalCleanup(request.Content);
-            return await base.HandleAsync(request);
+  
 
         }
 

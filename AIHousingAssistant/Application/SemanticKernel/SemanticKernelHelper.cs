@@ -17,7 +17,7 @@ namespace AIHousingAssistant.Application.SemanticKernel
         /// Returns an IKernelBuilder preconfigured with the chosen AI provider.
         /// Plugins can be added afterward using AddPlugin().
         /// </summary>
-        public static IKernelBuilder BuildKernel(AIProvider provider, ProviderSettings settings)
+        public static IKernelBuilder BuildKernel(AIProvider provider, Settings settings)
         {
             // English comment: Switch between different AI providers based on configuration
             var builder = provider switch

@@ -47,8 +47,6 @@
   <ItemGroup>
     <Folder Include="Application\SemanticKernel\Extentions\" />
     <Folder Include="Application\SemanticKernel\Functions\" />
-    <Folder Include="Application\Services\DocumentProcessing\MD\AR\" />
-    <Folder Include="Application\Services\DocumentProcessing\MD\EN\" />
     <Folder Include="Domain\Interfaces\" />
     <Folder Include="Infrastructure\Repositories\" />
     <Folder Include="ProcessingFolder\MD\EN\" />

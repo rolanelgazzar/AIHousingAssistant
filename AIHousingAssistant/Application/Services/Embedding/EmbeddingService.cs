@@ -19,10 +19,10 @@ namespace AIHousingAssistant.Application.Services.Embedding
     public class EmbeddingService : IEmbeddingService
     {
         private readonly OllamaApiClient _client;
-        private readonly ProviderSettings _providerSettings;
+        private readonly Settings _providerSettings;
 
         // Constructor: Uses Dependency Injection to initialize settings and the Ollama client.
-        public EmbeddingService(IOptions<ProviderSettings> providerSettings)
+        public EmbeddingService(IOptions<Settings> providerSettings)
         {
             _providerSettings = providerSettings.Value;
             // The client is initialized with the endpoint from settings

@@ -10,9 +10,9 @@ namespace AIHousingAssistant.Application.Services
     public class SummarizerService : ISummarizerService
     {
         private readonly OllamaApiClient _client;
-        private readonly ProviderSettings _providerSettings;
+        private readonly Settings _providerSettings;
 
-        public SummarizerService(IOptions<ProviderSettings> providerSettings )
+        public SummarizerService(IOptions<Settings> providerSettings )
         {
             _providerSettings = providerSettings.Value;
             _client = new OllamaApiClient(_providerSettings.Ollama.Endpoint);

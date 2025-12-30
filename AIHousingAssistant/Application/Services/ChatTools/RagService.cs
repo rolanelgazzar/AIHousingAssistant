@@ -28,7 +28,7 @@ namespace AIHousingAssistant.Application.Services.ChatTools
 {
     public class RagService : IRagService
     {
-        private readonly ProviderSettings _providerSettings;
+        private readonly Settings _providerSettings;
         private readonly IChunkService _chunkService;
         private readonly OllamaApiClient _ollamaClient;
         private readonly IVectorStore _vectorStore;
@@ -38,7 +38,7 @@ namespace AIHousingAssistant.Application.Services.ChatTools
         // NEW: Use resolver instead of injecting 3 stores
 
         public RagService(
-            IOptions<ProviderSettings> providerSettings,
+            IOptions<Settings> providerSettings,
             IChunkService chunkService,
             IVectorStore vectorStore,
             IChatHistoryService historyService,
@@ -193,41 +193,63 @@ namespace AIHousingAssistant.Application.Services.ChatTools
 
 
 
-        // Declare questionHistory as a class-level variable to store all previous questions
-        private List<string> questionHistory = new List<string>();
-
-        // Use English comments in the code
         private async Task<string> ExtractAnswerFromChunkByChatModelAsync(RagUiRequest ragRequest, string chunkContent)
         {
-            // ... (Validation and History check logic remains the same)
+            if (string.IsNullOrEmpty(chunkContent)) return string.Empty;
 
             try
             {
+                // 1. Initialize Kernel and Chat Service
                 var kernelBuilder = SemanticKernelHelper.BuildKernel(ragRequest.AIProvider, _providerSettings);
                 var kernel = SemanticKernelHelper.Build(kernelBuilder);
                 var chatService = kernel.GetRequiredService<IChatCompletionService>();
 
-                var chatHistory = new ChatHistory();
-                //  Use the professional system prompt we discussed
-                chatHistory.AddSystemMessage("You are a professional banking assistant. Respond in the user's language.");
-                chatHistory.AddUserMessage($"Context: {chunkContent} \n\n Question: {ragRequest.Query}");
+                // 2. Get existing history or create a new one using your Service
+                // Note: Assuming ragRequest contains a SessionId to identify the user
+                var chatHistory = _historyService.GetOrCreateHistory(ragRequest.SessionId);
 
-                //  CRITICAL FIX - Get the specific settings for the chosen provider
+                // 3. To save tokens: We only keep the most recent messages if history is too long
+                // You can implement a simple check here if you want to trim old messages from 'chatHistory'
+
+                // 4. Create the current request prompt (User Message)
+                // We embed the context and the instructions inside this specific message
+                string userPrompt = $@"
+<Context>
+{chunkContent}
+</Context>
+
+Question: {ragRequest.Query}
+
+Instructions:
+- Use only the context above to answer.
+- Maintain table structure using '|'.
+- Provide step-by-step breakdown for any financial calculations.
+- Answer in the user's language.";
+
+                // Add the current query to the session history
+                chatHistory.AddUserMessage(userPrompt);
+
+                // 5. Execution settings (Temperature 0 for precision)
                 var executionSettings = SemanticKernelHelper.GetDefaultPromptSettings(ragRequest.AIProvider);
 
+                // 6. Get AI response
                 var response = await chatService.GetChatMessageContentAsync(chatHistory, executionSettings, kernel);
+                string answer = response.Content?.Trim() ?? string.Empty;
 
-                questionHistory.Add(ragRequest.Query);
-                return response.Content?.Trim() ?? string.Empty;
+                // 7. Store the AI's answer in the session history (Crucial for next turns)
+                if (!string.IsNullOrEmpty(answer))
+                {
+                    _historyService.AddAssistantMessage(ragRequest.SessionId, answer);
+                }
+
+                return answer;
             }
             catch (Exception ex)
             {
-                //  Log the specific inner exception to see the real Ollama error
-                throw new ApplicationException($"Error with {ragRequest.AIProvider}: {ex.Message}", ex);
+                // Log the error related to the specific AI provider
+                throw new ApplicationException($"AI Provider Error ({ragRequest.AIProvider}): {ex.Message}", ex);
             }
         }
-
-
 
 
 

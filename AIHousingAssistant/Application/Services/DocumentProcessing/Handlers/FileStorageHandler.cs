@@ -18,7 +18,7 @@ public class FileStorageHandler : DocumentHandlerBase
         string storageSubPath = Path.Combine(settings.ProcessingFolder, "MD", langFolder);
         string rootPath = FileHelper.GetProcessingRoot(storageSubPath);
 
-        string fileName = Path.GetFileNameWithoutExtension(request.FilePath) + ".md";
+        string fileName = Path.GetFileNameWithoutExtension(request.FilePath) + ".txt";
         string fullPath = Path.Combine(rootPath, fileName);
 
         // 3. Save the file

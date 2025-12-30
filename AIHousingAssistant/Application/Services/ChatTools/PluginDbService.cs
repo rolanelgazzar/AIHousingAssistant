@@ -15,12 +15,12 @@ namespace AIHousingAssistant.Application.Services.ChatTools
     {
         private readonly IHousingService _housingService;
         private readonly IChatHistoryService _chatHistoryService;
-        private readonly ProviderSettings _providerSettings;
+        private readonly Settings _providerSettings;
 
         public PluginDbService(
             IHousingService housingService,
             IChatHistoryService chatHistoryService,
-             IOptions<ProviderSettings> providerSettings)
+             IOptions<Settings> providerSettings)
         {
             _housingService = housingService;
             _chatHistoryService = chatHistoryService;

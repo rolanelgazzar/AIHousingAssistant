@@ -9,6 +9,6 @@ namespace AIHousingAssistant.Application.Services.DocumentProcessing.Models
         public string Language { get; set; } // Arabic or English
         public string Extension { get; set; } // .pdf, .docx, etc.
         public string FinalSavedPath { get; set; }
-        public ProviderSettings Settings { get; set; }
+        public Settings Settings { get; set; }
     }
 }
