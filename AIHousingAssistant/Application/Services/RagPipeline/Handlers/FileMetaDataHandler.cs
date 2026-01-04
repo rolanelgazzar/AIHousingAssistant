@@ -8,10 +8,10 @@ namespace AIHousingAssistant.Application.Services.RagPipeline.Handlers
     {
         public override async Task<RagPipelineRequest> HandleAsync(RagPipelineRequest request)
         {
-            if (!string.IsNullOrEmpty(request.Content))
+            if (!string.IsNullOrEmpty(request.MarkdownContent))
             {
                 // Detect Language based on content
-                request.Language = DetectLanguage(request.Content);
+                request.Language = DetectLanguage(request.MarkdownContent);
 
                 // Populate other metadata if needed (e.g., word count, processing date)
                 // request.ProcessedDate = DateTime.Now;

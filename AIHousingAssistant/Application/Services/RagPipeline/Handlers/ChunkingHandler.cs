@@ -18,7 +18,7 @@ namespace AIHousingAssistant.Application.Services.RagPipeline.Handlers.Indexing
         public override async Task<RagPipelineRequest> HandleAsync(RagPipelineRequest request)
         {
             // 1. Validation: If no content was extracted or cleaned, skip chunking
-            if (string.IsNullOrEmpty(request.Content))
+            if (string.IsNullOrEmpty(request.NormalizedContent))
             {
                 return await base.HandleAsync(request);
             }
@@ -26,7 +26,7 @@ namespace AIHousingAssistant.Application.Services.RagPipeline.Handlers.Indexing
             // 2. Execute Chunking: Use the ChunkService logic to generate the list of TextChunks
             // We pass the clean content, UI preferences (ChunkingMode), and the original file path as the source.
             request.Chunks = await _chunkService.CreateChunksAsync(
-                request.Content,
+                request.NormalizedContent,
                 request.RagUiRequest,
                 request.FilePath
             );

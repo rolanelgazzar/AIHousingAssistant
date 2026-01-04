@@ -1,12 +1,7 @@
 ﻿// Use English comments in the code
-using MarkItDownSharp;
-using Microsoft.AspNetCore.Http;
-using System.Text;
-using System.Text.Json;
-using DocumentFormat.OpenXml.Packaging;
-using UglyToad.PdfPig;
-using UglyToad.PdfPig.Content;
 
+
+using System.Text.Json;
 namespace AIHousingAssistant.Helper
 {
     public static class FileHelper

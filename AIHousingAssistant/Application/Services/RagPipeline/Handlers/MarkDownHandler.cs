@@ -17,7 +17,7 @@ namespace AIHousingAssistant.Application.Services.RagPipeline.Handlers
             var result = await markItDown.ConvertLocalAsync(request.FilePath);
 
             // Access the content property from the result
-            request.Content = result.TextContent;
+            request.MarkdownContent = result.TextContent;
 
             // Continue the chain
             return await base.HandleAsync(request);

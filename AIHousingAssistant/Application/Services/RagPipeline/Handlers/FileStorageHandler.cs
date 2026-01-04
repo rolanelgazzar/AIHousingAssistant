@@ -1,51 +1,54 @@
-﻿using AIHousingAssistant.Application.Services.RagPipeline.Abstractions;
+﻿using AIHousingAssistant.Application.Enum;
+using AIHousingAssistant.Application.Services.RagPipeline.Abstractions;
 using AIHousingAssistant.Application.Services.RagPipeline.Models;
 using AIHousingAssistant.Helper;
-using AIHousingAssistant.Application.Enum;
 
-namespace AIHousingAssistant.Application.Services.RagPipeline.Handlers.Indexing
+public class FileStorageHandler : RagHandlerBase
 {
-    // English comment: This handler saves the Markdown content in language-specific folders, 
-    // but saves the JSON chunks in the main processing folder as per the original logic.
-    public class FileStorageHandler : RagHandlerBase
+    public override async Task<RagPipelineRequest> HandleAsync(RagPipelineRequest request)
     {
-        public override async Task<RagPipelineRequest> HandleAsync(RagPipelineRequest request)
+        var settings = request.Settings ?? throw new Exception("Settings are missing from the request.");
+        string langFolder = request.Language?.ToLower() == "arabic" ? "AR" : "EN";
+
+        // 1. Save Extracted Content (The initial raw markdown/text)
+        if (!string.IsNullOrEmpty(request.MarkdownContent))
         {
-            var settings = request.Settings ?? throw new Exception("Settings are missing from the request.");
+            string mdPath = Path.Combine(settings.ProcessingFolder, "MD", langFolder);
+            string mdRoot = FileHelper.GetProcessingRoot(mdPath);
 
-            // 1. Path for Clean Text (Stays inside MD/AR or MD/EN)
-            string langFolder = request.Language?.ToLower() == "arabic" ? "AR" : "EN";
-            string mdStorageSubPath = Path.Combine(settings.ProcessingFolder, "MD", langFolder);
-            string mdRootPath = FileHelper.GetProcessingRoot(mdStorageSubPath);
+            string fileName = Path.GetFileNameWithoutExtension(request.FilePath) + ".txt";
+            string fullPath = Path.Combine(mdRoot, fileName);
 
-            if (!string.IsNullOrEmpty(request.Content))
-            {
-                string txtFileName = Path.GetFileNameWithoutExtension(request.FilePath) + ".txt";
-                string txtFullPath = Path.Combine(mdRootPath, txtFileName);
-                await File.WriteAllTextAsync(txtFullPath, request.Content, System.Text.Encoding.UTF8);
-                request.FinalSavedPath = txtFullPath;
-            }
-
-            // 2. Path for Chunks (Back to the Main Processing Folder)
-            // This matches your original logic: _uploadFolder = Path.Combine(Directory.GetCurrentDirectory(), settings.ProcessingFolder)
-            if (request.Chunks != null && request.Chunks.Any())
-            {
-                string chunkingMode = System.Enum.GetName(typeof(ChunkingMode), request.RagUiRequest.ChunkingMode);
-
-                // Get the main processing folder root (without MD/AR/EN)
-                string mainUploadFolder = FileHelper.GetProcessingRoot(settings.ProcessingFolder);
-
-                // Use the exact naming pattern you requested
-                var detailedFileName = $"{settings.ChunksFileName}--{FileHelper.GetFileNameWithoutExtension(request.FilePath)}--{chunkingMode}.json";
-
-                // Save 1: Detailed version in the main folder
-                await FileHelper.WriteJsonAsync(mainUploadFolder, detailedFileName, request.Chunks);
-
-                // Save 2: Global version in the main folder
-                await FileHelper.WriteJsonAsync(mainUploadFolder, settings.ChunksFileName, request.Chunks);
-            }
-
-            return await base.HandleAsync(request);
+            await File.WriteAllTextAsync(fullPath, request.MarkdownContent, System.Text.Encoding.UTF8);
+           // request.ExtractedFilePath = fullPath;
         }
+
+        // 2. Save Normalized Content (The cleaned version)
+        if (!string.IsNullOrEmpty(request.NormalizedContent))
+        {
+            string normPath = Path.Combine(settings.ProcessingFolder, "Normalized", langFolder);
+            string normRoot = FileHelper.GetProcessingRoot(normPath);
+
+            if (!Directory.Exists(normRoot)) Directory.CreateDirectory(normRoot);
+
+            string normFileName = Path.GetFileNameWithoutExtension(request.FilePath) + "_normalized.txt";
+            string normFullPath = Path.Combine(normRoot, normFileName);
+
+            await File.WriteAllTextAsync(normFullPath, request.NormalizedContent, System.Text.Encoding.UTF8);
+          //  request.NormalizedFilePath = normFullPath;
+        }
+
+        // 3. Save JSON Chunks
+        if (request.Chunks != null && request.Chunks.Any())
+        {
+            string mainUploadFolder = FileHelper.GetProcessingRoot(settings.ProcessingFolder);
+            string chunkingMode = System.Enum.GetName(typeof(ChunkingMode), request.RagUiRequest.ChunkingMode);
+            var detailedFileName = $"{settings.ChunksFileName}--{FileHelper.GetFileNameWithoutExtension(request.FilePath)}--{chunkingMode}.json";
+
+            await FileHelper.WriteJsonAsync(mainUploadFolder, detailedFileName, request.Chunks);
+            await FileHelper.WriteJsonAsync(mainUploadFolder, settings.ChunksFileName, request.Chunks);
+        }
+
+        return await base.HandleAsync(request);
     }
 }

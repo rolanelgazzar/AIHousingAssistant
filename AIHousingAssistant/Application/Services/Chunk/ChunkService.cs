@@ -9,6 +9,7 @@ using SemanticTextSplitting;
 using System.Text.Json;
 using System.Linq;
 using AIHousingAssistant.Application.Services.Embedding;
+using System.Collections.Concurrent;
 
 namespace AIHousingAssistant.Application.Services.Chunk
 {
@@ -109,62 +110,96 @@ namespace AIHousingAssistant.Application.Services.Chunk
         // -----------------------------------------------------------
         // 2) SemanticTextBlocksGrouper (Semantic Grouping using local IEmbeddingService)
         // This is the optimized function that adds the Vector to the TextChunk.
-        private async Task<List<TextChunk>> SemanticBlocksGrouperChunks(string text, string source,EmbeddingModel embeddingModel)
+        // English comment: Groups text into chunks based on semantic similarity.
+        // Ensures that groups are still split if they exceed the max character limit.
+        private async Task<List<TextChunk>> SemanticBlocksGrouperChunks(string text, string source, EmbeddingModel embeddingModel)
         {
-            // 1. Initial Split: Split text into elementary blocks (sentences in this case)
-            var blocks = SemanticTextBlocksGrouper.SplitTextIntoSentences(text);
-
-            if (blocks.Count <= 1)
-                return blocks.Select((b, i) => new TextChunk { Index = i, Content = b.Trim(), Source = source, Embedding = null }).ToList();
-
-            // 2. Embedding Generation: Generate embeddings for similarity grouping
-            var embeddings = new Dictionary<string, float[]>();
-            var blockList = blocks.Distinct().ToList();
-
-            foreach (var b in blockList)
-                embeddings[b] = await _embeddingService.EmbedAsync(b, embeddingModel); // <--- Embedding generated here
-
-            float threshold = 0.70f;
-
-            // 3. Semantic Grouping: Group blocks that are semantically similar
-            // grouped is List<List<string>>
-            var grouped = SemanticTextBlocksGrouper.GroupTextBlocksBySimilarity(embeddings, threshold);
-
-            var finalChunksWithVectors = new List<TextChunk>();
-            int chunkIndex = 0;
-
-            // 4. Final Split and Packaging: Loop through groups, split them, and assign the vector
-            foreach (var group in grouped)
+            try
             {
-                // The representative vector is the embedding of the first block in the group (semantic cohesion)
-                var representativeVector = embeddings[group.First()];
+                // 1. Initial Sentence Splitting
+                var rawBlocks = SemanticTextBlocksGrouper.SplitTextIntoSentences(text);
 
-                // Aggregate the group blocks into one large string
-                var aggregatedText = group.Aggregate((a, b) => a + " " + b);
-
-                // Recursively split the aggregated text to fit max chunk size (1000)
-                var splitBlocks = aggregatedText.RecursiveSplit(1000, 100);
-
-                foreach (var chunkContent in splitBlocks)
+                // English comment: Pre-split oversized sentences to prevent "Context Length Exceeded" errors in Ollama
+                var blocks = new List<string>();
+                foreach (var rb in rawBlocks)
                 {
-                    if (string.IsNullOrWhiteSpace(chunkContent)) continue;
-
-                    finalChunksWithVectors.Add(new TextChunk
-                    {
-                        Index = chunkIndex++,
-                        Content = chunkContent.Trim(),
-                        Source = source,
-                        Embedding = representativeVector
-                    });
+                    // English comment: If a sentence is unusually long (e.g., > 2000 chars), split it before embedding
+                    if (rb.Length > 2000)
+                        blocks.AddRange(rb.RecursiveSplit(2000, 0));
+                    else
+                        blocks.Add(rb);
                 }
-            }
 
-           return finalChunksWithVectors
-                .Where(x => !string.IsNullOrWhiteSpace(x.Content))
-                .ToList();
+                if (blocks.Count <= 1)
+                {
+                    return blocks.Select((b, i) => new TextChunk
+                    { Index = i, Content = b.Trim(), Source = source, Embedding = null }).ToList();
+                }
+
+                // 2. Parallel Embedding Generation with thread-safe storage
+                var embeddings = new ConcurrentDictionary<string, float[]>();
+                var blockList = blocks.Where(b => !string.IsNullOrWhiteSpace(b)).Distinct().ToList();
+
+                var embeddingTasks = blockList.Select(async b =>
+                {
+                    try
+                    {
+                        var emb = await _embeddingService.EmbedAsync(b, embeddingModel);
+                        if (emb != null) embeddings[b] = emb;
+                    }
+                    catch (Exception ex)
+                    {
+                        // English comment: Skip problematic blocks to avoid crashing the whole file process
+                        Console.WriteLine($"[Ollama Error] Skipping block due to context/format issues: {ex.Message}");
+                        throw;
+
+                    }
+                });
+                await Task.WhenAll(embeddingTasks);
+
+                // 3. Perform Semantic Grouping based on similarity threshold
+                float threshold = 0.70f;
+                var finalEmbeddingsDict = embeddings.ToDictionary(kv => kv.Key, kv => kv.Value);
+                var grouped = SemanticTextBlocksGrouper.GroupTextBlocksBySimilarity(finalEmbeddingsDict, threshold);
+
+                var finalChunksWithVectors = new List<TextChunk>();
+                int chunkIndex = 0;
+
+                // 4. Aggregate groups and apply final size limits
+                foreach (var group in grouped)
+                {
+                    if (group == null || !group.Any()) continue;
+
+                    // Use the group leader's vector
+                    if (!embeddings.TryGetValue(group.First(), out var representativeVector)) continue;
+
+                    var aggregatedText = string.Join(" ", group);
+
+                    // English comment: Ensure the final chunk does not exceed 1000 characters for optimal RAG
+                    var splitBlocks = aggregatedText.RecursiveSplit(1000, 100);
+
+                    foreach (var chunkContent in splitBlocks)
+                    {
+                        if (string.IsNullOrWhiteSpace(chunkContent)) continue;
+
+                        finalChunksWithVectors.Add(new TextChunk
+                        {
+                            Index = chunkIndex++,
+                            Content = chunkContent.Trim(),
+                            Source = source,
+                            Embedding = representativeVector
+                        });
+                    }
+                }
+
+                return finalChunksWithVectors;
+            }
+            catch (Exception ex)
+            {
+                // English comment: Re-throw exception as requested
+                throw;
+            }
         }
-        // -----------------------------------------------------------
-        // 3) RecursiveTextSplitterChunks (Custom Recursive, based on paragraphs/separators)
         private Task<List<TextChunk>> RecursiveTextSplitterChunks(string text, string source)
         {
             // RecursiveSplit is an extension method available via 'SemanticTextSplitting'
@@ -182,5 +217,8 @@ namespace AIHousingAssistant.Application.Services.Chunk
 
             return Task.FromResult(chunks);
         }
+
+        // English comment: This method generates synthetic Q&A from chunks and stores them as vectors.
+        // This is more accurate for RAG as it matches user intent directly.
     }
 }

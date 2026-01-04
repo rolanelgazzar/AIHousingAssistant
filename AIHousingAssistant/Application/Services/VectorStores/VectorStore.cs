@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -56,67 +57,84 @@ namespace AIHousingAssistant.Application.Services.VectorStores
         /// <summary>
         /// Stores text chunks as vectors in the Vector DB after generating embeddings in parallel.
         /// </summary>
+        // English comment: Efficiently stores chunks by generating missing embeddings in parallel.
+        // English comment: This method processes and stores text chunks into the vector database.
+        // It smartly handles both pre-embedded chunks (Semantic) and raw text chunks (Recursive).
+        // English comment: This method stores text chunks into the vector database.
+        // It detects if a chunk already has an embedding (Semantic) or needs a new one generated (Recursive).
         public async Task StoreTextChunksAsVectorsAsync(List<TextChunk> chunks, RagUiRequest ragUiRequest)
         {
-            if (chunks == null || chunks.Count == 0)
-                return;
+            if (chunks == null || !chunks.Any()) return;
 
-            var vectorChunks = new List<VectorChunk>();
-
-            // 1. Conditionally generate/use existing embeddings to create VectorChunks
-            foreach (var chunk in chunks)
+            try
             {
-                float[]? embedding = chunk.Embedding;
+                // English comment: Use ConcurrentBag for thread-safe collection during parallel tasks
+                var vectorChunks = new ConcurrentBag<VectorChunk>();
 
-                // Check 1: If the vector is null (meaning it came from a traditional splitter like Recursive/LangChain)
-                if (embedding == null)
+                // 1. Separate chunks: those without vectors vs those already embedded
+                var chunksToEmbed = chunks.Where(c => c.Embedding == null || c.Embedding.Length == 0).ToList();
+                var readyChunks = chunks.Where(c => c.Embedding != null && c.Embedding.Length > 0).ToList();
+
+                // 2. Generate missing embeddings in parallel
+                if (chunksToEmbed.Any())
                 {
-                    // Generate the embedding now. This is the only generation point for these chunks.
-                    embedding = await _embeddingService.EmbedAsync(chunk.Content, ragUiRequest.EmbeddingModel);
+                    var tasks = chunksToEmbed.Select(async chunk =>
+                    {
+                        try
+                        {
+                            var emb = await _embeddingService.EmbedAsync(chunk.Content, ragUiRequest.EmbeddingModel);
+                            if (emb != null && emb.Length > 0)
+                            {
+                                vectorChunks.Add(new VectorChunk
+                                {
+                                    Index = chunk.Index,
+                                    Content = chunk.Content,
+                                    Source = chunk.Source,
+                                    Embedding = emb,
+                                    Similarity = 0.0f
+                                });
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            // English comment: Log individual chunk error to avoid failing the whole process
+                            Console.WriteLine($"[Embedding Error] Chunk {chunk.Index} failed: {ex.Message}");
+                        }
+                    });
+                    await Task.WhenAll(tasks);
                 }
-                // else: The vector is already present (from Semantic chunking) and is used directly.
 
-                // Check 2: Map the result to VectorChunk model for Upserting
-                if (embedding != null && embedding.Length > 0)
+                // 3. Add chunks that already have embeddings (from Semantic Splitter)
+                foreach (var chunk in readyChunks)
                 {
                     vectorChunks.Add(new VectorChunk
                     {
                         Index = chunk.Index,
                         Content = chunk.Content,
                         Source = chunk.Source,
-                        // Use the existing or newly generated embedding
-                        Embedding = embedding,
-                        // Similarity is only relevant during retrieval, so set to 0.0 for storage
+                        Embedding = chunk.Embedding, // Taken directly as requested
                         Similarity = 0.0f
                     });
                 }
+
+                var finalValidChunks = vectorChunks.ToList();
+                if (!finalValidChunks.Any()) return;
+
+                // 4. Resolve DB instance and Upsert
+                var vectorDbInstance = GetVectorDb(ragUiRequest);
+                var collectionName = GetCollectionName(ragUiRequest);
+                int vectorSize = finalValidChunks[0].Embedding.Length;
+
+                await vectorDbInstance.EnsureCollectionAsync(collectionName, vectorSize);
+                await vectorDbInstance.UpsertAsync(collectionName, finalValidChunks);
             }
-
-            // 2. Validation
-            var validChunks = vectorChunks
-                .Where(vc => vc.Embedding != null && vc.Embedding.Length > 0)
-                .ToList();
-
-            if (validChunks.Count == 0)
-                return;
-
-            // 3. Ensure collection and Upsert using IVectorDB
-            int vectorSize = validChunks[0].Embedding!.Length;
-
-            // Resolve the specific Vector Database implementation (e.g., Qdrant, Chroma, etc.)
-            var vectorDbInstance = GetVectorDb(ragUiRequest);
-            var collectionName = GetCollectionName(ragUiRequest);
-
-            // Ensure the collection exists with the correct vector dimension
-            await vectorDbInstance.EnsureCollectionAsync(collectionName, vectorSize);
-
-            // Upsert the validated chunks into the database
-            await vectorDbInstance.UpsertAsync(collectionName, validChunks);
-        }        // ------------------------- Query Path -------------------------
-
-        /// <summary>
-        /// Pure Vector Search: returns the single closest vector chunk (top=1).
-        /// </summary>
+            catch (Exception ex)
+            {
+                // English comment: Global catch for critical failures in the storage pipeline
+                throw new ApplicationException("Failed to execute StoreTextChunksAsVectorsAsync.", ex);
+            }
+        }                 /// Pure Vector Search: returns the single closest vector chunk (top=1).
+                          /// </summary>
         public async Task<VectorChunk?> VectorSearchAsync(string queryText , RagUiRequest ragUiRequest)
         {
             // 1. Generate the query vector. 
