@@ -24,6 +24,7 @@ namespace AIHousingAssistant.Models.Settings
         public string CollectionNameKernelMemory { get; set; }
         public string CollectionNameCustomRag { get; set; }
         public string ChunksFileName { get; set; }
+        public bool EnableChatHistory { get; set; }
     }
 
     public class AzureSettings
@@ -79,8 +80,9 @@ namespace AIHousingAssistant.Models.Settings
 
     public class QDrantSettings
     {
-        public string Endpoint { get; set; }
-
+        public string EndPoint { get; set; }
+        public string EndPointSDK { get; set; }
+        public string CollectionBaseUrl { get; set; }
     }
 
     public class GoogleConnector

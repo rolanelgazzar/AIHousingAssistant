@@ -1,6 +1,7 @@
 ﻿using AIHousingAssistant.Application.Services.DocumentProcessing.Abstractions;
 using AIHousingAssistant.Application.Services.DocumentProcessing.Models;
 using AIHousingAssistant.Helper;
+using System.Text;
 
 public class FileStorageHandler : DocumentHandlerBase
 {
@@ -22,7 +23,7 @@ public class FileStorageHandler : DocumentHandlerBase
         string fullPath = Path.Combine(rootPath, fileName);
 
         // 3. Save the file
-        await File.WriteAllTextAsync(fullPath, request.Content);
+        await File.WriteAllTextAsync(fullPath, request.Content, System.Text.Encoding.UTF8);
         request.FinalSavedPath = fullPath;
 
         return await base.HandleAsync(request);

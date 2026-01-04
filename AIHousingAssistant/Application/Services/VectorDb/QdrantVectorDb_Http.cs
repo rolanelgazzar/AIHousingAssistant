@@ -8,21 +8,22 @@ using AIHousingAssistant.Models;
 using AIHousingAssistant.Models.Settings;
 using AIHousingAssistant.Helper;
 using AIHousingAssistant.Application.Enum;
+using DocumentFormat.OpenXml.Office2010.Excel;
+using Qdrant.Client.Grpc;
 
 namespace AIHousingAssistant.Application.Services.VectorDb
 {
     public class QdrantVectorDb_Http : IVectorDB
     {
         private readonly HttpClientHelper _httpClientHelper;
-        private readonly Settings _providerSettings;
-        private const string CollectionsBaseUrl = "collections";
+        private readonly Settings _settings;
 
         public QdrantVectorDb_Http(
             HttpClientHelper httpClientHelper,
             IOptions<Settings> providerSettings)
         {
             _httpClientHelper = httpClientHelper;
-            _providerSettings = providerSettings.Value;
+            _settings = providerSettings.Value;
         }
 
         // ------------------------- COMMON VALIDATION -------------------------
@@ -52,7 +53,7 @@ namespace AIHousingAssistant.Application.Services.VectorDb
 
             try
             {
-                var url = $"/{CollectionsBaseUrl}";
+                var url = $"{_settings.QDrant.CollectionBaseUrl.TrimStart('/')}/{collectionName}";
                 dynamic response = await _httpClientHelper.GetAsync<dynamic>(url);
 
                 if (response?.status != "ok" || response?.result?.collections == null)
@@ -77,7 +78,7 @@ namespace AIHousingAssistant.Application.Services.VectorDb
         {
             try
             {
-                var url = $"/{CollectionsBaseUrl}";
+                var url = $"{_settings.QDrant.CollectionBaseUrl}";
                 dynamic response = await _httpClientHelper.GetAsync<dynamic>(url);
 
                 var result = new List<string>();
@@ -105,7 +106,7 @@ namespace AIHousingAssistant.Application.Services.VectorDb
 
             try
             {
-                var url = $"/{CollectionsBaseUrl}/{collectionName}?wait=true";
+                var url = $"{_settings.QDrant.CollectionBaseUrl.TrimStart('/')}/{collectionName}";
                 await _httpClientHelper.DeleteAsync(url);
                 return true;
             }
@@ -131,7 +132,7 @@ namespace AIHousingAssistant.Application.Services.VectorDb
                     }
                 };
 
-                var url = $"/{CollectionsBaseUrl}/{collectionName}?timeout=30";
+                var url = $"{_settings.QDrant.CollectionBaseUrl}/{collectionName}?timeout=30";
                 dynamic response = await _httpClientHelper.PutAsync<dynamic, dynamic>(url, createRequest);
 
                 if (response?.status != "ok")
@@ -143,8 +144,8 @@ namespace AIHousingAssistant.Application.Services.VectorDb
             catch (Exception ex)
             {
                 Console.WriteLine($"CreateCollectionAsync Error: {ex.Message}");
-                return false;
-            }
+                throw;
+                    }
         }
 
         public async Task EnsureCollectionAsync(string collectionName, int vectorSize, QdrantDistance distance = QdrantDistance.Cosine)
@@ -166,7 +167,6 @@ namespace AIHousingAssistant.Application.Services.VectorDb
                     await CreateCollectionAsync(collectionName, vectorSize, distance);
                 }
                 
-                await CreateCollectionAsync(collectionName, vectorSize, distance);
             }
             catch (Exception ex)
             {
@@ -193,7 +193,7 @@ namespace AIHousingAssistant.Application.Services.VectorDb
                     .Where(v => v.Embedding != null && v.Embedding.Length > 0 && v.Index >= 0)
                     .Select(v => new
                     {
-                        id = (ulong)v.Index,
+                        id = Guid.NewGuid().ToString(),
                         vector = v.Embedding,
                         payload = new
                         {
@@ -209,7 +209,9 @@ namespace AIHousingAssistant.Application.Services.VectorDb
                     return;
                 }
 
-                var url = $"/{CollectionsBaseUrl}/{collectionName}/points?wait=true";
+                // var url = $"collections/{collectionName}/points?wait=true";
+                var url = $"{_settings.QDrant.CollectionBaseUrl.TrimStart('/')}/{collectionName}/points?wait=true";
+                //var url = $"{_settings.QDrant.CollectionsBaseUrl}/collections/{collectionName}/points?wait=true";
                 dynamic response = await _httpClientHelper.PutAsync<dynamic, dynamic>(url, new { points });
 
                 if (response?.status != "ok")
@@ -248,7 +250,7 @@ namespace AIHousingAssistant.Application.Services.VectorDb
                     filter
                 };
 
-                var url = $"/{CollectionsBaseUrl}/{collectionName}/points/search";
+                var url = $"{_settings.QDrant.CollectionBaseUrl}/{collectionName}/points/search";
                 dynamic response = await _httpClientHelper.PostAsync<dynamic, dynamic>(url, request);
 
                 if (response?.status != "ok" || response?.result == null)

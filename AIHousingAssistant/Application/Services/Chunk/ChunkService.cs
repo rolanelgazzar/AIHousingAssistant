@@ -70,8 +70,8 @@ namespace AIHousingAssistant.Application.Services.Chunk
             };
 
             // Save for transparency/debug
-            string chunkingName = System.Enum.GetName(typeof(ChunkingMode), ragUiRequest.ChunkingMode);
-            var fileName = $"{_providerSettings.ChunksFileName}-{chunkingName}.json";
+            string chunkingMode = System.Enum.GetName(typeof(ChunkingMode), ragUiRequest.ChunkingMode);
+            var fileName = $"{_providerSettings.ChunksFileName}--{FileHelper.GetFileNameWithoutExtension(source)}--{chunkingMode}.json";
             await FileHelper.WriteJsonAsync(_uploadFolder, fileName, chunks);
             await FileHelper.WriteJsonAsync(_uploadFolder, _providerSettings.ChunksFileName, chunks);
 
@@ -114,7 +114,7 @@ namespace AIHousingAssistant.Application.Services.Chunk
             var blocks = SemanticTextBlocksGrouper.SplitTextIntoSentences(text);
 
             if (blocks.Count <= 1)
-                return blocks.Select((b, i) => new TextChunk { Index = i, Content = b.Trim(), Source = source, Vector = null }).ToList();
+                return blocks.Select((b, i) => new TextChunk { Index = i, Content = b.Trim(), Source = source, Embedding = null }).ToList();
 
             // 2. Embedding Generation: Generate embeddings for similarity grouping
             var embeddings = new Dictionary<string, float[]>();
@@ -153,12 +153,12 @@ namespace AIHousingAssistant.Application.Services.Chunk
                         Index = chunkIndex++,
                         Content = chunkContent.Trim(),
                         Source = source,
-                        Vector = representativeVector
+                        Embedding = representativeVector
                     });
                 }
             }
 
-            return finalChunksWithVectors
+           return finalChunksWithVectors
                 .Where(x => !string.IsNullOrWhiteSpace(x.Content))
                 .ToList();
         }

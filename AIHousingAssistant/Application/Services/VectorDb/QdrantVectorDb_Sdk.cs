@@ -28,7 +28,7 @@ namespace AIHousingAssistant.Application.Services.VectorDb
         public QdrantVectorDb_Sdk(IOptions<Settings> providerSettings)
         {
             _providerSettings = providerSettings.Value;
-            _qdrantClient = new QdrantClient(_providerSettings.QDrant.Endpoint);
+            _qdrantClient = new QdrantClient(_providerSettings.QDrant.EndPointSDK);
         }
 
         // ------------------------- COMMON VALIDATION -------------------------
@@ -121,7 +121,7 @@ namespace AIHousingAssistant.Application.Services.VectorDb
             {
                 await CreateCollectionAsync(collectionName, vectorSize, distance);
             }
-            await CreateCollectionAsync(collectionName, vectorSize, distance);
+     //       await CreateCollectionAsync(collectionName, vectorSize, distance);
         }
 
         // ------------------------- DATA & VECTOR OPERATIONS -------------------------
@@ -140,7 +140,7 @@ namespace AIHousingAssistant.Application.Services.VectorDb
                 {
                     var point = new PointStruct
                     {
-                        Id = new PointId { Num = (ulong)v.Index },
+                        Id = new PointId { Uuid = Guid.NewGuid().ToString() },
                         Vectors = v.Embedding
                     };
 
@@ -195,8 +195,8 @@ namespace AIHousingAssistant.Application.Services.VectorDb
                 Index = (int)(r.Payload?["index"]?.IntegerValue ?? 0),
                 Content = r.Payload?["content"]?.StringValue ?? string.Empty,
                 Source = r.Payload?["source"]?.StringValue ?? string.Empty,
-                Embedding = SearchHelper.ExtractEmbeddingFromVectorsOutput(r.Vectors)
-
+                Embedding = SearchHelper.ExtractEmbeddingFromVectorsOutput(r.Vectors),
+                Similarity = r.Score
             }).ToList();
         }
 

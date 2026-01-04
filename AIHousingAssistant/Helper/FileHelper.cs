@@ -30,14 +30,33 @@ namespace AIHousingAssistant.Helper
             return filePath;
         }
 
+        //public static async Task WriteJsonAsync<T>(string folderPath, string fileName, T data)
+        //{
+        //    if (!Directory.Exists(folderPath)) Directory.CreateDirectory(folderPath);
+        //    var path = Path.Combine(folderPath, fileName);
+        //    var json = JsonSerializer.Serialize(data, SerializerOptions);
+        //    await File.WriteAllTextAsync(path, json);
+        //}
         public static async Task WriteJsonAsync<T>(string folderPath, string fileName, T data)
         {
             if (!Directory.Exists(folderPath)) Directory.CreateDirectory(folderPath);
             var path = Path.Combine(folderPath, fileName);
-            var json = JsonSerializer.Serialize(data, SerializerOptions);
-            await File.WriteAllTextAsync(path, json);
-        }
 
+            // Configure SerializerOptions to support Arabic characters
+            var options = new JsonSerializerOptions
+            {
+                // This allows the serializer to write Arabic characters as they are 
+                // instead of converting them to \uXXXX
+                Encoder = System.Text.Encodings.Web.JavaScriptEncoder.Create(System.Text.Unicode.UnicodeRanges.All),
+                WriteIndented = true // Optional: makes the JSON file readable
+            };
+
+            // Serialize using the new options
+            var json = JsonSerializer.Serialize(data, options);
+
+            // Save the file using UTF-8 encoding
+            await File.WriteAllTextAsync(path, json, System.Text.Encoding.UTF8);
+        }
         public static async Task<T?> ReadJsonAsync<T>(string folderPath, string fileName)
         {
             var path = Path.Combine(folderPath, fileName);
@@ -53,6 +72,11 @@ namespace AIHousingAssistant.Helper
             var rootPath = Path.Combine(Directory.GetCurrentDirectory(), processingFolderPath);
             if (!Directory.Exists(rootPath)) Directory.CreateDirectory(rootPath);
             return rootPath;
+        }
+
+        public static string GetFileNameWithoutExtension(string filePath)
+        {
+            return Path.GetFileNameWithoutExtension(filePath);
         }
     }
 }

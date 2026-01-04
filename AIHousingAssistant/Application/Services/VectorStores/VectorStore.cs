@@ -25,7 +25,7 @@ namespace AIHousingAssistant.Application.Services.VectorStores
     public class VectorStore : IVectorStore
     {
         private readonly IEmbeddingService _embeddingService;
-        private readonly Settings _providerSettings;
+        private readonly Settings _settings;
         private readonly IVectorDB_Resolver _vectorDbResolver; 
         // Assumed constant payload key for filtering
         private const string ContentPayloadField = "content";
@@ -40,7 +40,7 @@ namespace AIHousingAssistant.Application.Services.VectorStores
             
         {
             _embeddingService = embeddingService;
-            _providerSettings = providerSettings.Value;
+            _settings = providerSettings.Value;
             _vectorDbResolver = vectorDbResolver;
 
         }
@@ -66,7 +66,7 @@ namespace AIHousingAssistant.Application.Services.VectorStores
             // 1. Conditionally generate/use existing embeddings to create VectorChunks
             foreach (var chunk in chunks)
             {
-                float[]? embedding = chunk.Vector;
+                float[]? embedding = chunk.Embedding;
 
                 // Check 1: If the vector is null (meaning it came from a traditional splitter like Recursive/LangChain)
                 if (embedding == null)
@@ -240,7 +240,7 @@ namespace AIHousingAssistant.Application.Services.VectorStores
             }
         }
         private string GetCollectionName(RagUiRequest ragUiRequest) {
-            return _providerSettings.CollectionNameCustomRag
+            return _settings.CollectionNameCustomRag
              + System.Enum.GetName(typeof(ChunkingMode), ragUiRequest.ChunkingMode);
         }
     }

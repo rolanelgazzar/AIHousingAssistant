@@ -20,32 +20,32 @@ namespace AIHousingAssistant.Application.Services.ChatTools
     public class MemoryKernelService : IMemoryKernelService
     {
         private readonly IKernelMemory _memory;
-        private readonly Settings _providerSettings;
+        private readonly Settings _settings;
 
         private readonly IChatHistoryService _chatHistoryService;
 
         public MemoryKernelService(IOptions<Settings> providerSettings, IChatHistoryService chatHistoryService)
         {
-            _providerSettings = providerSettings.Value;
+            _settings = providerSettings.Value;
             _chatHistoryService = chatHistoryService;
 
             //var ollamaTextConfig = new OllamaConfig
             //{
-            //    Endpoint = _providerSettings.Ollama.Endpoint,
-            //    TextModel = new OllamaModelConfig { ModelName = _providerSettings.Ollama.TextModel }
+            //    Endpoint = _settings.Ollama.Endpoint,
+            //    TextModel = new OllamaModelConfig { ModelName = _settings.Ollama.TextModel }
             //};
             // Using OpenAIConfig because Groq is OpenAI-compatible
             var chatConfig = new OpenAIConfig
             {
-                APIKey = _providerSettings.ChatModel.ApiKey, // Replace with your actual API key
-                Endpoint = _providerSettings.ChatModel.Endpoint,
-                TextModel = _providerSettings.ChatModel.Model, // Best for Arabic, English, and complex tables
+                APIKey = _settings.ChatModel.ApiKey, // Replace with your actual API key
+                Endpoint = _settings.ChatModel.Endpoint,
+                TextModel = _settings.ChatModel.Model, // Best for Arabic, English, and complex tables
 
             };
             var ollamaEmbeddingConfig = new OllamaConfig
             {
-                Endpoint = _providerSettings.EmbeddingModel.Endpoint,
-                EmbeddingModel = new OllamaModelConfig { ModelName = _providerSettings.EmbeddingModel.DefaultModel }
+                Endpoint = _settings.EmbeddingModel.Endpoint,
+                EmbeddingModel = new OllamaModelConfig { ModelName = _settings.EmbeddingModel.DefaultModel }
             };
 
             var qdrantConfig = new QdrantConfig
@@ -56,7 +56,7 @@ namespace AIHousingAssistant.Application.Services.ChatTools
             //  Define how to split the PDF into small chunks to avoid "context length" errors
             var textPartitioningOptions = new TextPartitioningOptions
             {
-                MaxTokensPerParagraph = 500,
+                MaxTokensPerParagraph = 300,
                 OverlappingTokens = 100
                 // MaxTokensPerParagraph = 300, // for ollama model Reduced from 1000 to be safer
                 //  OverlappingTokens = 50       // Reduced overlap
@@ -75,8 +75,8 @@ namespace AIHousingAssistant.Application.Services.ChatTools
             };
             var azureDocIntelConfig = new AzureAIDocIntelConfig
             {
-                APIKey = _providerSettings.AzureDocIntel.ApiKey,
-                Endpoint = _providerSettings.AzureDocIntel.Endpoint,
+                APIKey = _settings.AzureDocIntel.ApiKey,
+                Endpoint = _settings.AzureDocIntel.Endpoint,
                 Auth = AzureAIDocIntelConfig.AuthTypes.APIKey,  // Add this line
               
 
@@ -92,7 +92,7 @@ namespace AIHousingAssistant.Application.Services.ChatTools
                                                                     // Local file storage used by KernelMemory pipelines to temporarily store
                                                                     //it persists every step of the document processing
                                                                     // uploaded documents, extracted text, and intermediate processing artifacts
-                .WithSimpleFileStorage(_providerSettings.ProcessingFolder)
+                .WithSimpleFileStorage(_settings.ProcessingFolder)
                 // This line fixes the "input length exceeds context length" error
                 .WithCustomTextPartitioningOptions(textPartitioningOptions)
                 .WithSearchClientConfig(searchClientConfig)
@@ -102,73 +102,83 @@ namespace AIHousingAssistant.Application.Services.ChatTools
         }
         public async Task ProcessDocumentByKernelMemoryAsync(List<IFormFile> files, RagUiRequest ragUiRequest)
         {
-            if (files == null || !files.Any()) return;
-            var collectionName = _providerSettings.CollectionNameKernelMemory + ragUiRequest.SessionId;
-            foreach (var file in files)
-            {
-                var fileName = file.FileName.ToLower();
-                var extension = Path.GetExtension(fileName);
-                var documentId = $"{Guid.NewGuid():N}";
-
-                // 1. Special Handling: URLs & TXT files (requires reading text first)
-                if (extension == ".txt" || fileName.Contains("url"))
+          
+                if (files == null || !files.Any()) return;
+                var collectionName = _settings.CollectionNameKernelMemory + ragUiRequest.SessionId;
+                foreach (var file in files)
                 {
-                    string textInFile;
-                    using (var reader = new StreamReader(file.OpenReadStream()))
-                    {
-                        textInFile = (await reader.ReadToEndAsync()).Trim();
-                    }
+                    var fileName = file.FileName.ToLower();
+                    var extension = Path.GetExtension(fileName);
+                    var documentId = $"{Guid.NewGuid():N}";
 
-                    // If it's a URL, use ImportWebPageAsync
-                    if (Uri.TryCreate(textInFile, UriKind.Absolute, out var uriResult)
-                        && (uriResult.Scheme == Uri.UriSchemeHttp || uriResult.Scheme == Uri.UriSchemeHttps))
+                    // 1. Special Handling: URLs & TXT files (requires reading text first)
+                    if (extension == ".txt" || fileName.Contains("url"))
                     {
-                        await _memory.ImportWebPageAsync(
-                            url: textInFile,
-                            documentId: $"web_{documentId}",
+                        string textInFile;
+                        using (var reader = new StreamReader(file.OpenReadStream()))
+                        {
+                            textInFile = (await reader.ReadToEndAsync()).Trim();
+                        }
+
+                        // If it's a URL, use ImportWebPageAsync
+                        if (Uri.TryCreate(textInFile, UriKind.Absolute, out var uriResult)
+                            && (uriResult.Scheme == Uri.UriSchemeHttp || uriResult.Scheme == Uri.UriSchemeHttps))
+                        {
+                            await _memory.ImportWebPageAsync(
+                                url: textInFile,
+                                documentId: $"web_{documentId}",
+                                index: collectionName,  //collectionNmae
+                                tags: new TagCollection { { "source", "file-url" }, { "sessionId", ragUiRequest.SessionId } }
+                            );
+                            continue;
+                        }
+
+                        // If it's just text, use ImportTextAsync
+                        await _memory.ImportTextAsync(
+                            text: textInFile,
+                            documentId: $"text_{documentId}",
                             index: collectionName,  //collectionNmae
-                            tags: new TagCollection { { "source", "file-url" }, { "sessionId", ragUiRequest.SessionId } }
+                            tags: new TagCollection { { "source", "file-text" }, { "sessionId", ragUiRequest.SessionId } }
                         );
                         continue;
                     }
 
-                    // If it's just text, use ImportTextAsync
-                    await _memory.ImportTextAsync(
-                        text: textInFile,
-                        documentId: $"text_{documentId}",
+                    // 2. Unified Handling: Documents (PDF, Word, Excel) AND Images
+                    // Both use ImportDocumentAsync directly from the stream
+                    using var uploadStream = file.OpenReadStream();
+
+                    // Determine source tag based on extension
+                    string[] imageExtensions = { ".jpg", ".jpeg", ".png", ".bmp" };
+                    string sourceTag = imageExtensions.Contains(extension) ? "image" : "upload";
+                    string idPrefix = imageExtensions.Contains(extension) ? "img" : "file";
+                try
+                {
+                    await _memory.ImportDocumentAsync(
+                        content: uploadStream,
+                        fileName: file.FileName,
+                        documentId: $"{idPrefix}_{documentId}",
                         index: collectionName,  //collectionNmae
-                        tags: new TagCollection { { "source", "file-text" }, { "sessionId", ragUiRequest.SessionId } }
-                    );
-                    continue;
-                }
-
-                // 2. Unified Handling: Documents (PDF, Word, Excel) AND Images
-                // Both use ImportDocumentAsync directly from the stream
-                using var uploadStream = file.OpenReadStream();
-
-                // Determine source tag based on extension
-                string[] imageExtensions = { ".jpg", ".jpeg", ".png", ".bmp" };
-                string sourceTag = imageExtensions.Contains(extension) ? "image" : "upload";
-                string idPrefix = imageExtensions.Contains(extension) ? "img" : "file";
-
-                await _memory.ImportDocumentAsync(
-                    content: uploadStream,
-                    fileName: file.FileName,
-                    documentId: $"{idPrefix}_{documentId}",
-                    index: collectionName,  //collectionNmae
-                    tags: new TagCollection {
+                        tags: new TagCollection {
                 { "source", sourceTag },
                 { "sessionId", ragUiRequest.SessionId }
-                    }
-                );
+                        }
+                    );
+                }
+                catch (Exception ex)
+                {
+                    // English comment: Log specific error for each file to catch encoding or embedding failures
+                    Console.WriteLine($"Error processing file {fileName}: {ex.Message}");
+                    throw;
+                }
             }
+            
         }
         public async Task<RagAnswerResponse> AskMemoryKernelAsync(RagUiRequest ragRequest)
         {
             if (string.IsNullOrWhiteSpace(ragRequest.Query))
                 throw new ArgumentException("Query cannot be empty");
 
-            var collectionName = _providerSettings.CollectionNameKernelMemory + ragRequest.SessionId;
+            var collectionName = _settings.CollectionNameKernelMemory + ragRequest.SessionId;
 
             // English comment: Update chat history with the user's latest message
             _chatHistoryService.AddUserMessage(ragRequest.SessionId, ragRequest.Query);
@@ -224,20 +234,29 @@ namespace AIHousingAssistant.Application.Services.ChatTools
 
         private string GetEnrichedQuery(RagUiRequest ragRequest)
         {
-            var history = _chatHistoryService.GetChatHistory(ragRequest.SessionId);
-            var historySummary = history != null
-                ? string.Join("\n", history.TakeLast(3).Select(m => $"{m.Role}: {m.Content}"))
-                : string.Empty;
+            string historySummary = string.Empty;
+
+            // Only fetch and format history if it's enabled in settings
+            if (_settings.EnableChatHistory)
+            {
+                var history = _chatHistoryService.GetChatHistory(ragRequest.SessionId);
+                if (history != null)
+                {
+                    historySummary = string.Join("\n", history.TakeLast(3).Select(m => $"{m.Role}: {m.Content}"));
+                }
+            }
 
             // Condensed Prompt focusing only on Language and Table structure
             return $@"
-[System: Banking assistant. Use provided context only. Strict Rules:
+[System: Banking assistant. Use context only. Rules:
 1. Respond in the EXACT same language as the user query.
-2. If data is tabular, you MUST use Markdown tables '|'.
+2. If data is tabular, you MUST use a Markdown table. 
+   - Ensure each row is on a NEW LINE.
+   - Start with the header row, then the separator row '|---|---|', then data rows.
 3. No external info. If missing, say: 'Information not available'.]
 
 ### History:
-{historySummary}
+{(string.IsNullOrEmpty(historySummary) ? "No history provided." : historySummary)}
 
 ### User: {ragRequest.Query}";
         }

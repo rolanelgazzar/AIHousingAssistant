@@ -14,7 +14,7 @@ public class DocProcessor : IDocProcessor
         _settings = settings;
     }
 
-    public async Task<string> ProcessAndSaveAsync(IFormFile file)
+    public async Task<DocumentProcessingRequest> ProcessAndSaveAsync(IFormFile file)
     {
         // 1. Save temp file and prepare the request with settings
         var tempPath = await FileHelper.SaveFileAsync(file, _settings.Value.ProcessingFolder);
@@ -36,6 +36,6 @@ public class DocProcessor : IDocProcessor
 
         var result = await h1.HandleAsync(request);
 
-        return result.FinalSavedPath;
+        return result;
     }
 }
