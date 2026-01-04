@@ -1,0 +1,6 @@
+﻿https://github.com/jgm/pandoc/releases/download/3.1.1/pandoc-3.1.1-windows-x86_64.msi
+تحميل الملف: سيتحمل ملف اسمه pandoc-3.1.1-windows-x86_64.msi.
+
+التثبيت: افتحي الملف واضغطي Next ثم Install (مثل أي برنامج عادي).
+
+إعادة تشغيل Visual Studio: هذه خطوة مهمة جداً لكي يشعر الـ Visual Studio بأن البرنامج الجديد تم تثبيته في الـ Path
