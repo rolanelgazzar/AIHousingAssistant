@@ -15,15 +15,10 @@ using AIHousingAssistant.Models;
 using AIHousingAssistant.Application.Services.Chunk;
 using Microsoft.SemanticKernel;
 using Microsoft.SemanticKernel.ChatCompletion;
-using Microsoft.AspNetCore.Http.HttpResults;
-using System.Collections.Concurrent;
 using AIHousingAssistant.Application.SemanticKernel;
-using AIHousingAssistant.semantic.Plugins;
-using Microsoft.SemanticKernel.Connectors.OpenAI;
-using Microsoft.KernelMemory;
-using Microsoft.KernelMemory.AI.OpenAI;
 using AIHousingAssistant.Application.Services.ChatTools.Interfaces;
-using AIHousingAssistant.Application.Services.DocumentProcessing.Abstractions;
+
+using AIHousingAssistant.Application.Services.RagPipeline.Abstractions;
 namespace AIHousingAssistant.Application.Services.ChatTools
 {
     public class RagService : IRagService
@@ -34,7 +29,7 @@ namespace AIHousingAssistant.Application.Services.ChatTools
         private readonly IVectorStore _vectorStore;
         private readonly Kernel _kernel;
         private readonly IChatHistoryService _historyService;
-        private readonly IDocProcessor _docProcessor;
+        private readonly IRagPipelineProcessor _ragPipelineProcessor;
         // NEW: Use resolver instead of injecting 3 stores
 
         public RagService(
@@ -43,7 +38,7 @@ namespace AIHousingAssistant.Application.Services.ChatTools
             IVectorStore vectorStore,
             IChatHistoryService historyService,
             Kernel kernel,
-            IDocProcessor docProcessor
+            IRagPipelineProcessor ragPipelineProcessor
             )
         {
             if (providerSettings == null)
@@ -57,11 +52,12 @@ namespace AIHousingAssistant.Application.Services.ChatTools
             _ollamaClient.SelectedModel = _settings.Ollama.Model;
             _historyService = historyService ?? throw new ArgumentNullException(nameof(historyService));
             _kernel = kernel ?? throw new ArgumentNullException(nameof(kernel));
-            _docProcessor = docProcessor ?? throw new ArgumentNullException(nameof(docProcessor));
+            _ragPipelineProcessor = ragPipelineProcessor ?? throw new ArgumentNullException(nameof(ragPipelineProcessor));
         }
 
         // --------------------------------------------
         //  Process uploaded document and store vectors using selected provider
+
         public async Task ProcessDocumentByRagAsync(List<IFormFile> files, RagUiRequest ragUiRequest)
         {
             // Check if the list is null or empty
@@ -84,27 +80,9 @@ namespace AIHousingAssistant.Application.Services.ChatTools
                     //// 2) Extract text from the saved document
                     //// var textExtracted = await FileHelper.ExtractDocumentAsync(filePath, source);
                     // This will: Save -> Convert (MarkItDown) -> MetaData (Language) -> Normalize
-                    var docProcessed = await _docProcessor.ProcessAndSaveAsync(file);
+                    var docProcessed = await _ragPipelineProcessor.ExecutePipelineAsync(file, ragUiRequest);
 
-                    // Get safe name for source tracking
-                    var source = Path.GetFileName(docProcessed.FilePath);
-
-                    // Read the clean markdown content to be chunked
-                    var cleanText = docProcessed.Content; //await File.ReadAllTextAsync(markdownFilePath);
-
-
-
-                    // 3) Split text into chunks based on the selected RagUiRequest configuration
-                    var chunks = await _chunkService.CreateChunksAsync(cleanText, ragUiRequest, source);
-
-                    if (chunks == null || chunks.Count == 0)
-                    {
-                        // Log or handle files that produce no content
-                        continue;
-                    }
-
-                    // 4) Store generated vectors in the selected Vector Database
-                    await _vectorStore.StoreTextChunksAsVectorsAsync(chunks, ragUiRequest);
+                    
                 }
                 catch (Exception ex)
                 {
@@ -114,7 +92,60 @@ namespace AIHousingAssistant.Application.Services.ChatTools
                 }
             }
         }
+        #region old code ProcessDocumentByRagAsync
+        //public async Task ProcessDocumentByRagAsync(List<IFormFile> files, RagUiRequest ragUiRequest)
+        //{
+        //    // Check if the list is null or empty
+        //    if (files == null || files.Count == 0)
+        //        throw new ArgumentException("No files provided for processing.");
 
+        //    // Loop through each file in the list
+        //    foreach (var file in files)
+        //    {
+        //        // Skip empty files
+        //        if (file == null || file.Length == 0)
+        //            continue;
+
+        //        try
+        //        {
+        //            //// 1) Save the file locally to the processing folder
+        //            //var filePath = await FileHelper.SaveFileAsync(file, _settings.ProcessingFolder);
+        //            //var source = FileHelper.GetSafeFileNameFromPath(filePath);
+
+        //            //// 2) Extract text from the saved document
+        //            //// var textExtracted = await FileHelper.ExtractDocumentAsync(filePath, source);
+        //            // This will: Save -> Convert (MarkItDown) -> MetaData (Language) -> Normalize
+        //            var docProcessed = await _docProcessor.ProcessAndSaveAsync(file);
+
+        //            // Get safe name for source tracking
+        //            var source = Path.GetFileName(docProcessed.FilePath);
+
+        //            // Read the clean markdown content to be chunked
+        //            var cleanText = docProcessed.Content; //await File.ReadAllTextAsync(markdownFilePath);
+
+
+
+        //            // 3) Split text into chunks based on the selected RagUiRequest configuration
+        //            var chunks = await _chunkService.CreateChunksAsync(cleanText, ragUiRequest, source);
+
+        //            if (chunks == null || chunks.Count == 0)
+        //            {
+        //                // Log or handle files that produce no content
+        //                continue;
+        //            }
+
+        //            // 4) Store generated vectors in the selected Vector Database
+        //            await _vectorStore.StoreTextChunksAsVectorsAsync(chunks, ragUiRequest);
+        //        }
+        //        catch (Exception ex)
+        //        {
+        //            // You can log the error for a specific file here and continue with others
+        //            // _logger.LogError($"Error processing file {file.FileName}: {ex.Message}");
+        //            throw; // Or rethrow if you want to stop the entire process
+        //        }
+        //    }
+        //}
+        #endregion
         // ----------------------------------s----------
         // New unified method
         public async Task<RagAnswerResponse> AskRagAsync(RagUiRequest ragRequest)

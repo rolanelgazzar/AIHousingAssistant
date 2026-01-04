@@ -10,13 +10,11 @@ using AIHousingAssistant.Helper;
 using AIHousingAssistant.Infrastructure.Data;
 using AIHousingAssistant.Models.Settings;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.KernelMemory;
 using Microsoft.SemanticKernel;
-using Qdrant.Client;
-using System;
 using AIHousingAssistant.Application.Services.ChatTools.Interfaces;
-using AIHousingAssistant.Application.Services.DocumentProcessing;
-using AIHousingAssistant.Application.Services.DocumentProcessing.Abstractions;
+using AIHousingAssistant.Application.Services.RagPipeline;
+using AIHousingAssistant.Application.Services.RagPipeline.Abstractions;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -53,7 +51,7 @@ builder.Services.AddScoped<QdrantVectorDb_Sdk>();
 builder.Services.AddScoped<IVectorDB_Resolver, VectorDB_Resolver>();
 //builder.Services.AddScoped<IVectorDB, QdrantVectorDb_InMemory>();
 builder.Services.AddScoped<IVectorStore, VectorStore>();
-builder.Services.AddScoped<IDocProcessor, DocProcessor>();
+builder.Services.AddScoped<IRagPipelineProcessor, RagPipelineProcessor>();
 
 builder.Services.AddTransient<Kernel>(sp =>
 {

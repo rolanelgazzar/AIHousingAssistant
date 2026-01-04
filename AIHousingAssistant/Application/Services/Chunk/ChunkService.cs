@@ -69,11 +69,12 @@ namespace AIHousingAssistant.Application.Services.Chunk
                     await LangChainRecursiveTextSplitter(text, source)
             };
 
-            // Save for transparency/debug
-            string chunkingMode = System.Enum.GetName(typeof(ChunkingMode), ragUiRequest.ChunkingMode);
-            var fileName = $"{_providerSettings.ChunksFileName}--{FileHelper.GetFileNameWithoutExtension(source)}--{chunkingMode}.json";
-            await FileHelper.WriteJsonAsync(_uploadFolder, fileName, chunks);
-            await FileHelper.WriteJsonAsync(_uploadFolder, _providerSettings.ChunksFileName, chunks);
+           // Save for transparency / debug
+
+           //string chunkingMode = System.Enum.GetName(typeof(ChunkingMode), ragUiRequest.ChunkingMode);
+           //var fileName = $"{_providerSettings.ChunksFileName}--{FileHelper.GetFileNameWithoutExtension(source)}--{chunkingMode}.json";
+           // await FileHelper.WriteJsonAsync(_uploadFolder, fileName, chunks);
+           // await FileHelper.WriteJsonAsync(_uploadFolder, _providerSettings.ChunksFileName, chunks);
 
             return chunks;
         }

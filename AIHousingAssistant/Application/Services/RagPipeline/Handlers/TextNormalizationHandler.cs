@@ -1,13 +1,13 @@
-﻿using AIHousingAssistant.Application.Services.DocumentProcessing.Abstractions;
-using AIHousingAssistant.Application.Services.DocumentProcessing.Models;
-using System.Text.RegularExpressions;
+﻿using System.Text.RegularExpressions;
 using System.Text;
+using AIHousingAssistant.Application.Services.RagPipeline.Abstractions;
+using AIHousingAssistant.Application.Services.RagPipeline.Models;
 
-namespace AIHousingAssistant.Application.Services.DocumentProcessing.Handlers
+namespace AIHousingAssistant.Application.Services.RagPipeline.Handlers
 {
-    public class TextNormalizationHandler : DocumentHandlerBase
+    public class TextNormalizationHandler : RagHandlerBase
     {
-        public override async Task<DocumentProcessingRequest> HandleAsync(DocumentProcessingRequest request)
+        public override async Task<RagPipelineRequest> HandleAsync(RagPipelineRequest request)
         {               return await base.HandleAsync(request);
             if (string.IsNullOrEmpty(request.Content))
                 return await base.HandleAsync(request);

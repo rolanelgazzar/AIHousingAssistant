@@ -1,41 +1,39 @@
-﻿User uploads Word/PDF
-    ↓
-ChatController receives file
-    ↓
-DocumentProcessingPipeline.Process(file)
-    ↓
-[Chain of Responsibility executes]
-    ↓
-Markdown output with tables
-    ↓
-Option A: MemoryKernelService.ImportDocument(markdown)
-OR
-Option B: ChunkService.SplitText(markdown) → RagService
-    ↓
-User asks question about the document
-    ↓
-MemoryKernelService.SearchAsync() retrieves relevant chunks
-    ↓
-AI generates response using context
-    ↓
-ChatHistoryService saves the conversation
-
-
-  📄 Document Input (Word/PDF/Excel)
-          ↓
-┌──────────────────────────────────────────┐
-│  Handler 1: MarkItDownConversionHandler   │ 
-│  (Uses MarkItDownSharp to get raw MD)    │
-└──────────────────────────────────────────┘
-          ↓
-┌──────────────────────────────────────────┐
-│  Handler 2: ArabicNormalizationHandler   │ 
-│  (Fix Arabic text flow and diacritics)   │
-└──────────────────────────────────────────┘
-          ↓
-┌──────────────────────────────────────────┐
-│  Handler 3: RTLDirectionHandler          │ 
-│  (Add HTML/CSS markers for Arabic UI)    │
-└──────────────────────────────────────────┘
-          ↓
-✅ Professional Markdown Output        ↓
+﻿📄 Document Input (Word/PDF/Excel/etc.)
+                  ↓
+┌──────────────────────────────────────────────────┐
+│  Phase 1: Extraction (Folder: Extraction)         │
+│  Handler: MarkItDownHandler                      │ 
+│  (Uses MarkItDownSharp to get raw Markdown)      │
+└──────────────────────────────────────────────────┘
+                  ↓
+┌──────────────────────────────────────────────────┐
+│  Phase 2: Refinement (Folder: Refinement)         │
+│  Handler: TextNormalizationHandler               │ 
+│  (Fix Arabic RTL, Clean Tables & whitespace)     │
+└──────────────────────────────────────────────────┘
+                  ↓
+┌──────────────────────────────────────────────────┐
+│  Phase 3: Metadata (Folder: Refinement)           │
+│  Handler: FileMetaDataHandler                    │ 
+│  (Detect Language & Document Properties)         │
+└──────────────────────────────────────────────────┘
+                  ↓
+┌──────────────────────────────────────────────────┐
+│  Phase 4: Indexing (Folder: Indexing)             │
+│  Handler: ChunkingHandler                        │ 
+│  (Split text into Chunks using IChunkService)   │
+└──────────────────────────────────────────────────┘
+                  ↓
+┌──────────────────────────────────────────────────┐
+│  Phase 5: Vector Store (Folder: Indexing)         │
+│  Handler: VectorStoreHandler                     │ 
+│  (Generate Embeddings & Save to Qdrant/VectorDB) │
+└──────────────────────────────────────────────────┘
+                  ↓
+┌──────────────────────────────────────────────────┐
+│  Phase 6: Final Storage (Folder: Indexing)        │
+│  Handler: FileStorageHandler                     │ 
+│  (Save Final .txt & Chunks.json to Disk)         │
+└──────────────────────────────────────────────────┘
+                  ↓
+✅ RAG Process Complete (Ready for Retrieval & Chat)

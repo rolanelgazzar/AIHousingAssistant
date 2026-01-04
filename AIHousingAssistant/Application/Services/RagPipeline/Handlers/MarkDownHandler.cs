@@ -1,13 +1,14 @@
 ﻿
-using AIHousingAssistant.Application.Services.DocumentProcessing.Abstractions;
-using AIHousingAssistant.Application.Services.DocumentProcessing.Models;
+
+using AIHousingAssistant.Application.Services.RagPipeline.Abstractions;
+using AIHousingAssistant.Application.Services.RagPipeline.Models;
 using MarkItDownSharp; // The main namespace
 
-namespace AIHousingAssistant.Application.Services.DocumentProcessing.Handlers
+namespace AIHousingAssistant.Application.Services.RagPipeline.Handlers
 {
-    public class MarkItDownHandler : DocumentHandlerBase
+    public class MarkDownHandler : RagHandlerBase
     {
-        public override async Task<DocumentProcessingRequest> HandleAsync(DocumentProcessingRequest request)
+        public override async Task<RagPipelineRequest> HandleAsync(RagPipelineRequest request)
         {
             // The library usually uses 'MarkItDown' class as the entry point
             var markItDown = new MarkItDownConverter();
