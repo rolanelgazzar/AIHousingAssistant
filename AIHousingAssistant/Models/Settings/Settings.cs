@@ -49,6 +49,8 @@ namespace AIHousingAssistant.Models.Settings
 
     public class OpenAISettings
     {
+        public string Endpoint { get; set; }
+
         public string ApiKey { get; set; } = string.Empty;
         public string Model { get; set; } = string.Empty;
     }

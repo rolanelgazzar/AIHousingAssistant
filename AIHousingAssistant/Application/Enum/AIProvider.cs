@@ -7,7 +7,8 @@ namespace AIHousingAssistant.Application.Enum
         Ollama,
         OpenRouter,
         AzureOpenAI,
-        Groq
+        Groq,
+        OpenAI
     }
 }
 

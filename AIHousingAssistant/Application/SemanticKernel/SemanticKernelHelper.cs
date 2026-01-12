@@ -25,8 +25,9 @@ namespace AIHousingAssistant.Application.SemanticKernel
                 AIProvider.AzureOpenAI => BuildWithAzure(settings.AzureOpenAI),
                 AIProvider.OpenRouter => BuildWithOpenRouter(settings.OpenRouterAI),
                 AIProvider.Ollama => BuildWithOllama(settings.Ollama),
-                // English comment: Direct integration for Groq LPU
                 AIProvider.Groq => BuildWithGroq(settings.Groq),
+                AIProvider.OpenAI => BuildWithOpenAI(settings.OpenAI),
+
                 _ => BuildWithSemanticOnly()
             };
 
@@ -36,7 +37,7 @@ namespace AIHousingAssistant.Application.SemanticKernel
         // ---------------------------
         // Internal helpers for each AI provider
         // ---------------------------
-
+       
         private static IKernelBuilder BuildWithAzure(AzureSettings azure)
         {
             var builder = Kernel.CreateBuilder();
@@ -59,10 +60,17 @@ namespace AIHousingAssistant.Application.SemanticKernel
             return builder;
         }
 
-        private static IKernelBuilder BuildWithOpenAI(OpenAISettings openAI)
+       
+        private static IKernelBuilder BuildWithOpenAI(OpenAISettings settings)
         {
+            // English comment: ChatGpt is OpenAI-compliant, so we use the OpenAI connector 
+            // but point it to the ChatGpt API endpoint.
             var builder = Kernel.CreateBuilder();
-            builder.AddOpenAIChatCompletion(openAI.Model, openAI.ApiKey);
+            builder.AddOpenAIChatCompletion(
+                modelId: settings.Model,
+                apiKey: settings.ApiKey,
+                endpoint: new Uri(settings.Endpoint) // Standard:
+            );
             return builder;
         }
 

@@ -1,0 +1,4 @@
+﻿| Embedding Model  | Tool Used     | Result Description                                         | Best Output Format              |
+| ---------------- | ------------- | ---------------------------------------------------------- | ------------------------------- |
+| nomic-embed-text | pandoc        | This model works with pandoc and gives good search results | HTML works better than Markdown |
+| bge-m3           | MarkdownSharp | This model works with MarkdownSharp and gives good results | Markdown works best             |

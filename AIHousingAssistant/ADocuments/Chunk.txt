@@ -1,0 +1,35 @@
+﻿SemanticBlocksGrouper – Processing Flow
+// 1. Split the raw text into individual sentences
+var sentences = SemanticTextBlocksGrouper.SplitTextIntoSentences(rawText);
+
+// 2. Generate embeddings for each sentence (Parallel execution)
+var embeddingsMap = await SemanticTextBlocksGrouper.GenerateTextBlocksEmbeddingsAsync(myGenerator, sentences);
+
+// 3. Group sentences that share the same meaning (Threshold: 0.8 is usually a good start)
+var similarityGroups = SemanticTextBlocksGrouper.GroupTextBlocksBySimilarity(embeddingsMap, 0.8f);
+
+// 4. Merge the groups back into final semantic chunks
+var finalSemanticChunks = SemanticTextBlocksGrouper.AggregateGroupedTextBlocks(similarityGroups);
+
+// Now 'finalSemanticChunks' contains sentences grouped by topic rather than just position
+
+Raw Text
+   ↓
+Split Text into Sentences
+   ↓
+Normalize / Split Long Sentences
+   ↓
+Generate Embeddings (Parallel)
+   ↓
+Semantic Similarity Comparison
+   ↓
+Group Similar Text Blocks
+   ↓
+Aggregate Each Group into One Text
+   ↓
+Split Aggregated Text into RAG Chunks
+   ↓
+Generate Embedding for Each Final Chunk
+   ↓
+Final Text Chunks (Content + Embedding)
+-----------------------------------------------------------------------------

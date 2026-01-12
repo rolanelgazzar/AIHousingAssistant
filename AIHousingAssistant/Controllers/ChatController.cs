@@ -5,6 +5,7 @@ using AIHousingAssistant.Models;
 using AIHousingAssistant.Models.Settings;
 using Microsoft.Extensions.Options;
 using AIHousingAssistant.Application.Services.ChatTools.Interfaces;
+using AIHousingAssistant.Application.Services.ChatTools;
 
 namespace AIHousingAssistant.Controllers
 {
@@ -19,7 +20,9 @@ namespace AIHousingAssistant.Controllers
         private readonly IMemoryKernelService _kernelMemoryService;
         private readonly IDirectChatService _directChatService;
         private readonly IPluginDbService _pluginDbService;
-        private readonly IRagService _ragService;
+        private readonly IRagPipelineService _ragService;
+        //private readonly IRagMDSharpPipelineService _testRagService;
+
         private readonly IWebSearchService _webSearchService;
 
         public ChatController(
@@ -29,7 +32,8 @@ namespace AIHousingAssistant.Controllers
             IMemoryKernelService kernelMemoryService,
             IDirectChatService directChatService,
             IPluginDbService pluginDbService,
-            IRagService ragService,
+            IRagPipelineService ragService,
+         //   IRagMDSharpPipelineService testRagService,
             IWebSearchService webSearchService)
         {
             _housingService = housingService;
@@ -40,6 +44,7 @@ namespace AIHousingAssistant.Controllers
             _pluginDbService = pluginDbService;
             _ragService = ragService;
             _webSearchService = webSearchService;
+          //  _testRagService = testRagService;
         }
 
         public IActionResult Index() => View();
@@ -58,6 +63,11 @@ namespace AIHousingAssistant.Controllers
         {
             return await ExecuteAskAction(() => _ragService.AskRagAsync(ragRequest), ragRequest);
         }
+        //[HttpPost("AskTestRag")]
+        //public async Task<IActionResult> AskTestRagAsync([FromBody] RagUiRequest ragRequest)
+        //{
+        //    return await ExecuteAskAction(() => _testRagService.AskRagAsync(ragRequest), ragRequest);
+        //}
 
         [HttpPost("AskKernelMemory")]
         public async Task<IActionResult> AskKernelMemoryAsync([FromBody] RagUiRequest ragRequest)
@@ -98,10 +108,11 @@ namespace AIHousingAssistant.Controllers
                 {
                     await _kernelMemoryService.ProcessDocumentByKernelMemoryAsync(files, request);
                 }
-                else if (request.ToolsSearchBy == SearchToolType.Rag)
+                else if (request.ToolsSearchBy == SearchToolType.RagDocling || request.ToolsSearchBy == SearchToolType.RagPandDoc || request.ToolsSearchBy == SearchToolType.RagMarkdownSharp)
                 {
                     await _ragService.ProcessDocumentByRagAsync(files, request);
                 }
+               
                 else
                 {
                     return BadRequest(new

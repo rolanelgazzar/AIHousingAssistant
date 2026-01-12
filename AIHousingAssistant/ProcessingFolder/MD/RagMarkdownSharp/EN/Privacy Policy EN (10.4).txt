@@ -1,0 +1,567 @@
+﻿Solution Architecture & Governance
+1. Overview
+1.1. Introduction
+This Privacy Policy (together with our Terms and Conditions and any other documents
+referred to on it) describes how Enjaz Payment Services Company, a Saudi Closed Joint Stock
+Company (hereinafter referred to as “Organization,” "we," "us," or "our") the operator of
+this website or mobile app or service collects, uses, discloses, and protects your Personal
+Data and respects the privacy of Enjaz channel users (herein referred to as “you” and
+“your”). We are committed to ensuring the privacy and security of your Personal Data and
+comply with the applicable data protection laws in Saudi Arabia, including but not limited to
+the Saudi Arabia Personal Data Protection Law (KSA PDPL), the Data Management &
+Personal Data Protection Standards of the National Data Management Office (NDMO), and
+the Saudi Arabian Monetary Authority (Saudi Central Bank or SAMA) regulations.
+1.2. Purpose
+The purpose of this Privacy Policy is to inform Data Subjects about the types of Personal Data
+we collect, how we use and protect that data, and their rights regarding their Personal Data.
+We aim to provide transparency about our data handling practices and ensure Data Subjects
+are fully informed about how their Personal Data is processed when they interact with us
+through our various channels and customer touch points.
+*Shared internally only not intended for public distribution
+
+Solution Architecture & Governance
+We process your data in an appropriate and lawful manner, in accordance with the applicable
+laws and regulations to which Enjaz is subject, including the Saudi Personal Data Protection
+Law, Royal Decree No. M/148 dated 5/9/1444H, herein referred to as “PDPL”.
+1.3. Objective
+The objective of this Privacy Policy is to clearly outline how Enjaz handles Personal Data to
+ensure it is processed in a lawful, fair, and transparent manner. We aim to provide clear and
+concise information about our data processing practices, ensuring Data Subjects understand
+how their Personal Data is collected, used, and protected. This policy is designed to foster trust
+and confidence by demonstrating our commitment to privacy and compliance with relevant
+data protection regulations. It also aims to inform Data Subjects of their rights concerning your
+Personal Data and how you can exercise these rights.
+1.4. Scope
+This Privacy Policy applies to all Personal Data collected and processed by Enjaz through our
+websites, mobile applications, branches, customer service centers, and any other channels or
+touch points where we collect your Personal Data. It covers the processing activities related to
+the collection, storage, use, disclosure, and protection of Personal Data, ensuring compliance
+with the KSA PDPL, NDMO standards and SAMA regulations. This policy applies to all
+customers, visitors, and users of our services, as well as any third parties who interact with us
+in connection with the processing of Personal Data.
+*Shared internally only not intended for public distribution
+
+Solution Architecture & Governance
+1.5. Acronyms, and Abbreviations
+Term Definition
+The support, assistance, and advice provided by a
+Customer Care company to its customers both before and after they buy
+or use its products or services
+Any of the services provided by Enjaz in connection with
+Electronic Services
+all Enjaz websites and mobile app.
+Any data, regardless of its source or form, that may lead
+to identifying an individual specifically, or that may
+directly or indirectly make it possible to identify an
+individual, including name, personal identification
+Personal Data
+number, addresses, contact numbers, license numbers,
+records, personal assets, bank / payment service providers
+and credit card numbers, photos and videos of an
+individual, and any other data of personal nature
+Personal Data revealing racial or ethnic origin, or
+religious, intellectual or political belief, data relating to
+security criminal convictions and offenses, biometric or
+Sensitive Personal Data
+Genetic Data for the purpose of identifying the person,
+Health Data, and data that indicates that one or both of
+the individual’s parents are unknown
+Refers to the principle of limiting data collection and
+Data Minimization retention to the bare minimum necessary to accomplish a
+given purpose.
+*Shared internally only not intended for public distribution
+
+Solution Architecture & Governance
+A breach of security leading to the accidental or unlawful
+destruction, loss, alteration, unauthorized disclosure of,
+Data Breach
+or access to, personal data transmitted, stored or
+otherwise processed.
+Any incident that leads to the Disclosure, Destruction, or
+unauthorized access to Personal Data, whether
+Personal Data Breach
+intentional or accidental, and by any means, whether
+automated or manual.
+Dat subject refers to the individual the personal data
+Data Subject
+relates to.
+Any operation carried out on Personal Data by any
+means, whether manual or automated, including
+collecting, recording, saving, indexing, organizing,
+Personal Data Processing
+formatting, storing, modifying, updating, consolidating,
+retrieving, using, disclosing, transmitting, publishing,
+sharing, linking, blocking, erasing and destroying data.
+Consent of the data subject refers to any freely given,
+specific, informed and unambiguous indication of the
+Data Subject Consent data subject’s wishes by which he or she, by a statement
+or by a clear affirmative action, signifies agreement to the
+processing of their personal data.
+Information that is used to determine a customer’s
+Credit Data creditworthiness, such as payment history and credit
+utilization.
+*Shared internally only not intended for public distribution
+
+Solution Architecture & Governance
+A DPO is an appointed expert on data protection that
+informs and advises on applicable data protection laws
+Data Protection Officer,
+and regulations, monitors compliance with applicable
+“DPO”
+laws and regulations, and acts as a point of contact with
+relevant regulatory authorities
+A natural or legal person, public authority, agency or any
+other body which alone or jointly with others determines
+the purposes and means of the processing of personal
+Data Controller data. Where the purposes and means of such processing
+are determined by EU or member state law, the controller
+or the specific criteria for its nomination may be provided
+for by EU or member state law.
+Standards designed to protect financial institutions
+Know Your Customer, “KYC” against fraud, corruption, money laundering and terrorist
+financing.
+Refers to an exchange or transfer of goods, services, or
+Transactions
+funds.
+The support, assistance, and advice provided by a
+Customer Care company to its customers both before and after they buy
+or use its products or services.
+*Shared internally only not intended for public distribution
+
+Solution Architecture & Governance
+2. Policy Statement
+2.1. Collection of Your Personal Data
+Personal Data means any and all information which an individual can be identified with and does
+not include any data where identity has been removed (namely, anonymous data). Upon
+registration with us, it is necessary that we collect your Personal Data in order to comply with legal
+obligations such as KYC and other regulatory requirements. By understanding your background
+and needs, we can treat you fairly, provide you with the services that best match your
+requirements, offer you appropriate and relevant information and process your requests in a fair
+and efficient manner. We will collect, use, store and transfer different elements of Personal Data
+about you through various channels, including when:
+• You apply for our products or services, visit our website, use our mobile application, and
+communicate, make a request or provide feedback with us electronically or in person, or
+through third-party sources as permitted by applicable laws and regulations.
+• You open an account or r perform transactions and/or services provided by Enjaz, including
+but not limited to international transfers, local transfers (between accounts and to local
+bank accounts/ payment service providers), bill payments, adding beneficiaries and editing
+beneficiary details, and any other stipulated in the terms and conditions.
+• You seek information from our Customer Care concerning inquiries, complaints, and
+disputes.
+• You provide account information such as your personal details or information concerning
+your identity.
+• You use your login credentials to access your account through Enjaz website or mobile
+application.
+.
+• We conduct necessary investigations i.e., due diligence checks, and Anti-money Laundering
+and Counter-Terrorism Financing (AML/CTF) checks, and obtain information that we need
+*Shared internally only not intended for public distribution
+
+Solution Architecture & Governance
+to support our regulatory obligations, e.g., information about transaction details, and
+detection of any suspicious and unusual activities.
+• Subscribe to our service or publications.
+• Enter a competition, promotion or survey;
+The types of Personal Data we may collect include:
+• Full Name, gender, date, and place of birth, country of residence, contact details such as
+home, work or delivery address, proof of address, email address, telephone numbers,
+identification information such as photo ID, passport information, National ID/ Iqama
+card, and nationality.
+• Financial and banking information.
+• Employment and income details such as annual income, net worth, source of funds,
+anticipated account, turnover, bank account, bank statements, payment card details
+• Transaction history and account activity such as details about payments to and from you,
+information on products and services you have purchased from us, deposit methods,
+purpose of transactions with us.
+• Records of communications to or from us.
+• Information obtained from credit reporting agencies and other financial institutions.
+• Technical information includes your internet protocol (IP) address, login data to our
+website/ application, browser type and version, time zone setting and location, operating
+system, platform, and other technology on the devices you use to access this website. We
+use this information for system administration or our commercial purposes.
+• Profile Data includes your username and password, purchases or orders made by you, your
+interests, preferences, feedback, survey responses.
+• Usage information includes information about how you use our website, application, and
+assorted services.
+• Marketing and communications information includes your preferences in receiving
+marketing from us and any third-party companies on our behalf and your communication
+preferences.
+*Shared internally only not intended for public distribution
+
+Solution Architecture & Governance
+Third parties or publicly available sources. We may receive Personal Data about you from various
+third parties and public sources as set out below:
+• Technical data from analytics providers such as Google;
+• Contact, financial and transaction data from payment services providers;
+Identity and contact data for KYC purposes from individual and publicly availably
+sources, for any consumer-reporting agencies etc.
+Sometimes, we may collect and use your information even if you are not our customer:
+For any information in this category, we will adhere to the principles outlined in this Policy. This
+may occur, for example, if you are a customer, beneficiary, cardholder, or representative of one
+of our customers, or if you are in the process of applying for a product or service with us.
+Additionally, your personal circumstances might significantly impact our customer's ability to fulfil
+their obligations to us, necessitating our consideration of your information.
+We may also collect your information if a customer makes a payment to you or engages in a
+transaction with you, requiring us to process the payment or transaction. Furthermore, if we
+acquire a new business or the assets of another business, we might obtain some of your
+information, as detailed below.
+2.2. Use of Your Personal Data
+• We will only use your Personal Data when you have provided your consent or when Enjaz
+has a lawful basis or is required by the applicable laws to do so.
+• We use the Personal Data we collect to provide our customers with products and services
+(i.e., international transfers, transfers between accounts, transfers to local bank accounts /
+payment service providers , bill payments, etc.), to manage our business and customer
+relationships, as stipulated in our Terms and Conditions, and to offer an enriched and
+enhanced customer experience.
+*Shared internally only not intended for public distribution
+
+Solution Architecture & Governance
+• We make appropriate use of your Personal Data to manage your transactions and
+respond to your requests.
+• We use your Personal Data to deliver more relevant products and services, conduct your
+instructions, and provide online product and services of Enjaz
+• We will use your Personal Data to meet our compliance obligations, comply with laws,
+regulations, and regulatory requirements, and share with regulators when necessary.
+• We use Personal Data to protect public interest, detect and prevent financial crimes
+including fraud, financing for terrorism, and money laundering or other illegal activities.
+• Where we have your consent, we may use your Personal Data such as your email address,
+mobile number, and email address to deliver directly to you marketing and promotional
+advertisements and we will provide updates on exclusive deals and offers that might
+interest you on our website.
+• Information about criminal convictions and offences.
+• We also collect, use and share aggregated data such as statistical or demographic data.
+Non-Personal Data may be derived from your Personal Data but is not considered Personal
+Data for the purposes of law as such does not directly or indirectly reveal your identity in
+any way whatsoever. For example, we may aggregate your usage data to calculate the
+percentage of users accessing a specific website and the Electronic Services feature.
+However, if we combine or connect aggregated data with your Personal Data in a way
+that, either directly or indirectly, identify you we treat the combined data as Personal Data
+which will be used in accordance with this Privacy Policy.
+2.3. Disclosure of your Personal Information
+We may disclose your Personal Data to third parties under the following circumstances:
+• We may disclose your Personal Data within Enjaz on a confidential basis as allowed by
+applicable law or where required for the purpose of providing products or services and for
+administrative, billing and other business or ancillary purposes.
+*Shared internally only not intended for public distribution
+
+Solution Architecture & Governance
+• We may instruct service providers in or outside Enjaz, domestically or abroad, to process
+Personal Data for the permitted purposes on our behalf and in accordance with our
+instructions. Enjaz requires these service providers to enter into relevant agreements with
+us as such may be required by applicable laws that govern the use of any information that
+they receive from us. These agreements prohibit the service provider from using information
+of ours other than for the purposes for which such was provided or disclosed. In accordance
+with applicable legislation, Enjaz will retain control over, remain responsible for your
+Personal Data and use appropriate safeguards to ensure integrity and security of your
+Personal Data when engaging service providers.
+• We may share your Personal Data with companies providing services in the areas of fraud
+and crime prevention and with companies providing similar services, including financial
+institutions such as credit reference agencies and regulatory bodies.
+• We may share your Personal Data with companies providing services in the areas of IT,
+platforms administration, translation of documents, support of clients, marketing,
+promoting our services and products, external and internal audit, storage, payment services
+and other relevant entities required to complete transactions. .
+• We may share your Personal Data with third parties to whom we may choose to transfer,
+or merge parts of our business or our assets or of Enjaz; additionally, we may seek to acquire
+other businesses or merge with them.
+• We may disclose information about you to any depository, stock exchange, clearing or
+settlement system, account controller or other participant in the relevant system, to
+counterparties, dealers, custodians, intermediaries and others where disclosure is
+reasonably intended for the purpose of effecting, managing or reporting transactions in
+connection with the provision of our services or establishing a relationship with a view to
+such transactions.
+• Consistent with applicable law, we may share your Personal Data with courts, law
+enforcement authorities, regulators or attorneys or other parties for the establishment,
+*Shared internally only not intended for public distribution
+
+Solution Architecture & Governance
+exercise or defense of a legal or equitable claim or for the purposes of an alternative dispute
+resolution process.
+• Following your consent obtainment.
+• To our subsidiaries, service providers, and agents who assist us in delivering our services.
+• In connection with mergers, acquisitions, or other corporate transactions.
+• To companies who may be acting as controllers or processors that provide system
+administration services and internal reporting activities to Enjaz.
+• To companies who may be acting as data processors, joint-controllers, or independent
+controllers to Enjaz such as Service Providers, Payment Processors (i.e., Western Union,
+TransFast, and transfer tracking third parties, etc.), Credit Bureaus, Financial Institutions,
+Banks, and other relevant institutions operating in the Kingdom of Saudi Arabia and
+Regulatory bodies (i.e., SAMA, etc.).
+Generally, we will only disclose your Personal Data when you direct us or authorize us to do so,
+when we are allowed or required by applicable law or judicial or official request to do so, or as
+required to investigate actual or suspected fraudulent or criminal activities. We ensure that any
+third parties with whom we share your Personal Data comply with appropriate data protection and
+confidentiality measures set out by the applicable laws and regulations.
+2.4. Lawful Basis for Processing
+We may use your Personal Data for the following purposes, based on the following lawful basis:
+2.4.1 To Enter into or Perform Our Agreement:
+• To provide services to you in accordance with the agreement(s) you or your organization
+may have with us, for record-keeping and compliance procedures.
+• To provide you or your organization with financial products and other services available via
+Enjaz and/or to deal with any requests or inquiries you may have.
+• To respond to requests for information from you and to follow up afterwards to see if any
+further assistance is required.
+*Shared internally only not intended for public distribution
+
+Solution Architecture & Governance
+2.4.2 To Comply with Our Legal Obligations:
+• To comply with any applicable laws in any country we operate in or provide a service.
+• For the purposes of preventing and detecting money-laundering, terrorism, fraud or other
+crimes and/or abuses of our services.
+• To comply with any legal, regulatory or good practice requirement and to fulfil our
+obligations under any reporting agreement entered with any tax authority or revenue
+services from time to time.
+2.4.3 To Pursue Our Legitimate Interests:
+• For our own administrative and operational procedures.
+• For statistical purposes and for market research and product analysis and to develop and
+improve our products and services.
+• To carry out, monitor and analyze our business or operations including the activities set out
+in this Policy.
+• To enforce or apply any agreement and/or to protect our (or others’) property or rights and
+to defend any potential claim.
+2.4.4 For Marketing Purposes with Your Consent:
+We may also process your Personal Data for the following purposes (after obtaining your explicit
+consent where such is legally required) in accordance with your preferences:
+• To communicate with you through the channels you have approved to keep you up to date
+on latest developments, announcements and other information about our services,
+products and technologies.
+• To conduct client surveys, marketing campaigns, market analysis or promotional activities.
+*Shared internally only not intended for public distribution
+
+Solution Architecture & Governance
+• To collect information about your preferences, to create a user profile to personalize and
+foster the quality of our communication and interaction with you (for example, by way of
+newsletter tracking or website analytics).
+• To conduct monitoring by us or any other person on our behalf using various methods,
+including;
+a) the use of intelligent automated monitoring tools.
+b) through random monitoring of systems, for example systematically via electronic
+communication recording tools.
+c) specific monitoring of systems for example in relation to investigations, regulatory
+requests, subject access requests, litigation, arbitration or mediation.
+d) data tracking, aggregation and analysis tools that pull data from various disparate data
+sources to draw linkages and/or detect patterns, interactions or preferences for analysis
+(including predictive analysis).
+e) using other similar monitoring technology that may become available from time to time.
+Where legally required, we will not use your Personal Data for taking any automated decisions
+affecting you or creating profiles other than described above.
+We will use your Personal Data for the purposes for which we collect it, unless we
+reasonably consider that we need to use it for another reason and that such reason is
+compatible with the original purpose and the law (in which case your knowledge or consent
+for use thereof is not required). If you wish to get an explanation as to how compatibility
+of the reason and the original purpose is determined, please contact us. If we need to use
+your Personal Data for an unrelated purpose, we will notify you accordingly and explain the
+legal basis which allows us to do so. Please note that we may process your Personal Data,
+where this is required or permitted by law.
+*Shared internally only not intended for public distribution
+
+Solution Architecture & Governance
+2.5. Data Minimization
+Whenever and to the extent possible, we anonymize the data which we hold about you
+when it is no longer necessary to identify you from the personal information which we hold
+about you .
+2.6. Financial Crime Prevention
+To comply with our legal obligations and protect against financial crimes, such as money
+laundering and fraud, we may conduct due diligence checks and request additional information
+from you. This may include verifying your identity, conducting background checks, and sharing
+your Personal Data with relevant authorities, as permitted by applicable laws and regulations.
+2.7. Cross-border Data Transfers
+If we transfer your Personal Data to countries outside of the Kingdom of Saudi Arabia, some
+of our external third parties are based outside of the Kingdom of Saudi Arabia so processing
+of your Personal Data may involve a transfer of data outside of the Kingdom of Saudi Arabia
+on the permitted purposes.
+Please contact us if you want further information on the specific mechanism used by us when
+transferring your Personal Data.
+2.8. Security of Personal Data
+We maintain reasonable technical, organizational, physical, electronic, and procedural
+measures to ensure the security and confidentiality of your Personal Data against any
+unauthorized access, use, disclosure, accidental or unlawful alteration, destruction, and other
+unauthorized forms of processing. These measures include data encryption, access controls,
+firewalls, and regular security assessments. We provide our employees with training on the
+*Shared internally only not intended for public distribution
+
+Solution Architecture & Governance
+importance of data privacy and ensure their compliance with applicable policies and
+procedures. Enjaz has a code of conduct that includes a section on confidentiality of
+information, which requires every employee, contractor, or third-party vendor to keep business
+and internal information obtained in the course of their work at Enjaz confidential.
+Whilst we have implemented such measures, we cannot completely guarantee the security of
+your information; any transmission by you is at your own risk.
+You are responsible for maintaining the confidentiality of any password or account details.
+Where you chose to click a link to any of the third-party websites, please note that those
+websites have their own privacy policies and we do not accept any responsibility or liability for
+their policies or their security of your Personal Data on third party sites. Please check their
+policies before you submit any Personal Data to those websites.
+2.9. Personal Data Breach
+We have put in place procedures to deal with any suspected Personal Data breach and will
+notify you and any applicable regulator of any breach where we are legally required to do so.
+If you require further information on how we deal with a data breach, please contact us as
+stated below.
+2.10. Retention of Personal Data
+We retain your Personal Data for as long as necessary to fulfill the purposes outlined in this
+Privacy Policy unless a longer retention period is required or permitted by applicable laws and
+regulations. We will retain and use your Personal Data to the extent necessary to comply with
+our legal obligations, resolve disputes, and enforce our legal agreements and policies. When
+Personal Data is no longer required, we securely dispose of, anonymize or de-identify it.
+*Shared internally only not intended for public distribution
+
+Solution Architecture & Governance
+2.11. Joint Accounts
+If you hold a joint account with another individual(s), please note that we may disclose account
+information and transaction details to all joint account holders. Each joint account holder is
+responsible for ensuring that they have the necessary authority and consent to provide and
+access Personal Data related to the joint account.
+2.12. Authorized Representative(s)
+We may collect and process Personal Data about your authorized representative(s) to identify
+and provide our services if you have authorized another person to act on your behalf in relation
+to your accounts or transactions with us. It is your responsibility to ensure that you have your
+representative’s consent to provide us with their Personal Data.
+2.13. Your Rights and Choices
+Under certain circumstances, you may have certain rights in relation to your Personal Data. For
+example, you may have:
+1- The right to know and be informed about our contact details, the exact reason your
+Personal Data is being collected, the methods being used for Personal Data collection, and
+whether this collected Personal Data will be shared with third parties.
+2- The right to access your Personal Data from us and obtain a copy of it in a clear and
+readable format, in conformity with the content of the records.
+3- The right to request correction of, or update any Personal Data collected by Enjaz if it is
+incomplete, inaccurate, or obsolete.
+*Shared internally only not intended for public distribution
+
+Solution Architecture & Governance
+4- The right to request the destruction of your Personal Data collected by Enjaz. Noting that
+the reasons can range from the individual rescinding his/her consent for data collection to
+the data no longer serving the purpose for which it was initially collected. However, Enjaz
+may retain such information in accordance with the Policy and applicable laws.
+5- The right to object to or restrict certain processing activities of your Personal Data and to
+withdraw your consent where required.
+Enjaz is required to ensure that you are appropriately informed about these rights and establish
+dedicated channels for you to properly exercise them. We may need to request specific
+information from you to help us confirm your identity and ensure your right to access your
+Personal Data (or to exercise any of your other rights). This is a security measure to ensure that
+your Personal Data is not disclosed to any person who has no right to receive it. We may also
+contact you to ask you for further information in relation to your request to speed up our
+response.
+We try to respond to all legitimate requests within one month of receipt. Occasionally, it may
+take us longer than a month if your request is particularly complex or if you have made a
+number of requests. In this case, we will notify you and keep you updated.
+If you believe that any of your Personal Data is inaccurate or incomplete and to exercise any
+of these rights or for any privacy-related inquiries, please contact us using the details provided
+below.
+2.14. Consent Withdrawal
+Where we rely on your consent for processing Personal Data, you have the right to withdraw
+your consent at any time. Withdrawal of consent does not affect the lawfulness of processing
+based on consent before its withdrawal. To manage your consent preferences, please contact
+us using the details provided below.
+*Shared internally only not intended for public distribution
+
+Solution Architecture & Governance
+2.15. Your Responsibilities
+While we take reasonable steps to protect your Personal Data, you need to act appropriately
+to safeguard your information, such as keeping your login credentials secure and promptly
+notifying us of any unauthorized access or use of your accounts.
+2.16. Minor’s Privacy
+Our services are not designed for individuals under the age of eighteen (18) as such if you are
+resident in the Kingdom of Saudi Arabia and under the age of eighteen (18) or are a resident
+elsewhere and you are not yet at the relevant age of majority in the jurisdiction in which you
+reside, we are not permitted to contract with you directly. Where necessary by local legislation,
+by agreeing to this Privacy Policy, your parent or legal guardian acknowledges and consents to
+the terms of this Privacy Policy on your behalf. If we seek your consent to process your Personal
+Data for a specific purpose in accordance with this Privacy Policy, such consent must be granted
+on your behalf by your parent or legal guardian.
+It is important to mention that we do not knowingly collect Personal Data from minors without
+the consent of their parents or legal guardians. If you believe that we have inadvertently
+collected the Personal Data of a minor, please contact us immediately so that we can act
+appropriately to delete the relevant Personal Data.
+2.17. Use of CCTV and Surveillance
+For security and safety purposes, we may use closed-circuit television (CCTV) cameras and
+surveillance systems on our premises. The recorded footage may be used to monitor and
+investigate security incidents, prevent fraud, and ensure the safety of our customers,
+employees, and assets.
+*Shared internally only not intended for public distribution
+
+Solution Architecture & Governance
+2.18. Marketing Communications
+Where we have a lawful basis to do so, as stated above, or with your consent, we may send
+you marketing communications about our products, services, promotions, and events. Our
+marketing communications may include personalized and non-personalized materials, where
+the personalized materials will be specifically tailored based on the information we know about
+you.
+You can withdraw your consent or opt out of receiving marketing communications at any time
+through one of these channels: -
+• • Visiting one of our branches
+• Sending us an email at dataprotectionoffice@enjaz.com.
+2.19. Social Media
+We may engage with you on social media platforms to provide information, respond to
+inquiries, and promote our products and services. Please note that any information you post
+or disclose on our social media pages may be visible to the public, and you should exercise
+caution when sharing Personal Data or Sensitive Personal Data, as defined in the Saudi Arabia
+Personal Data Protection Law.
+2.20. Monitoring and Recordings of Calls and Electronic Communications
+To ensure quality control, assurance, training, and compliance purposes, we may monitor and
+record telephone calls, including customer service calls and calls with our representatives as
+well as record electronic communications, such as emails and instant messages, exchanged
+between you and our representatives. We will notify you if a call is being recorded, and the
+recorded calls will be overseen in accordance with applicable data protection laws and
+*Shared internally only not intended for public distribution
+
+Solution Architecture & Governance
+regulations. These measures are taken to ensure the security of our systems, prevent fraud,
+and maintain regulatory compliance.
+2.21. Cookies
+A cookie is a small file that is placed on your computer’s hard drive. Its functions include storing
+your login and session statuses, recording your user preferences, and analyzing web traffic.
+Apart from the data that you elect to disclose and share with us, we cannot access your
+computer or any other information about you with cookies. Although most browsers
+automatically accept cookies, you can amend your browser settings to disable cookies. You
+can control your cookies from your browser menu. You can easily remove any cookies that
+have been created in the cookie folder of your browser. Depending on the type of browser
+that you use, please see the steps to follow for deleting and/or disabling your
+cookies http://www.allaboutcookies.org/manage-cookies/
+Please note, this may however prevent you from fully experiencing the website as it was
+intended.
+2.22. Third-Party Links
+Our website or mobile applications may contain links to third-party websites or services that
+are not operated or controlled by us. This Privacy Policy does not apply to such third-party
+websites or services, and we are not responsible for their privacy practices. We encourage you
+to review the privacy policies of those third parties before providing any Personal Data to them.
+2.23. Updates to this Privacy Policy
+We reserve the right to modify or update this Privacy Policy from time to time to reflect changes
+in our privacy practices, legal obligations, or as required by the applicable data protection laws
+*Shared internally only not intended for public distribution
+
+Solution Architecture & Governance
+and regulations. We will provide notice of any material changes by posting the updated Privacy
+Policy on our website or by other appropriate means. We encourage you to review this Privacy
+Policy periodically for any updates. The revised Privacy Policy will be effective as of the updated
+effective date stated at the beginning of the Policy.
+2.24. Indemnification
+You agree to defend, indemnify, and hold harmless Enjaz, its subsidiaries, and their respective
+directors, officers, employees, and agents from and against all claims and expenses, including
+attorneys' fees, arising out of your violation of this Privacy Policy or misuse of the services or
+Enjaz’s website, including such violation or misuses conducted by your employee or agent, if
+applicable.
+2.25. Governing Law and Jurisdiction
+This Privacy Policy shall be governed by and construed in accordance with the applicable laws
+of Saudi Arabia. Any disputes arising out of or relating to this Privacy Policy shall be subject to
+the exclusive jurisdiction of the courts of Saudi Arabia.
+2.26. Contact Us and Our Data Protection Officer
+If you have any questions, concerns, or requests regarding this Privacy Policy or our privacy
+practices, please contact us at:
+Enjaz
+Head Office Address : 8229 Al-Mutamarat District, King Fahd Road, Riyadh 3952 - 12711,
+Kingdom of Saudi Arabia
+Phone: 800 5000 300
+*Shared internally only not intended for public distribution
+
+Solution Architecture & Governance
+Email: dataprotectionoffice@enjaz.com
+Any enquiries with regards to the use of your Personal Data should be sent to the above email
+address.
+Enjaz is committed to protecting your privacy, addressing any concerns, and resolving any
+issues related to the processing of your Personal Data and will oversee your Personal Data with
+utmost care and respect.
+3. Periodic Review of this Policy
+This policy will be reviewed every 3 years from the date of acceptance and sign off, or as
+deemed necessary.
+*Shared internally only not intended for public distribution

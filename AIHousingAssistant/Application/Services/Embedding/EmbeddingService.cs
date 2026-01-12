@@ -43,12 +43,18 @@ namespace AIHousingAssistant.Application.Services.Embedding
 
             try
             {
-                // Normalize the text before embedding
-                text = text.Trim().ToLowerInvariant();
-
                 var modelId = embeddingModel.MapToModelId(_providerSettings.EmbeddingModel);
 
-                // Set the correct model for the client before the call
+                // English comment: Prepare the text. 
+                // BGE-M3 performs better with original casing (Multilingual/Context-aware).
+                // Nomic or other older models often benefit from lowercase.
+                text = text.Trim();
+                if (!modelId.Contains("bge-m3", StringComparison.OrdinalIgnoreCase))
+                {
+                    text = text.ToLowerInvariant();
+                }
+
+                // English comment: Set the target model in Ollama
                 _client.SelectedModel = modelId;
 
                 var response = await _client.EmbedAsync(text);
@@ -59,16 +65,14 @@ namespace AIHousingAssistant.Application.Services.Embedding
                     return embedding.Length > 0 ? embedding : Array.Empty<float>();
                 }
 
-                // If the response is valid but contains no embeddings, treat it as a service error
                 throw new InvalidOperationException($"Ollama returned an empty embedding list for model {modelId}.");
             }
             catch (Exception ex)
             {
-                // Catch any exception (network, API, etc.) and wrap it
-                throw new ApplicationException($"Failed to generate single embedding for model {embeddingModel} from Ollama.", ex);
+                // English comment: Wrap the exception to provide context on which model failed
+                throw new ApplicationException($"Failed to generate embedding for model {embeddingModel} from Ollama.", ex);
             }
         }
-
         // ------------------------- Batch Embedding (Used for Ingestion/Storage) -------------------------
 
         /// <summary>

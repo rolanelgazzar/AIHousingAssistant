@@ -64,6 +64,8 @@ namespace AIHousingAssistant.Application.Services.VectorStores
         // It detects if a chunk already has an embedding (Semantic) or needs a new one generated (Recursive).
         public async Task StoreTextChunksAsVectorsAsync(List<TextChunk> chunks, RagUiRequest ragUiRequest)
         {
+            await _embeddingService.EmbedAsync("Warm-up text", EmbeddingModel.BgeM3);
+
             if (chunks == null || !chunks.Any()) return;
 
             try
@@ -99,6 +101,7 @@ namespace AIHousingAssistant.Application.Services.VectorStores
                         {
                             // English comment: Log individual chunk error to avoid failing the whole process
                             Console.WriteLine($"[Embedding Error] Chunk {chunk.Index} failed: {ex.Message}");
+                            throw;// new ApplicationException($"[Embedding Error] Chunk {chunk.Index} failed", ex);
                         }
                     });
                     await Task.WhenAll(tasks);
@@ -130,8 +133,8 @@ namespace AIHousingAssistant.Application.Services.VectorStores
             }
             catch (Exception ex)
             {
-                // English comment: Global catch for critical failures in the storage pipeline
-                throw new ApplicationException("Failed to execute StoreTextChunksAsVectorsAsync.", ex);
+                // Esh comment: Global catch for critical failures in the storage pipeline
+                throw;
             }
         }                 /// Pure Vector Search: returns the single closest vector chunk (top=1).
                           /// </summary>
@@ -166,7 +169,7 @@ namespace AIHousingAssistant.Application.Services.VectorStores
             catch (Exception ex)
             {
                 // Catch any exception related to the Vector DB search itself (e.g., Qdrant connection failure)
-                throw new ApplicationException($"Failed to perform Vector DB search on collection {GetCollectionName (ragUiRequest)}.", ex);
+                throw;
             }
         }
 
@@ -257,9 +260,14 @@ namespace AIHousingAssistant.Application.Services.VectorStores
                 throw new ApplicationException($"Failed to perform Hybrid Search on collection {GetCollectionName(ragUiRequest)}.", ex);
             }
         }
-        private string GetCollectionName(RagUiRequest ragUiRequest) {
-            return _settings.CollectionNameCustomRag
-             + System.Enum.GetName(typeof(ChunkingMode), ragUiRequest.ChunkingMode);
+        private string GetCollectionName(RagUiRequest ragUiRequest)
+        {
+            string chunkModeName = System.Enum.GetName(typeof(ChunkingMode), ragUiRequest.ChunkingMode);
+            string searchToolName = System.Enum.GetName(typeof(SearchToolType), ragUiRequest.ToolsSearchBy);
+
+         //   return _settings.CollectionNameCustomRag + chunkModeName + searchToolName;
+            return searchToolName +"_"+ chunkModeName ;
+
         }
     }
 }

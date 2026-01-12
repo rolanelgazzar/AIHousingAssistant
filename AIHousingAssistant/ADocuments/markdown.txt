@@ -1,6 +1,47 @@
 ﻿https://github.com/jgm/pandoc/releases/download/3.1.1/pandoc-3.1.1-windows-x86_64.msi
-تحميل الملف: سيتحمل ملف اسمه pandoc-3.1.1-windows-x86_64.msi.
 
-التثبيت: افتحي الملف واضغطي Next ثم Install (مثل أي برنامج عادي).
+Download the file: A file named pandoc-3.1.1-windows-x86_64.msi will be downloaded.
 
-إعادة تشغيل Visual Studio: هذه خطوة مهمة جداً لكي يشعر الـ Visual Studio بأن البرنامج الجديد تم تثبيته في الـ Path
+Installation: Open the file and click Next, then Install (like any normal program).
+
+Restart Visual Studio: This is a very important step so that Visual Studio recognizes that the new program has been installed and added to the system PATH.
+
+📄 Document Input (Word/PDF/Excel/etc.)
+                  ↓
+┌──────────────────────────────────────────────────┐
+│  Phase 1: Extraction (Folder: Extraction)         │
+│  Handler: MarkItDownHandler                      │ 
+│  (Uses MarkItDownSharp to get raw Markdown)      │
+└──────────────────────────────────────────────────┘
+                  ↓
+┌──────────────────────────────────────────────────┐
+│  Phase 2: Refinement (Folder: Refinement)         │
+│  Handler: TextNormalizationHandler               │ 
+│  (Fix Arabic RTL, Clean Tables & whitespace)     │
+└──────────────────────────────────────────────────┘
+                  ↓
+┌──────────────────────────────────────────────────┐
+│  Phase 3: Metadata (Folder: Refinement)           │
+│  Handler: FileMetaDataHandler                    │ 
+│  (Detect Language & Document Properties)         │
+└──────────────────────────────────────────────────┘
+                  ↓
+┌──────────────────────────────────────────────────┐
+│  Phase 4: Indexing (Folder: Indexing)             │
+│  Handler: ChunkingHandler                        │ 
+│  (Split text into Chunks using IChunkService)   │
+└──────────────────────────────────────────────────┘
+                  ↓
+┌──────────────────────────────────────────────────┐
+│  Phase 5: Vector Store (Folder: Indexing)         │
+│  Handler: VectorStoreHandler                     │ 
+│  (Generate Embeddings & Save to Qdrant/VectorDB) │
+└──────────────────────────────────────────────────┘ش
+                  ↓
+┌──────────────────────────────────────────────────┐
+│  Phase 6: Final Storage (Folder: Indexing)        │
+│  Handler: FileStorageHandler                     │ 
+│  (Save Final .txt & Chunks.json to Disk)         │
+└──────────────────────────────────────────────────┘
+                  ↓
+✅ RAG Process Complete (Ready for Retrieval & Chat)

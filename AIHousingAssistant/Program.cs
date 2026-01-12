@@ -29,7 +29,6 @@ builder.Services.Configure<Settings>(
 builder.Services.AddScoped<IHousingService, HousingService>();
 builder.Services.AddScoped<ISummarizerService, SummarizerService>();
 builder.Services.AddSingleton<IChatHistoryService, ChatHistoryService>();
-builder.Services.AddScoped<IRagService, RagService>();
 builder.Services.AddScoped<IMemoryKernelService, MemoryKernelService>();
 builder.Services.AddScoped<IWebSearchService, WebSearchService>();
 builder.Services.AddScoped<IPluginDbService, PluginDbService>();
@@ -37,6 +36,9 @@ builder.Services.AddScoped<IDirectChatService, DirectChatService>();
 
 builder.Services.AddScoped<IChunkService, ChunkService>();
 builder.Services.AddScoped<IEmbeddingService, EmbeddingService>();
+
+
+
 
 
 builder.Services.AddHttpClient<HttpClientHelper>();
@@ -51,7 +53,13 @@ builder.Services.AddScoped<QdrantVectorDb_Sdk>();
 builder.Services.AddScoped<IVectorDB_Resolver, VectorDB_Resolver>();
 //builder.Services.AddScoped<IVectorDB, QdrantVectorDb_InMemory>();
 builder.Services.AddScoped<IVectorStore, VectorStore>();
-builder.Services.AddScoped<IRagPipelineProcessor, RagPipelineProcessor>();
+
+
+builder.Services.AddScoped<IRagPipelineService, RagPipelineService>();
+builder.Services.AddScoped<IRagMDSharpPipelineProcessor, RagMDSharpPipelineProcessor>();
+builder.Services.AddScoped<IRagDoclingPipelineProcessor, RagDoclingPipelineProcessor>();
+builder.Services.AddScoped<IRagPandocPipelineProcessor, RagPandocPipelineProcessor>();
+
 
 builder.Services.AddTransient<Kernel>(sp =>
 {

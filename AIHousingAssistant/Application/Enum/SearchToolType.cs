@@ -9,9 +9,12 @@ namespace AIHousingAssistant.Application.Enum
         DirectChat,
         PluginDB,
         Web,
-        Rag,
-        KernelMemory
-        
+        KernelMemory,
+        RagPandDoc,
+        RagMarkdownSharp,
+        RagDocling
+
+
     }
 }
 

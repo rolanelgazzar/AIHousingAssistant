@@ -56,18 +56,18 @@ namespace AIHousingAssistant.Application.Services.Chunk
             List<TextChunk> chunks = ragUiRequest.ChunkingMode switch
             {
                 ChunkingMode.LangChainRecursiveTextSplitter =>
-                    await LangChainRecursiveTextSplitter(text, source),
+                    await LangChainRecursiveTextSplitter(text, source, ragUiRequest.EmbeddingModel),
 
                 // Semantic Splitter (using local DI for EmbeddingService)
                 ChunkingMode.SemanticTextBlocksGrouper =>
                     await SemanticBlocksGrouperChunks(text, source, ragUiRequest.EmbeddingModel), 
 
                 ChunkingMode.RecursiveTextSplitter =>
-                    await RecursiveTextSplitterChunks(text, source),
+                    await RecursiveTextSplitterChunks(text, source, ragUiRequest.EmbeddingModel),
 
                 // fallback to the widely used LangChain Recursive Splitter
                 _ =>
-                    await LangChainRecursiveTextSplitter(text, source)
+                    await LangChainRecursiveTextSplitter(text, source, ragUiRequest.EmbeddingModel)
             };
 
            // Save for transparency / debug
@@ -82,14 +82,23 @@ namespace AIHousingAssistant.Application.Services.Chunk
 
         // -----------------------------------------------------------
         // 1) LangChain.NET RecursiveCharacterTextSplitter (Traditional, fast)
-        private Task<List<TextChunk>> LangChainRecursiveTextSplitter(string text, string source)
+        private Task<List<TextChunk>> LangChainRecursiveTextSplitter(
+            string text,
+            string source,
+            EmbeddingModel embeddingModel) // Added model parameter
         {
             if (string.IsNullOrWhiteSpace(text))
                 return Task.FromResult(new List<TextChunk>());
 
+            // English comment: Dynamically calculate chunk size based on the specific embedding model 
+            // and the language of the input text to ensure optimal token utilization.
+            int safeSize = embeddingModel.GetSafeChunkSize(text);
+            int overlap = safeSize / 10;
+
+            // English comment: Initialize LangChain's splitter with dynamic parameters instead of hardcoded 1000/100.
             var splitter = new RecursiveCharacterTextSplitter(
-                chunkSize: 1000,
-                chunkOverlap: 100
+                chunkSize: safeSize,
+                chunkOverlap: overlap
             );
 
             var rawChunks = splitter.SplitText(text);
@@ -100,48 +109,62 @@ namespace AIHousingAssistant.Application.Services.Chunk
                     Index = i,
                     Content = c.Trim(),
                     Source = source
+                    // Note: Embedding is usually generated in the next step of the pipeline.
                 })
                 .Where(tc => !string.IsNullOrWhiteSpace(tc.Content))
                 .ToList();
 
             return Task.FromResult(chunks);
         }
-
         // -----------------------------------------------------------
         // 2) SemanticTextBlocksGrouper (Semantic Grouping using local IEmbeddingService)
         // This is the optimized function that adds the Vector to the TextChunk.
         // English comment: Groups text into chunks based on semantic similarity.
         // Ensures that groups are still split if they exceed the max character limit.
-        private async Task<List<TextChunk>> SemanticBlocksGrouperChunks(string text, string source, EmbeddingModel embeddingModel)
+        private async Task<List<TextChunk>> SemanticBlocksGrouperChunks(
+      string text,
+      string source,
+      EmbeddingModel embeddingModel)
         {
             try
             {
                 // 1. Initial Sentence Splitting
-                var rawBlocks = SemanticTextBlocksGrouper.SplitTextIntoSentences(text);
+                // Split the text into sentences using the utility from SemanticTextBlocksGrouper
+                var rawSentences = SemanticTextBlocksGrouper.SplitTextIntoSentences(text);
 
-                // English comment: Pre-split oversized sentences to prevent "Context Length Exceeded" errors in Ollama
+                // 2. Determine model-specific safe chunk size based on the text language
+                // Uses token-aware safe size for both English and Arabic
+                int safeChunkSize = embeddingModel.GetSafeChunkSize(text);
+                int overlap = safeChunkSize / 10; // 10% overlap for semantic context
+
+                // 3. Split long sentences into blocks based on the safe chunk size
                 var blocks = new List<string>();
-                foreach (var rb in rawBlocks)
+                foreach (var sentence in rawSentences)
                 {
-                    // English comment: If a sentence is unusually long (e.g., > 2000 chars), split it before embedding
-                    if (rb.Length > 2000)
-                        blocks.AddRange(rb.RecursiveSplit(2000, 0));
+                    // Check if sentence exceeds max token limit
+                    if (embeddingModel.EstimateTokenCount(sentence) > embeddingModel.GetMaxTokenLimit())
+                    {
+                        // Recursive split for very long sentences
+                        blocks.AddRange(sentence.RecursiveSplit(safeChunkSize, overlap));
+                    }
                     else
-                        blocks.Add(rb);
+                    {
+                        blocks.Add(sentence);
+                    }
                 }
 
-                if (blocks.Count <= 1)
-                {
-                    return blocks.Select((b, i) => new TextChunk
-                    { Index = i, Content = b.Trim(), Source = source, Embedding = null }).ToList();
-                }
+                if (blocks.Count == 0) return new List<TextChunk>();
 
-                // 2. Parallel Embedding Generation with thread-safe storage
+                // --- PERFORMANCE OPTIMIZATION: Concurrency Control ---
+                // Use a Semaphore to limit the number of concurrent embedding API calls
+                using var semaphore = new SemaphoreSlim(10);
                 var embeddings = new ConcurrentDictionary<string, float[]>();
                 var blockList = blocks.Where(b => !string.IsNullOrWhiteSpace(b)).Distinct().ToList();
 
+                // 4. Parallel Embedding Generation (for grouping)
                 var embeddingTasks = blockList.Select(async b =>
                 {
+                    await semaphore.WaitAsync();
                     try
                     {
                         var emb = await _embeddingService.EmbedAsync(b, embeddingModel);
@@ -149,61 +172,73 @@ namespace AIHousingAssistant.Application.Services.Chunk
                     }
                     catch (Exception ex)
                     {
-                        // English comment: Skip problematic blocks to avoid crashing the whole file process
-                        Console.WriteLine($"[Ollama Error] Skipping block due to context/format issues: {ex.Message}");
-                        throw;
-
+                        // Log the error and continue with other blocks
+                        Console.WriteLine($"[Embedding Error] Model: {embeddingModel}, Msg: {ex.Message}");
+                    }
+                    finally
+                    {
+                        semaphore.Release();
                     }
                 });
                 await Task.WhenAll(embeddingTasks);
 
-                // 3. Perform Semantic Grouping based on similarity threshold
-                float threshold = 0.70f;
-                var finalEmbeddingsDict = embeddings.ToDictionary(kv => kv.Key, kv => kv.Value);
-                var grouped = SemanticTextBlocksGrouper.GroupTextBlocksBySimilarity(finalEmbeddingsDict, threshold);
+                // 5. Semantic Grouping
+                float threshold = 0.70f; // Cosine similarity threshold
+                var grouped = SemanticTextBlocksGrouper.GroupTextBlocksBySimilarity(
+                    embeddings.ToDictionary(kv => kv.Key, kv => kv.Value),
+                    threshold);
 
                 var finalChunksWithVectors = new List<TextChunk>();
                 int chunkIndex = 0;
 
-                // 4. Aggregate groups and apply final size limits
+                // 6. Final Aggregation and Re-Embedding (Crucial for vector accuracy)
                 foreach (var group in grouped)
                 {
                     if (group == null || !group.Any()) continue;
 
-                    // Use the group leader's vector
-                    if (!embeddings.TryGetValue(group.First(), out var representativeVector)) continue;
-
+                    // Aggregate the group into one semantic block
                     var aggregatedText = string.Join(" ", group);
 
-                    // English comment: Ensure the final chunk does not exceed 1000 characters for optimal RAG
-                    var splitBlocks = aggregatedText.RecursiveSplit(1000, 100);
+                    // Split aggregated text into RAG-friendly chunks based on safe chunk size
+                    var finalSubBlocks = aggregatedText.RecursiveSplit(
+                        embeddingModel.GetSafeChunkSize(aggregatedText),
+                        overlap
+                    );
 
-                    foreach (var chunkContent in splitBlocks)
+                    foreach (var chunkContent in finalSubBlocks)
                     {
                         if (string.IsNullOrWhiteSpace(chunkContent)) continue;
+
+                        // Re-embed the final chunk to accurately represent its semantic meaning
+                        var finalEmb = await _embeddingService.EmbedAsync(chunkContent, embeddingModel);
 
                         finalChunksWithVectors.Add(new TextChunk
                         {
                             Index = chunkIndex++,
                             Content = chunkContent.Trim(),
                             Source = source,
-                            Embedding = representativeVector
+                            Embedding = finalEmb
                         });
                     }
                 }
 
                 return finalChunksWithVectors;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                // English comment: Re-throw exception as requested
                 throw;
             }
         }
-        private Task<List<TextChunk>> RecursiveTextSplitterChunks(string text, string source)
+
+        private Task<List<TextChunk>> RecursiveTextSplitterChunks(string text, string source, EmbeddingModel embeddingModel)
         {
-            // RecursiveSplit is an extension method available via 'SemanticTextSplitting'
-            var blocks = text.RecursiveSplit(1000, 100);
+            // English comment: Determine the safe chunk size dynamically based on the model and language.
+            // This ensures that even simple recursive splitting respects model token limits.
+            int safeSize = embeddingModel.GetSafeChunkSize(text);
+            int overlap = safeSize / 10;
+
+            // English comment: Use the smart safeSize instead of the hardcoded 1000.
+            var blocks = text.RecursiveSplit(safeSize, overlap);
 
             var chunks = blocks
                 .Select((b, i) => new TextChunk
@@ -211,13 +246,13 @@ namespace AIHousingAssistant.Application.Services.Chunk
                     Index = i,
                     Content = (b ?? string.Empty).Trim(),
                     Source = source
+                    // Note: Embedding is usually added later in the pipeline for this simple splitter
                 })
                 .Where(tc => !string.IsNullOrWhiteSpace(tc.Content))
                 .ToList();
 
             return Task.FromResult(chunks);
         }
-
         // English comment: This method generates synthetic Q&A from chunks and stores them as vectors.
         // This is more accurate for RAG as it matches user intent directly.
     }

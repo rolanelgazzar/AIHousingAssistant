@@ -231,6 +231,23 @@
             text-align: right;
             font-size: 13px;
         }
+        /* table response*/
+        .bot-markdown-content table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 10px 0;
+            border: 1px solid #ddd;
+        }
+
+        .bot-markdown-content th, .bot-markdown-content td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: right;
+        }
+
+        .bot-markdown-content th {
+            background-color: #f9f9f9;
+        }
     </style>
 </head>
 <body>
@@ -241,20 +258,24 @@
         <div class="config-section">
             <h4>🧠 Embedding Model</h4>
             <select id="embeddingModel">
+                <option value="2">BgeM3</option>
+
                 <option value="1">nomic-embed-text</option>
 
                 <option value="0">mxbai-embed-large</option>
+
+                
             </select>
         </div>
 
         <div class="config-section">
             <h4>✂️ Chunking Strategy</h4>
             <select id="chunkingMode">
-              
 
+                <option value="2">Semantic Text Blocks</option>
                 <option value="0">LangChain Recursive</option>
                 <option value="1">Recursive Text Splitter</option>
-                <option value="2">Semantic Text Blocks</option>
+          
             </select>
         </div>
 
@@ -280,6 +301,8 @@
         <div class="config-section">
             <h4>🧠 AI Provider</h4>
             <select id="AIProvider">
+                <option value="4">Open AI</option>
+
                 <option value="3">Groq</option>
 
                 <option value="0">Ollama</option>
@@ -321,11 +344,17 @@
 
                 <input type="text" id="messageInput" class="msger-input" placeholder="Type your question here..." style="direction: ltr; text-align: left;">
                 <select id="toolSelector" class="tools-dropdown">
+                    <option value="RagMarkdownSharp" data-name="RagMarkdownSharp">⚙️ Rag MarkdownSharp </option>
+                    <option value="RagDocling" data-name="RagDocling">⚙️ Rag Docling </option>
+
+                    <option value="RagPandDoc" data-name="RagPandDoc">⚙️ Rag Pandoc </option>
+
+
+                    <option value="KernelMemory" data-name="Kernel Memory">📝 Kernel Memory</option>
+
                     <option value="DirectChat" data-name="Direct Chat">🔍 Direct Chat</option>
                     <option value="PluginDB" data-name="Plugin DB">🗄️ Plugin DB</option>
                     <option value="Web" data-name="Web Search">🌐 Web Search</option>
-                    <option value="KernelMemory" data-name="Kernel Memory">📝 Kernel Memory</option>
-                    <option value="Rag" data-name="Custom Rag">⚙️ Custom Rag</option>
                 </select>
 
                 <button id="mainSendBtn" class="send-btn">
@@ -338,6 +367,7 @@
     </section>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <script>
         // Static assets
         const imgBOT = "/images/bot.png";
@@ -364,21 +394,22 @@
             $('#mainSendBtn').on('click', function() {
                 const msg = $('#messageInput').val().trim();
                 const tool = $('#toolSelector').val();
-
+               
                 if (!msg) return;
 
                 // Show user message
                 addMessage(msg, 'user');
                 $('#messageInput').val('');
-
+               
                 // Routing to specific tool functions
                 switch(tool) {
                     case 'DirectChat':   askDirectChat(msg); break;
                     case 'PluginDB':     askPluginDB(msg); break;
                     case 'Web':          askWeb(msg); break;
-                    case 'Rag':          askRag(msg); break;
                     case 'KernelMemory': askKernelMemory(msg); break;
-                   
+                    case 'RagPandDoc':          askRag(msg); break;
+                    case 'RagMarkdownSharp':          askRag(msg); break;
+                    case 'RagDocling':          askRag(msg); break;
                     default:             askDirectChat(msg);
                 }
 
@@ -394,8 +425,23 @@
         function askPluginDB(q)   { sendAiRequest('/AskPluginDB', q); }
         function askWeb(q)        { sendAiRequest('/AskWeb', q); }
         function askRag(q)        { sendAiRequest('/AskRag', q); }
+        // function askTestRag(q)        { sendAiRequest('/AskTestRag', q); }
         function askKernelMemory(q) { sendAiRequest('/AskKernelMemory', q); }
 
+        function MappingTool( val){
+        
+            switch (val) {
+                    case 'DirectChat': return 0; break;
+                    case 'PluginDB': return 1; break;
+
+                    case 'Web': return 2; break;
+                    case 'KernelMemory': return 3; break;
+
+                    case 'RagPandDoc':   return 4; break;
+                    case 'RagMarkdownSharp':       return 5; break;
+                    case 'RagDocling':       return 6; break;
+            }
+        }
         /**
          * Generic AJAX wrapper for AI requests
          */
@@ -409,9 +455,11 @@
                 EmbeddingModel: parseInt($('#embeddingModel').val()),
                 SearchMode: parseInt($('#searchMode').val()),
                 AIProvider: parseInt($('#AIProvider').val()),
-                TopSimilarity: parseInt($('#topSimilarity').val())
+                TopSimilarity: parseInt($('#topSimilarity').val()),
+                 ToolsSearchBy: MappingTool($('#toolSelector').val())
+               
             };
-
+            var toolSelector=$('#toolSelector').val();
             showLoader();
 
             $.ajax({
@@ -430,6 +478,7 @@
 
                     // English comment: Get the text label for the selected search mode
                     const searchModeLabel = $('#searchMode option:selected').text();
+                                        const AIProviderName = $('#AIProvider option:selected').text();
 
                     // English comment: Construct the metadata header
                     let metadataHtml = "";
@@ -439,7 +488,7 @@
 
                         // English comment: Display the Search Mode used for this specific request
                         metadataHtml += `🔍 <b>Search Mode:</b> ${searchModeLabel}<br/>`;
-
+                        
                         if (sources.length > 0) {
                             metadataHtml += `📚 <b>Sources:</b> ${[...new Set(sources)].join(', ')}<br/>`;
                         }
@@ -448,16 +497,39 @@
                         }
                         if (similarities.length > 0) {
                             const topScore = (Math.max(...similarities) * 100).toFixed(1);
-                            metadataHtml += `🎯 <b>TopK:</b> ${topScore}%`;
+                            metadataHtml += `🎯 <b>TopK:</b> ${topScore}%<br/>`;
                         }
-
+                         if (toolSelector.length > 0) {
+                            metadataHtml += `🎯 <b>Tool Selector:</b> ${toolSelector}%<br/>`;
+                        }
+                            if (AIProviderName.length > 0) {
+                                    metadataHtml += `🎯 <b>AI Provider:</b> ${AIProviderName}`;
+                        }
                         metadataHtml += `</div>`;
                     }
 
-                    // English comment: Combine metadata at the TOP, then the bot answer
-                    const fullMessage = `${metadataHtml}${botReply}`;
-                    addMessage(fullMessage, 'bot');
-                },
+              // --- Modification Start ---
+            // English comment: Convert Markdown (like tables) to HTML using marked.js if available
+            // This prevents the "compact text" issue with tables.
+        // --- Modification Start ---
+             // English comment: Prepare the bot reply for rendering.
+             // If the AI returns HTML (like <table>), it will be rendered as-is.
+                    // --- Markdown Parsing Logic Start ---
+            // English comment: Convert the Markdown table/text from the prompt into HTML
+            let renderedContent = botReply;
+            if (typeof marked !== 'undefined') {
+                // English comment: Parse Markdown using marked.js library
+                renderedContent = marked.parse(botReply);
+            } else {
+                // English comment: Basic formatting if library is missing
+                renderedContent = botReply.replace(/\n/g, '<br/>');
+            }
+            // --- Markdown Parsing Logic End ---
+
+            // English comment: Wrap content in a div for targeted CSS styling
+            const fullMessage = `${metadataHtml}<div class="bot-markdown-content">${renderedContent}</div>`;
+            addMessage(fullMessage, 'bot');
+        },
                         error: function(xhr) {
             hideLoader();
 
@@ -491,7 +563,7 @@
                 aiProvider: $("#AIProvider option:selected").text(),
                 tool: $("#toolSelector option:selected").attr("data-name") || $("#toolSelector option:selected").text()
             };
-
+            
             const formData = new FormData();
             // Temporarily store files to be uploaded
             const currentUploadSet = Array.from(files);
