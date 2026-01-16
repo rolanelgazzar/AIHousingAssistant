@@ -15,18 +15,18 @@ namespace AIHousingAssistant.Application.Services.RagPipeline.Handlers.MarkDownS
             string extension = Path.GetExtension(request.FilePath).ToLower();
 
             // English comment: Check if the extension is supported by Docling
-            string[] supportedExtensions = { ".docx", ".doc", ".pdf", ".pptx", ".html" };
+            //string[] supportedExtensions = { ".docx", ".doc", ".pdf", ".pptx", ".html" };
 
-            if (!supportedExtensions.Contains(extension))
-            {
-                // English comment: For Excel, you might still need a custom logic or skip
-                if (extension == ".xlsx" || extension == ".xls")
-                {
-                    request.MarkdownContent = "[Excel Content Extraction - Implementation Pending]";
-                    return await base.HandleAsync(request);
-                }
-                throw new NotSupportedException($"File type {extension} is not supported by Docling.");
-            }
+            //if (!supportedExtensions.Contains(extension))
+            //{
+            //    // English comment: For Excel, you might still need a custom logic or skip
+            //    if (extension == ".xlsx" || extension == ".xls")
+            //    {
+            //        request.MarkdownContent = "[Excel Content Extraction - Implementation Pending]";
+            //        return await base.HandleAsync(request);
+            //    }
+            //    throw new NotSupportedException($"File type {extension} is not supported by Docling.");
+            //}
 
             // English comment: Use Docling to convert supported files to Markdown
             request.MarkdownContent = await ConvertWithDocling(request.FilePath);
